@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "resolveJsonModule":true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "rootDir": "./",
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "paths": {
+      "@src/*":["src/*"],
+      "@test/*":["test/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+  },
+  "ts-node": {"esm":true},
+  "include": ["src/**/*", "test/**/*"],
+}
+ 

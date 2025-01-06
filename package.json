@@ -1,0 +1,20 @@
+{
+  "name": "spreadsheet-orm",
+  "packageManager": "yarn@4.5.3",
+  "dependencies": {
+    "gaxios": "^6.7.1",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx test/index.ts",
+    "dev": "nodemon --exec tsx test/index.ts"
+  },
+  "type": "module"
+}
