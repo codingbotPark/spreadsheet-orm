@@ -1,4 +1,4 @@
-import BaseConnection from "./BaseConnection";
+import BaseConnection from "./SpreadsheetClient";
 
 class PromiseSpreadsheetConnection{
     connection:BaseConnection

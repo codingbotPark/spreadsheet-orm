@@ -1,18 +1,13 @@
 import { google, sheets_v4 } from "googleapis";
 
-// export type SpreadsheetConnectionOptions = 
-// | Required<Pick<ConnectionProperties, 'spreadsheetId'>> & Partial<Pick<ConnectionProperties, 'spreadsheetUrl'>>
-// | Required<Pick<ConnectionProperties, 'spreadsheetUrl'>> & Partial<Pick<ConnectionProperties, 'spreadsheetId'>>;
-export type SpreadsheetConnectionOptions = ConnectionProperties
-
-export interface ConnectionProperties{
+export interface SpreadsheetConfigOptions{
     spreadsheetID:string;
     email: string; // service acount email
     privateKey: string; // Google API key
 }
 
-class ConnectionConfig{
-    static makeAuthJWT({email, privateKey}:Pick<ConnectionProperties, 'email' | 'privateKey'>){
+class SpreadsheetConfig{
+    static makeAuthJWT({email, privateKey}:Pick<SpreadsheetConfigOptions, 'email' | 'privateKey'>){
        return new google.auth.JWT({
         email,
         key:privateKey,
@@ -20,7 +15,7 @@ class ConnectionConfig{
        }) 
     }
 
-    static extractSheetIDfromURL(url:string):ConnectionProperties['spreadsheetID'] | false{
+    static extractSheetIDfromURL(url:string):SpreadsheetConfigOptions['spreadsheetID'] | false{
         const regex = /\/d\/([a-zA-Z0-9_-]{43})/; // extract sheet id from url
         const match = url.match(regex);
         if (match && match[1]) {
@@ -28,14 +23,19 @@ class ConnectionConfig{
         } 
         return false
     }
+
+    /**
+     * instance properties
+     */
     
     spreadsheetID:string;
     authJWT: InstanceType<typeof google.auth.JWT>;
     spreadsheetAPI: sheets_v4.Sheets;
-    constructor(options:SpreadsheetConnectionOptions){
+
+    constructor(options:SpreadsheetConfigOptions){
         this.checkFormat(options)
-        this.spreadsheetID = ConnectionConfig.extractSheetIDfromURL(options.spreadsheetID) || options.spreadsheetID 
-        this.authJWT = ConnectionConfig.makeAuthJWT({email:options.email, privateKey:options.privateKey}) 
+        this.spreadsheetID = SpreadsheetConfig.extractSheetIDfromURL(options.spreadsheetID) || options.spreadsheetID 
+        this.authJWT = SpreadsheetConfig.makeAuthJWT({email:options.email, privateKey:options.privateKey}) 
         this.spreadsheetAPI = google.sheets({
             version:'v4',
             auth:this.authJWT
@@ -43,7 +43,7 @@ class ConnectionConfig{
     }
 
 
-    private checkFormat(options:SpreadsheetConnectionOptions){
+    private checkFormat(options:SpreadsheetConfigOptions){
         if (!this.isValidEmail(options.email)){
             throw Error("Invalid email format")
         }
@@ -55,4 +55,4 @@ class ConnectionConfig{
     }
 }
 
-export default ConnectionConfig
+export default SpreadsheetConfig

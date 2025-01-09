@@ -1,4 +1,4 @@
-import BaseConnection from "./BaseConnection"
+import BaseConnection from "./SpreadsheetClient"
 import PromiseSpreadsheetConnection from "./PromiseSpreadsheetConnection"
 
 class SpreadsheetConnection extends BaseConnection{
