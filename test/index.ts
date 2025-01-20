@@ -1,5 +1,5 @@
+import createSpreadsheetClient from "client/createSpreadsheetClient";
 import credentials from "../security/credentials.json"
-import createSpreadsheetClient from "index";
 
 const connectionParameters:Credentials = credentials
 
@@ -14,3 +14,24 @@ const spreadsheetClient = createSpreadsheetClient({
     privateKey:connectionParameters.private_key,
     spreadsheetID:connectionParameters.spreadsheetID
 })
+
+spreadsheetClient.query().select()
+
+const test = await spreadsheetClient.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
+    spreadsheetId:spreadsheetClient.spreadsheetID,
+    requestBody:{
+        dataFilters:[
+            {
+                a1Range:"class!A1:B3"
+            },
+            {
+                a1Range:"student!A1:C2"
+            },
+            {
+                a1Range:"class!C1:D3"
+            },
+        ]
+    }
+})
+
+spreadsheetClient.queryBuilder.select()

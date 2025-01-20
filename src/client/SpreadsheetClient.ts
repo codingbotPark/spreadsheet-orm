@@ -1,56 +1,41 @@
 import SpreadsheetConfig, { SpreadsheetConfigOptions } from "config/SpreadsheetConfig";
 import { sheets_v4 } from "googleapis";
 import { GaxiosError } from "gaxios";
-import QueryBuilder from "queryBuilder/QueryBuilder";
+import QueryBuilder from "core/DML/QueryBuilder";
 
+// serve method to user 
 class SpreadsheetClient{
     spreadsheetAPI:sheets_v4.Sheets
     spreadsheetID:string
 
-    private spreadsheetInfo:sheets_v4.Schema$Spreadsheet | null = null
 
     constructor(private config:SpreadsheetConfig, public queryBuilder:QueryBuilder){
         this.spreadsheetAPI = config.spreadsheetAPI
         this.spreadsheetID = config.spreadsheetID
     }
 
-    async getSpreadsheetInfo({cached}:{cached:boolean}={cached:false}){
-        if (cached && this.spreadsheetInfo) return this.spreadsheetInfo
-        const spreadsheetID = this.config.spreadsheetID
+    
 
-        try {
-            this.config.spreadsheetAPI.spreadsheets.values
-            const response = await this.config.spreadsheetAPI.spreadsheets.get({spreadsheetId:spreadsheetID});
-            // 스프레드시트가 유효하면 response를 처리
-            this.spreadsheetInfo = response.data
-        } catch (error) {
-            if (error instanceof GaxiosError){
-                const status = error.status
-                const message = error.response?.data.error.message
 
-                if (status === 404){
-                    throw new Error(`cannot find spreadsheet with (ID:${spreadsheetID})`)
-                } else if (status === 403){
-                    throw new Error(`forbidden spreadsheet with (ID:${spreadsheetID})`)
-                } else {
-                    throw new Error(`Error fetching spreadsheet: ${status} - ${message}`)
-                }
-            }
+    query():QueryBuilder;
+    query(sql:string, values:[string | number]):Promise<void>
+    query(sql?:string):Promise<any>
+    query(sql?:string, values?:[string | number]):Promise<any> | QueryBuilder{
+        if (sql === undefined){
+            return this.queryBuilder
         }
-    }
 
-    async query(sql:string, values:[string | number]){
-
+        return this.executeSql(sql, values)
     }
     
     
-    test(){
-        
+    async executeSql(sql:string, values?:[string | number]):Promise<any>{
+        return this.spreadsheetAPI.spreadsheets.values.get({
+            spreadsheetId:this.spreadsheetID,
+            range:"class!A1:B3"
+        })
     }
 }
 
-interface spreadsheetclientOpts{
-   config:SpreadsheetConfig
-}
 
 export default SpreadsheetClient

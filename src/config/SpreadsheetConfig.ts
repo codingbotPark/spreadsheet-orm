@@ -31,6 +31,7 @@ class SpreadsheetConfig{
     spreadsheetID:string;
     authJWT: InstanceType<typeof google.auth.JWT>;
     spreadsheetAPI: sheets_v4.Sheets;
+    spreadsheetInfo:sheets_v4.Schema$Spreadsheet | null = null
 
     constructor(options:SpreadsheetConfigOptions){
         this.checkFormat(options)
@@ -40,6 +41,31 @@ class SpreadsheetConfig{
             version:'v4',
             auth:this.authJWT
         })
+    }
+
+    async getSpreadsheetInfo({cached}:{cached:boolean}={cached:false}){
+        if (cached && this.spreadsheetInfo) return this.spreadsheetInfo
+        const spreadsheetID = this.spreadsheetID
+
+        try {
+            this.spreadsheetAPI.spreadsheets.values
+            const response = await this.spreadsheetAPI.spreadsheets.get({spreadsheetId:spreadsheetID});
+            // 스프레드시트가 유효하면 response를 처리
+            this.spreadsheetInfo = response.data
+        } catch (error) {
+            if (error instanceof GaxiosError){
+                const status = error.status
+                const message = error.response?.data.error.message
+
+                if (status === 404){
+                    throw new Error(`cannot find spreadsheet with (ID:${spreadsheetID})`)
+                } else if (status === 403){
+                    throw new Error(`forbidden spreadsheet with (ID:${spreadsheetID})`)
+                } else {
+                    throw new Error(`Error fetching spreadsheet: ${status} - ${message}`)
+                }
+            }
+        }
     }
 
 
@@ -53,6 +79,7 @@ class SpreadsheetConfig{
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
+
 }
 
 export default SpreadsheetConfig
