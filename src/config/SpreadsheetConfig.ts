@@ -1,3 +1,4 @@
+import { GaxiosError } from "gaxios";
 import { google, sheets_v4 } from "googleapis";
 
 export interface SpreadsheetConfigOptions{
@@ -24,10 +25,13 @@ class SpreadsheetConfig{
         return false
     }
 
+    // lowest = 1
+    DEFAULT_RECORDING_START_ROW = 1
+    // 따로 config 파일에서 사용하거나, default를 사용하거나
+
     /**
      * instance properties
      */
-    
     spreadsheetID:string;
     authJWT: InstanceType<typeof google.auth.JWT>;
     spreadsheetAPI: sheets_v4.Sheets;

@@ -3,17 +3,14 @@ import BaseBuilder from "./BaseBuilder";
 
 
 // from, where 구현
+// 원래 where 은 data 를 다 가져온 후 실행된다
 abstract class ConditionBuilder<ExecuteReturn> extends BaseBuilder<ExecuteReturn>{
-    a1Range:string | null = null
     filterFN:null | ((data:sheets_v4.Schema$MatchedValueRange) => boolean) = null
 
-    where(a1Range:string):this
     where(callbackFN:(data:sheets_v4.Schema$MatchedValueRange) => boolean):this
-    where(param:((data:sheets_v4.Schema$MatchedValueRange) => boolean) | string):this{
+    where(param:((data:sheets_v4.Schema$MatchedValueRange) => boolean)):this{
         if (typeof param === "function"){
            this.filterFN = param 
-        } else if (typeof param === "string"){
-            this.a1Range = param
         }
 
         return this
@@ -21,13 +18,12 @@ abstract class ConditionBuilder<ExecuteReturn> extends BaseBuilder<ExecuteReturn
 
     protected getCurrentCondition(){
         return {
-            a1Range:this.a1Range,
             filterFN:this.filterFN
         }
     }
 
     // 필터링, 인덱스를 포함하는 객체로 만든다
-    protected conditioning(){
+    protected conditioning(data:sheets_v4.Schema$MatchedValueRange){
 
     }
 }
