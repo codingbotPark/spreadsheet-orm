@@ -39,7 +39,7 @@ abstract class ConditionBuilder<ExecuteReturn> extends BaseBuilder<ExecuteReturn
         }
 
 
-        return data.map((currData,idx)=>[idx, ...currData])
+        return indexedData
     }
 
     private indexingData(data:string[][]):ConditionedDataWithIdx[]{

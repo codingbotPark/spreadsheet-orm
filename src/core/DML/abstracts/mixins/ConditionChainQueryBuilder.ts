@@ -1,9 +1,9 @@
 import applyMixins from "interface/mixin";
-import ChainQueryBuilder from "./ChainQueryBuilder";
-import ConditionBuilder, { ConditionedDataWithIdx, ConditionParamTypes } from "./ConditionBuilder";
+import ChainQueryBuilder from "../ChainQueryBuilder";
+import ConditionBuilder, { ConditionedDataWithIdx, ConditionParamTypes } from "../ConditionBuilder";
 import { sheets_v4 } from "googleapis";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
-import BaseBuilder from "./BaseBuilder";
+import BaseBuilder from "../BaseBuilder";
 
 export interface ConditionQueueType extends ConditionParamTypes{
     sheetName:string;

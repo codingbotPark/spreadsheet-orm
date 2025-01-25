@@ -1,12 +1,14 @@
 import { sheets_v4 } from "googleapis";
-import ConditionChainQueryBuilder from "../abstracts/ConditionChainQueryBuilder";
+import  { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import { DataTypes } from "core/DDL/SchemaManager";
 import assertNotNull from "interface/assertType";
+import RangeDataConditionChainQueryBuilder from "../abstracts/mixins/RangeDataConditionChainQueryBuilder";
 
 export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
 
-class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$UpdateValuesByDataFilterResponse[]>>{
+class UpdateBuilder extends RangeDataConditionChainQueryBuilder<Promise<sheets_v4.Schema$UpdateValuesByDataFilterResponse[]>>{
+    queryQueue: ConditionQueueType[] = [];
 
     from(sheetName: string): this {
         this.sheetName = sheetName;
@@ -15,6 +17,7 @@ class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
 
     async execute(): sheets_v4.Schema$UpdateValuesByDataFilterResponse {
         assertNotNull(this.sheetName)
+        
         
     }
     
