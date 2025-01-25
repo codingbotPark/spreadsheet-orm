@@ -1,9 +1,11 @@
 import { sheets_v4 } from "googleapis";
 import { GaxiosPromise } from "gaxios";
-import ConditionBuilder from "../abstracts/ConditionBuilder";
+import ConditionBuilder, { ConditionedDataWithIdx } from "../abstracts/ConditionBuilder";
 import ChainQueryBuilder from "../abstracts/ChainQueryBuilder";
-import ConditionChainQueryBuilder from "../abstracts/ConditionChainQueryBuilder";
+import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
+import ExecuteAllPrototypes from "decorator/ExecuteAllPrototypes";
+import assertNotNull from "interface/assertType";
 
 interface DummyColumnOptions{
     column:string
@@ -20,24 +22,32 @@ const dummyDefinedColumn:Record<string, DummyColumnOptions> = {
 }
 
 
-class SelectBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$MatchedValueRange[]>>{
-    
+type SelectBuilderRetureType = ConditionedDataWithIdx[][]
 
-    from(sheetName:string){
-        this.sheetName = sheetName
+class SelectBuilder extends ConditionChainQueryBuilder<Promise<SelectBuilderRetureType>>{
+    queryQueue: ConditionQueueType[] = [];
+    
+    from(sheetName: string) {
+        this.sheetName = sheetName;
+        return this; // Ensure method chaining
     }
-    
-    async execute(){
 
+    async execute(){
+        assertNotNull(this.sheetName)
+        this.addQueryToQueue(this.createQueryForQueue())
         
-        const specifiedRange = this.specifyRange(this.sheetName)
+
+        const specifiedColumn = this.specifyColumn(this.targetColumn)
+        const specifiedRange = this.specifyRange(this.sheetName, this.config.DEFAULT_RECORDING_START_ROW, specifiedColumn)
+
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,
             requestBody:{
+                // query queue 나열
                 dataFilters:[
                     {
-                        
+                        a1Range:specifiedRange,
                     }
                 ]
             }
@@ -46,16 +56,28 @@ class SelectBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
         const result = response.data.valueRanges
         if (!result) throw Error("error")
 
+        // extract values only
+        const extractedValues = this.extractValuesFromMatch(result)
+
+        // process where
+        const conditionedExtractedValues = this.chainConditioning(extractedValues)
+
         // return result
-        return result
+        return conditionedExtractedValues
     }
 
-    constructor(config:SpreadsheetConfig, protected targetColumn:string[]){
+    // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
+    constructor(config:SpreadsheetConfig, private targetColumn:string[]){
         super(config)
+        console.log(this.queryQueue)
     }
 
-    private specifyRange(sheetName:string){
 
+    private specifyRange(sheetName:string, recordingRow:number, specifiedColumn:Required<RangeSpecificationType> | null):string{
+        if (specifiedColumn === null) return sheetName // only sheetName = all data
+
+        const { startColumn, endColumn } = specifiedColumn;
+        return `${sheetName}!${startColumn}${recordingRow}:${endColumn}`
     }
 
     private specifyColumn(columnNames:string[]):null | Required<RangeSpecificationType>{
@@ -82,6 +104,15 @@ class SelectBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
         if (columnSpecification.startColumn === null) return null
 
         return columnSpecification
+    }
+
+    private extractValuesFromMatch(matchedValueRange: sheets_v4.Schema$MatchedValueRange[]): string[][][]{
+
+        const extractedValues:string[][][] = matchedValueRange.map((valueRangeObj) => {
+        return valueRangeObj.valueRange?.values ?? []; 
+        })
+
+        return extractedValues
     }
     
 

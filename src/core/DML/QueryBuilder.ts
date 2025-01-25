@@ -1,6 +1,6 @@
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import SelectBuilder from "./implements/SelectBuilder";
-import UpdateBuilder from "./implements/UpdateBuilder";
+import UpdateBuilder, { UpdateValueType } from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
 
@@ -16,8 +16,8 @@ class QueryBuilder {
         return new SelectBuilder(this.config, targetColumn)
     }   
 
-    update(){
-        return new UpdateBuilder(this.config)
+    update(updateValues:UpdateValueType){
+        return new UpdateBuilder(this.config, updateValues)
     }
 
     delete(){

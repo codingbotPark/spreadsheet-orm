@@ -15,23 +15,7 @@ const spreadsheetClient = createSpreadsheetClient({
     spreadsheetID:connectionParameters.spreadsheetID
 })
 
-spreadsheetClient.query().select()
 
-const test = await spreadsheetClient.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
-    spreadsheetId:spreadsheetClient.spreadsheetID,
-    requestBody:{
-        dataFilters:[
-            {
-                a1Range:"class!A1:B3"
-            },
-            {
-                a1Range:"student!A1:C2"
-            },
-            {
-                a1Range:"class!C1:D3"
-            },
-        ]
-    }
-})
 
-spreadsheetClient.queryBuilder.select()
+const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
+console.log(result)

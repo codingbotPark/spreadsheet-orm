@@ -1,21 +1,28 @@
+import SpreadsheetConfig from "config/SpreadsheetConfig";
 import BaseBuilder from "./BaseBuilder";
 
 // implement "and" method
 abstract class ChainQueryBuilder<QueueType, ExecuteReturn = void> extends BaseBuilder<ExecuteReturn>{
-    private currentQueryIndex = 0
-    protected queryQueue:Array<QueueType> = []
+    abstract queryQueue:Array<QueueType>
+
+    constructor(config:SpreadsheetConfig){
+        super(config)
+    }
 
     abstract createQueryForQueue():QueueType
 
-    and(sheetName:string | null):this{
+    and(sheetName?:string):this{
         // if param==null -> use same sheetName
-        if (!!sheetName){
+        if (sheetName){
             this.sheetName = sheetName
         }
-
-        this.queryQueue[this.currentQueryIndex] = this.createQueryForQueue()
-        this.currentQueryIndex += 1
+        
+        this.addQueryToQueue(this.createQueryForQueue())
         return this
+    }
+
+    protected addQueryToQueue(query:QueueType){
+        this.queryQueue.push(query)
     }
 }
 
