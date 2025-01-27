@@ -16,24 +16,36 @@ const dummyDefinedColumn:Record<string, DummyColumnOptions> = {
 
 abstract class RangeDataProcessor {
 
-    protected specifyRange(sheetName:string, recordingRow:number, specifiedColumn:Required<RangeSpecificationType> | null):string{
-        if (specifiedColumn === null) return sheetName // only sheetName = all data
 
-        const { startColumn, endColumn } = specifiedColumn;
-        return `${sheetName}!${startColumn}${recordingRow}:${endColumn}`
+    // row O column X -> 특정 행(sheet1!1:1)
+    // row O column O -> 특정 셀(sheet1!A1)
+    protected specifyRange(sheetName:string, row:RowSpecificationType, specifiedColumn?:ColumnSpecificationType):string
+    protected specifyRange(sheetName:string, row:number, specifiedColumn?:ColumnSpecificationType):string
+    protected specifyRange(sheetName:string, row:RowSpecificationType | number, specifiedColumn?:ColumnSpecificationType):string{
+
+        const startRow = typeof row === "number" ? row : row.startRow
+        const endRow = typeof row === "number" ? '' : (row.endRow ?? startRow)
+        const startColumn = (specifiedColumn && specifiedColumn.startColumn) ?? 'A'
+        const endColumn = (specifiedColumn && specifiedColumn.endColumn) ?? 'ZZZ'
+
+        return `${sheetName}!${startColumn}${startRow}:${endColumn}${endRow}`
     }
 
-    protected specifyColumn(columnNames:string[]):null | Required<RangeSpecificationType>{
+    protected specifyColumn(columnNames:string[]):ColumnSpecificationType{
+        const defaultColumns = { startColumn: null, endColumn: null } 
+
         // DDL이함들어와야함
-        if (!dummyDefinedColumn) return null
-        const columnSpecification = columnNames.reduce((columnSpecification: RangeSpecificationType, columnName: string) => {
+        if (!dummyDefinedColumn) return defaultColumns
+
+        const columnSpecification = columnNames.reduce((columnSpecification: ColumnSpecificationType, columnName: string) => {
             const targetColumn = dummyDefinedColumn[columnName]?.column;
 
             if (!targetColumn) return columnSpecification; // targetColumn이 없으면 그대로 리턴
+            
             const { startColumn, endColumn } = columnSpecification;
-        
+
             // 초기값 설정
-            if (startColumn === null || endColumn === null) {
+            if (!startColumn || !endColumn) {
               return { startColumn: targetColumn, endColumn: targetColumn };
             }
         
@@ -42,9 +54,8 @@ abstract class RangeDataProcessor {
               startColumn: targetColumn < startColumn ? targetColumn : startColumn,
               endColumn: targetColumn > endColumn ? targetColumn : endColumn
             };
-          }, { startColumn: null, endColumn: null });
+          }, defaultColumns);
 
-        if (columnSpecification.startColumn === null) return null
 
         return columnSpecification
     }
@@ -57,14 +68,19 @@ abstract class RangeDataProcessor {
 
         return extractedValues
     }
+
     
 
     // Add other abstract or concrete methods as needed
 }
 
-interface RangeSpecificationType{
-    startColumn:null | string,
-    endColumn:null | string
+interface ColumnSpecificationType{
+    startColumn:string | null,
+    endColumn:string | null
+}
+interface RowSpecificationType{
+    startRow:number,
+    endRow?:number
 }
 
 export default RangeDataProcessor

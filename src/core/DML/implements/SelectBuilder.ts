@@ -21,13 +21,15 @@ class SelectBuilder extends RangeDataConditionChainQueryBuilder<Promise<SelectBu
     }
 
     async execute(){
+
         assertNotNull(this.sheetName)
+       
         this.addQueryToQueue(this.createQueryForQueue())
         
 
         const specifiedColumn = this.specifyColumn(this.targetColumn)
-        const specifiedRange = this.specifyRange(this.sheetName, this.config.DEFAULT_RECORDING_START_ROW, specifiedColumn)
-
+        const specifiedRange = this.specifyRange(this.sheetName, this.config.DATA_STARTING_ROW, specifiedColumn)
+        console.log("specifiedRange", specifiedRange)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,

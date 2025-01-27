@@ -1,5 +1,6 @@
 import createSpreadsheetClient from "client/createSpreadsheetClient";
 import credentials from "../security/credentials.json"
+import { ConditionedDataWithIdx } from "core/DML/abstracts/ConditionBuilder";
 
 const connectionParameters:Credentials = credentials
 
@@ -19,3 +20,6 @@ const spreadsheetClient = createSpreadsheetClient({
 
 const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
 console.log(result)
+
+const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data:ConditionedDataWithIdx) => data[2] === "Bruno").execute()
+console.log(result2)

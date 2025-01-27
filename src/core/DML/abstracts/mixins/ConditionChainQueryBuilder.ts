@@ -4,6 +4,7 @@ import ConditionBuilder, { ConditionedDataWithIdx, ConditionParamTypes } from ".
 import { sheets_v4 } from "googleapis";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import BaseBuilder from "../BaseBuilder";
+import assertNotNull from "interface/assertType";
 
 export interface ConditionQueueType extends ConditionParamTypes{
     sheetName:string;
@@ -16,19 +17,21 @@ abstract class ConditionChainQueryBuilder<ExecuteReturn> extends BaseBuilder<Exe
     
     // queue object for conditionChainQueryQueue
     createQueryForQueue():ConditionQueueType{
+        assertNotNull(this.sheetName)
+
         if (!this.sheetName) throw  Error("need sheetName")
         const condition = {
             sheetName:this.sheetName,
             filterFN:this.filterFN,
         }
-        console.log("condition", condition)
         return condition
     }
     
     chainConditioning(data:string[][][]):ConditionedDataWithIdx[][]{
         return data.map((rangeData, idx) => {
             const filterParam = this.queryQueue[idx]
-            return this.conditioning(rangeData, filterParam)
+            const result = this.conditioning(rangeData, filterParam)
+            return result
         })
     }
 
