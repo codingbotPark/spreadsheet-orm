@@ -1,15 +1,19 @@
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import BaseBuilder from "./BaseBuilder";
 
+export interface BasicQueryQueueType{
+    sheetName:string
+}
+
 // implement "and" method
-abstract class ChainQueryBuilder<QueueType, ExecuteReturn = void> extends BaseBuilder<ExecuteReturn>{
-    abstract queryQueue:Array<QueueType>
+abstract class ChainQueryBuilder<ExecuteReturn, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder<ExecuteReturn>{
+    protected abstract queryQueue:Array<QueueType>
 
     constructor(config:SpreadsheetConfig){
         super(config)
     }
 
-    abstract createQueryForQueue():QueueType
+    protected abstract createQueryForQueue():QueueType
 
     and(sheetName?:string):this{
         // if param==null -> use same sheetName

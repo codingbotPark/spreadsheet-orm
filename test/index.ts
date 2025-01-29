@@ -23,3 +23,6 @@ console.log(result)
 
 const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data:ConditionedDataWithIdx) => data[2] === "Bruno").execute()
 console.log(result2)
+
+const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("class").execute()
+console.log(result3)

@@ -6,14 +6,23 @@ import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mix
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import ExecuteAllPrototypes from "decorator/ExecuteAllPrototypes";
 import assertNotNull from "interface/assertType";
-import RangeDataConditionChainQueryBuilder from "../abstracts/mixins/RangeDataConditionChainQueryBuilder";
 
 
 
 type SelectBuilderRetureType = ConditionedDataWithIdx[][]
 
-class SelectBuilder extends RangeDataConditionChainQueryBuilder<Promise<SelectBuilderRetureType>>{
+class SelectBuilder extends ConditionChainQueryBuilder<Promise<SelectBuilderRetureType>>{
     queryQueue: ConditionQueueType[] = [];
+
+    protected createQueryForQueue(): ConditionQueueType {
+        assertNotNull(this.sheetName)
+        assertNotNull(this.targetColumn)
+
+        return {
+            sheetName:this.sheetName,
+            filterFN:this.filterFN,
+        }
+    }
     
     from(sheetName: string) {
         this.sheetName = sheetName;
@@ -21,14 +30,13 @@ class SelectBuilder extends RangeDataConditionChainQueryBuilder<Promise<SelectBu
     }
 
     async execute(){
-
         assertNotNull(this.sheetName)
        
         this.addQueryToQueue(this.createQueryForQueue())
         
 
-        const specifiedColumn = this.specifyColumn(this.targetColumn)
-        const specifiedRange = this.specifyRange(this.sheetName, this.config.DATA_STARTING_ROW, specifiedColumn)
+        const specifiedColumn = this.compseColumn(this.targetColumn)
+        const specifiedRange = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW, specifiedColumn)
         console.log("specifiedRange", specifiedRange)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({

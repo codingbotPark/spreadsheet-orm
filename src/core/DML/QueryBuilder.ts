@@ -8,8 +8,8 @@ class QueryBuilder {
     constructor(private config: SpreadsheetConfig) {}
 
 
-    insert(){
-        return new InsertBuilder(this.config)
+    insert(insertValues:string[]){
+        return new InsertBuilder(this.config,insertValues)
     }
     
     select(...targetColumn:string[]){

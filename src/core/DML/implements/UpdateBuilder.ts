@@ -1,9 +1,8 @@
 import { sheets_v4 } from "googleapis";
-import  { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
+import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import { DataTypes } from "core/DDL/SchemaManager";
 import assertNotNull from "interface/assertType";
-import RangeDataConditionChainQueryBuilder from "../abstracts/mixins/RangeDataConditionChainQueryBuilder";
 import { ConditionedDataWithIdx } from "../abstracts/ConditionBuilder";
 
 export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
@@ -11,10 +10,10 @@ interface UpdateQueueType extends ConditionQueueType{
     updateValues:UpdateValueType
 }
 
-class UpdateBuilder extends RangeDataConditionChainQueryBuilder<Promise<sheets_v4.Schema$DataFilterValueRange[]>>{
+class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$DataFilterValueRange[]>>{
     queryQueue: UpdateQueueType[] = [];
 
-    createQueryForQueue(): UpdateQueueType {
+    protected createQueryForQueue(): UpdateQueueType {
         assertNotNull(this.sheetName)
         assertNotNull(this.updateValues)
 
@@ -38,7 +37,7 @@ class UpdateBuilder extends RangeDataConditionChainQueryBuilder<Promise<sheets_v
             const updateValues = this.queryQueue[idx].updateValues
             const ranges = updateQueueData.flatMap((data) => {
                 const row = data.at(0) as number
-                return this.specifyRange (this.sheetName as string, {startRow:row, endRow:row})  
+                return this.compseRange (this.sheetName as string, {startRow:row, endRow:row})  
             })
             return this.makeUpdateDataArr(ranges, updateValues)
         }).flat()
@@ -82,12 +81,11 @@ class UpdateBuilder extends RangeDataConditionChainQueryBuilder<Promise<sheets_v
     private async getConditionData(){
         assertNotNull(this.sheetName)
 
-
         this.addQueryToQueue(this.createQueryForQueue())
 
         // where 문에 컬럼을 받게 된다면 구현
         // const specifiedColumn = this.specifyColumn(this.targetColumn)
-        const specifiedRange = this.specifyRange(this.sheetName, this.config.DATA_STARTING_ROW)
+        const specifiedRange = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,
