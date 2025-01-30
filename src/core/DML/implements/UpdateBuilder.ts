@@ -61,6 +61,7 @@ class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
         super(config)
     }
 
+    // and 를 위해 수정 필요
     private makeUpdateDataArr(ranges:string[], values:UpdateValueType):sheets_v4.Schema$DataFilterValueRange[]{
         if (Array.isArray(values)){
             return ranges.reduce((updateDataArr:sheets_v4.Schema$DataFilterValueRange[] ,range) => {

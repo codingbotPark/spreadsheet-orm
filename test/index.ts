@@ -26,3 +26,6 @@ console.log(result2)
 
 const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("class").execute()
 console.log(result3)
+
+const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data:ConditionedDataWithIdx) => data[2] === "Bruno").execute()
+console.log(result4)
