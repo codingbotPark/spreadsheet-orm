@@ -2,11 +2,11 @@ import SpreadsheetConfig from "config/SpreadsheetConfig";
 import BaseBuilder from "./BaseBuilder";
 
 export interface BasicQueryQueueType{
-    sheetName:string
+    sheetName?:string
 }
 
 // implement "and" method
-abstract class ChainQueryBuilder<ExecuteReturn, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder<ExecuteReturn>{
+abstract class ChainQueryBuilder<QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
     protected abstract queryQueue:Array<QueueType>
 
     constructor(config:SpreadsheetConfig){

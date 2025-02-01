@@ -7,12 +7,16 @@ interface ParsedRange {
     endCell?: { column: string; row: number };
 }
 
+export interface Executable<ExecuteReturn>{
+    execute():Promise<ExecuteReturn>
+}
+
 // execute & has a basic spreadhseet methods
-abstract class BaseBuilder<ExecuteReturn>{
+abstract class BaseBuilder{
 
     constructor(protected config:SpreadsheetConfig){}
-    protected sheetName:string | null = null
-    abstract execute():ExecuteReturn
+    protected abstract sheetName?:string
+    // protected sheetName?:string
 
     parseCell(cellAddress:string){
         

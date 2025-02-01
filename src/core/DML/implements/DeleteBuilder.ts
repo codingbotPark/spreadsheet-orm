@@ -3,7 +3,8 @@ import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mix
 import assertNotNull from "interface/assertType";
 
 
-class DeleteBuilder extends ConditionChainQueryBuilder<Promise<string[]>, ConditionQueueType>{
+class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+    protected sheetName?: T["sheetName"];
     queryQueue:ConditionQueueType[] = [];
 
     protected createQueryForQueue(): ConditionQueueType {
@@ -14,7 +15,7 @@ class DeleteBuilder extends ConditionChainQueryBuilder<Promise<string[]>, Condit
         }
     }
     
-    async execute(): Promise<string[]> {
+    async execute(this:DeleteBuilder<T & {sheetName:string}>): Promise<string[]> {
         assertNotNull(this.sheetName)
 
         const indexedConditionData = this.getConditionData()
@@ -41,12 +42,11 @@ class DeleteBuilder extends ConditionChainQueryBuilder<Promise<string[]>, Condit
 
     }
 
-    private async getConditionData(){
-        assertNotNull(this.sheetName)
+    private async getConditionData(this:DeleteBuilder<T & {sheetName:string}>){
 
         this.addQueryToQueue(this.createQueryForQueue())
         
-        const specifiedRange = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW)
+        const specifiedRange = this.compseRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,
@@ -61,16 +61,18 @@ class DeleteBuilder extends ConditionChainQueryBuilder<Promise<string[]>, Condit
 
         const result = response.data.valueRanges
         if (!result) throw Error("error")
-        // extract values only
+            // extract values only
         const extractedValues = this.extractValuesFromMatch(result)
         // process where
         const conditionedExtractedValues = this.chainConditioning(extractedValues)
         return conditionedExtractedValues
     }
 
-    from(sheetName: string): this {
+    from(sheetName: string){
         this.sheetName = sheetName;
-        return this; // Ensure method chaining
+        const instance = new DeleteBuilder<T & {sheetName:string}>(this.config)
+        Object.assign(instance,this)
+        return instance; // Ensure method chaining
     }
 
     // and 를 위해 수정 필요

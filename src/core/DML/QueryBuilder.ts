@@ -1,5 +1,5 @@
 import SpreadsheetConfig from "config/SpreadsheetConfig";
-import SelectBuilder from "./implements/SelectBuilder";
+import SelectBuilderWithoutFrom from "./implements/SelectBuilder";
 import UpdateBuilder, { UpdateValueType } from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
@@ -13,7 +13,7 @@ class QueryBuilder {
     }
     
     select(...targetColumn:string[]){
-        return new SelectBuilder(this.config, targetColumn)
+        return new SelectBuilderWithoutFrom(this.config, targetColumn)
     }   
 
     update(updateValues:UpdateValueType){

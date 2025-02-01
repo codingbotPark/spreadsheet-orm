@@ -1,42 +1,32 @@
-import { sheets_v4 } from "googleapis";
-import { GaxiosPromise } from "gaxios";
-import ConditionBuilder, { ConditionedDataWithIdx } from "../abstracts/ConditionBuilder";
-import ChainQueryBuilder from "../abstracts/ChainQueryBuilder";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
-import ExecuteAllPrototypes from "decorator/ExecuteAllPrototypes";
 import assertNotNull from "interface/assertType";
 
+class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+    protected sheetName?: T["sheetName"]; // 필수
 
-
-type SelectBuilderRetureType = ConditionedDataWithIdx[][]
-
-class SelectBuilder extends ConditionChainQueryBuilder<Promise<SelectBuilderRetureType>>{
     queryQueue: ConditionQueueType[] = [];
 
     protected createQueryForQueue(): ConditionQueueType {
         assertNotNull(this.sheetName)
         assertNotNull(this.targetColumn)
 
-        return {
-            sheetName:this.sheetName,
-            filterFN:this.filterFN,
-        }
+        const queryQueue = this.getCurrentCondition()
+        return queryQueue
     }
     
     from(sheetName: string) {
-        this.sheetName = sheetName;
-        return this; // Ensure method chaining
+        this.sheetName = sheetName
+        const instance = new SelectBuilder<T & {sheetName:string}>(this.config, this.targetColumn)
+        Object.assign(instance, this) // copy properties
+        return instance
     }
 
-    async execute(){
-        assertNotNull(this.sheetName)
-       
+    async execute(this:SelectBuilder<T & {sheetName:string}>){
         this.addQueryToQueue(this.createQueryForQueue())
-        
 
         const specifiedColumn = this.compseColumn(this.targetColumn)
-        const specifiedRange = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW, specifiedColumn)
+        const specifiedRange = this.compseRange(this.sheetName!, this.config.DATA_STARTING_ROW, specifiedColumn)
         console.log("specifiedRange", specifiedRange)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
@@ -63,14 +53,11 @@ class SelectBuilder extends ConditionChainQueryBuilder<Promise<SelectBuilderRetu
         // return result
         return conditionedExtractedValues
     }
-
+    
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:SpreadsheetConfig, private targetColumn:string[]){
+    constructor(config:SpreadsheetConfig, protected targetColumn:string[]){
         super(config)
     }
-
-
-
 }
 
 export default SelectBuilder

@@ -6,6 +6,8 @@
     "resolveJsonModule":true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
     "rootDir": "./",

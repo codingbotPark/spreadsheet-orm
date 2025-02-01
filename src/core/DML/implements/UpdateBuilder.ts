@@ -3,20 +3,17 @@ import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mi
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import { DataTypes } from "core/DDL/SchemaManager";
 import assertNotNull from "interface/assertType";
-import { ConditionedDataWithIdx } from "../abstracts/ConditionBuilder";
 
 export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
     updateValues:UpdateValueType
 }
 
-class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$DataFilterValueRange[]>>{
+class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+    protected sheetName?: T["sheetName"];
     queryQueue: UpdateQueueType[] = [];
 
-    protected createQueryForQueue(): UpdateQueueType {
-        assertNotNull(this.sheetName)
-        assertNotNull(this.updateValues)
-
+    protected createQueryForQueue(this:UpdateBuilder<T & {sheetName:string}>): UpdateQueueType {
         return {
             sheetName:this.sheetName,
             filterFN:this.filterFN,
@@ -24,14 +21,14 @@ class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
         }  
     }
 
-    from(sheetName: string): this {
+    from(sheetName: string) {
         this.sheetName = sheetName;
-        return this; // Ensure method chaining
+        const instance = new UpdateBuilder<T & {sheetName:string}>(this.config, this.updateValues)
+        Object.assign(instance, this)
+        return instance; // Ensure method chaining
     }
 
-    async execute() {
-        assertNotNull(this.sheetName)
-
+    async execute(this: UpdateBuilder<T & {sheetName:string}>) {
         const indexedConditionData = await this.getConditionData()
         const updateDataArr = indexedConditionData.map((updateQueueData, idx) => {
             const updateValues = this.queryQueue[idx].updateValues
@@ -50,11 +47,11 @@ class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
             }
         })
 
-        console.log(response.data)
         const result = response.data.totalUpdatedRows
-        if (!result) throw Error("error")
 
-        return updateDataArr
+        if (response.status !== 200) throw Error("error")
+
+        return result
     }
     
     constructor(config:SpreadsheetConfig, private updateValues:UpdateValueType){
@@ -79,14 +76,13 @@ class UpdateBuilder extends ConditionChainQueryBuilder<Promise<sheets_v4.Schema$
         return []
     }
 
-    private async getConditionData(){
-        assertNotNull(this.sheetName)
+    private async getConditionData(this:UpdateBuilder<T & {sheetName:string}>){
 
         this.addQueryToQueue(this.createQueryForQueue())
 
         // where 문에 컬럼을 받게 된다면 구현
         // const specifiedColumn = this.specifyColumn(this.targetColumn)
-        const specifiedRange = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW)
+        const specifiedRange = this.compseRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,

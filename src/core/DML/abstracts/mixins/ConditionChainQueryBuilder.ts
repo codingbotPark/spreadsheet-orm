@@ -1,19 +1,20 @@
 import applyMixins from "interface/mixin";
 import ChainQueryBuilder, { BasicQueryQueueType } from "../ChainQueryBuilder";
-import ConditionBuilder, { ConditionedDataWithIdx, ConditionParamTypes } from "../ConditionBuilder";
+import ConditionBuilder, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
 import BaseBuilder from "../BaseBuilder";
 
 export interface ConditionQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
-interface ConditionChainQueryBuilder<ExecuteReturn, QueryQueueType extends ConditionQueueType = ConditionQueueType> extends ChainQueryBuilder<ExecuteReturn, QueryQueueType>, ConditionBuilder<ExecuteReturn>{}
+interface ConditionChainQueryBuilder<QueryQueueType extends ConditionQueueType = ConditionQueueType> extends ChainQueryBuilder<QueryQueueType>, ConditionBuilder{}
 
-abstract class ConditionChainQueryBuilder<ExecuteReturn> extends BaseBuilder<ExecuteReturn>{
+abstract class ConditionChainQueryBuilder extends BaseBuilder{
     
-    chainConditioning(data:string[][][]):ConditionedDataWithIdx[][]{
+    chainConditioning(data:string[][][]):DataWithRowType[][]{
         return data.map((rangeData, idx) => {
             const filterParam = this.queryQueue[idx]
-            const result = this.conditioning(rangeData, filterParam)
+            const indexedRangeData = this.indexingBatchData(rangeData)
+            const result = this.conditioning(indexedRangeData, filterParam)
             return result
         })
     }

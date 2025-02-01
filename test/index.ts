@@ -1,6 +1,5 @@
 import createSpreadsheetClient from "client/createSpreadsheetClient";
 import credentials from "../security/credentials.json"
-import { ConditionedDataWithIdx } from "core/DML/abstracts/ConditionBuilder";
 
 const connectionParameters:Credentials = credentials
 
@@ -17,15 +16,18 @@ const spreadsheetClient = createSpreadsheetClient({
 })
 
 
+// const test = await spreadsheetClient.queryBuilder.select().execute()
+// const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
+// console.log(result)
 
-const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
-console.log(result)
+// const test1 = await spreadsheetClient.queryBuilder.update(['2']).where((data) => data[2] === "Bruno").execute()
+// const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data) => data[2] === "Bruno").execute()
+// console.log(result2)
 
-const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data:ConditionedDataWithIdx) => data[2] === "Bruno").execute()
-console.log(result2)
+// const test3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).execute()
+// const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("class").execute()
+// console.log(result3)
 
-const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("class").execute()
-console.log(result3)
-
-const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data:ConditionedDataWithIdx) => data[2] === "Bruno").execute()
+// const test4 = await spreadsheetClient.queryBuilder.delete().where((data) => data[2] === "Bruno").execute()
+const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data) => data[2] === "2").execute()
 console.log(result4)

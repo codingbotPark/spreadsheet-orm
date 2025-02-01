@@ -1,15 +1,13 @@
-import { sheets_v4 } from "googleapis";
-import BaseBuilder from "../abstracts/BaseBuilder";
-import assertNotNull from "interface/assertType";
 import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/ChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 
 
-class InsertBuilder extends ChainQueryBuilder<Promise<number>, BasicQueryQueueType>{
+class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder{
+    protected sheetName?: T["sheetName"]
+    
     protected queryQueue: BasicQueryQueueType[] = [];
 
-    protected createQueryForQueue(): BasicQueryQueueType {
-        assertNotNull(this.sheetName);
+    protected createQueryForQueue(this:InsertBuilder<T & {sheetName:string}>): BasicQueryQueueType {
         // Implementation for creating a query for the queue
         return {
             // Example structure, adjust as needed
@@ -18,15 +16,15 @@ class InsertBuilder extends ChainQueryBuilder<Promise<number>, BasicQueryQueueTy
         };
     }
 
-    into(sheetName: string): this {
+    into(sheetName: string) {
         this.sheetName = sheetName;
-        return this;
+        const instance = new InsertBuilder<T & {sheetName:string}>(this.config, this.insertValues)
+        Object.assign(instance, this)
+        return instance;
     }
 
 
-    async execute(): Promise<number> {
-        assertNotNull(this.sheetName);
-
+    async execute(this:InsertBuilder<T & {sheetName:string}>): Promise<number> {
         this.addQueryToQueue(this.createQueryForQueue());
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.append({
