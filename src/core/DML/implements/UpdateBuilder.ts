@@ -2,14 +2,17 @@ import { sheets_v4 } from "googleapis";
 import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import { DataTypes } from "core/DDL/SchemaManager";
-import assertNotNull from "interface/assertType";
+import assertNotNull from "types/assertType";
+import Tail from "types/Tail";
 
 export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
     updateValues:UpdateValueType
 }
 
-class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+type UpdateBuilderCtorParamType = Tail<ConstructorParameters<typeof UpdateBuilder>>
+
+class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<UpdateBuilderCtorParamType>{
     protected sheetName?: T["sheetName"];
     queryQueue: UpdateQueueType[] = [];
 

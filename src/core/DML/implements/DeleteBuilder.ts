@@ -1,9 +1,12 @@
 import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
-import assertNotNull from "interface/assertType";
+import assertNotNull from "types/assertType";
+import Tail from "types/Tail";
+import SpreadsheetConfig from "config/SpreadsheetConfig";
 
+type DeleteBuilderCtorParamType = Tail<ConstructorParameters<typeof DeleteBuilder>>
 
-class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
     protected sheetName?: T["sheetName"];
     queryQueue:ConditionQueueType[] = [];
 
@@ -83,6 +86,10 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             })
             return deleteDataArr
         }, [])
+    }
+
+    constructor(config:SpreadsheetConfig){
+        super(config)
     }
 
 }

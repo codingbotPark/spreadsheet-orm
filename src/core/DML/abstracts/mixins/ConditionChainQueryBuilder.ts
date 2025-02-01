@@ -1,14 +1,15 @@
-import applyMixins from "interface/mixin";
+import applyMixins from "types/mixin";
 import ChainQueryBuilder, { BasicQueryQueueType } from "../ChainQueryBuilder";
 import ConditionBuilder, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
 import BaseBuilder from "../BaseBuilder";
+import { BasicCtorParamType } from "types/Tail";
 
 export interface ConditionQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
-interface ConditionChainQueryBuilder<QueryQueueType extends ConditionQueueType = ConditionQueueType> extends ChainQueryBuilder<QueryQueueType>, ConditionBuilder{}
+interface ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends ChainQueryBuilder<CtorParamType, QueryQueueType>, ConditionBuilder{}
 
-abstract class ConditionChainQueryBuilder extends BaseBuilder{
+abstract class ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamType, QueryQueueType extends ConditionQueueType> extends BaseBuilder{
     
     chainConditioning(data:string[][][]):DataWithRowType[][]{
         return data.map((rangeData, idx) => {

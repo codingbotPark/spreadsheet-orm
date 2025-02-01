@@ -1,6 +1,6 @@
 import { sheets_v4 } from "googleapis";
 import BaseBuilder from "./BaseBuilder";
-import assertNotNull from "interface/assertType";
+import assertNotNull from "types/assertType";
 
 
 // from, where 구현

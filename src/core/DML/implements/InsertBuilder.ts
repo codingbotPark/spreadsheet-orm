@@ -1,8 +1,9 @@
+import Tail from "types/Tail";
 import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/ChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 
-
-class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder{
+type InsertBuilderCtorParamType = Tail<ConstructorParameters<typeof InsertBuilder>>
+class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<InsertBuilderCtorParamType>{
     protected sheetName?: T["sheetName"]
     
     protected queryQueue: BasicQueryQueueType[] = [];

@@ -1,8 +1,11 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
-import assertNotNull from "interface/assertType";
+import assertNotNull from "types/assertType";
+import Tail from "types/Tail";
 
-class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder{
+type SelectBuilderCtorParamType = Tail<ConstructorParameters<typeof SelectBuilder>>
+
+class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<SelectBuilderCtorParamType>{
     protected sheetName?: T["sheetName"]; // 필수
 
     queryQueue: ConditionQueueType[] = [];
@@ -55,7 +58,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
     }
     
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:SpreadsheetConfig, protected targetColumn:string[]){
+    constructor(config:SpreadsheetConfig, protected targetColumn:string[] = []){
         super(config)
     }
 }

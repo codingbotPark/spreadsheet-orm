@@ -15,6 +15,7 @@ const spreadsheetClient = createSpreadsheetClient({
     spreadsheetID:connectionParameters.spreadsheetID
 })
 
+const result = await spreadsheetClient.queryBuilder.delete().from("class").and()
 
 // const test = await spreadsheetClient.queryBuilder.select().execute()
 // const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
@@ -29,5 +30,5 @@ const spreadsheetClient = createSpreadsheetClient({
 // console.log(result3)
 
 // const test4 = await spreadsheetClient.queryBuilder.delete().where((data) => data[2] === "Bruno").execute()
-const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data) => data[2] === "2").execute()
-console.log(result4)
+// const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data) => data[2] === "2").execute()
+// console.log(result4)

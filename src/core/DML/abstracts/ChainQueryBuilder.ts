@@ -1,25 +1,20 @@
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import BaseBuilder from "./BaseBuilder";
+import { BasicCtorParamType } from "types/Tail";
 
 export interface BasicQueryQueueType{
     sheetName?:string
 }
 
 // implement "and" method
-abstract class ChainQueryBuilder<QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
+// abstract class ChainQueryBuilder<CtorParam extends new (...args: any) => any, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
+abstract class ChainQueryBuilder<CtorParam extends BasicCtorParamType, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
     protected abstract queryQueue:Array<QueueType>
-
-    constructor(config:SpreadsheetConfig){
-        super(config)
-    }
 
     protected abstract createQueryForQueue():QueueType
 
-    and(sheetName?:string):this{
+    and(...ctorParam:CtorParam):this{
         // if param==null -> use same sheetName
-        if (sheetName){
-            this.sheetName = sheetName
-        }
         
         this.addQueryToQueue(this.createQueryForQueue())
         return this
@@ -31,3 +26,4 @@ abstract class ChainQueryBuilder<QueueType extends BasicQueryQueueType = BasicQu
 }
 
 export default ChainQueryBuilder
+
