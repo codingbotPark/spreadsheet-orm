@@ -15,3 +15,7 @@
 security
 .env
 /examples/
+
+.DS_Store
+.AppleDouble
+.LSOverride
