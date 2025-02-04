@@ -15,7 +15,9 @@ const spreadsheetClient = createSpreadsheetClient({
     spreadsheetID:connectionParameters.spreadsheetID
 })
 
-const result = await spreadsheetClient.queryBuilder.delete().from("class").and()
+const tt = await spreadsheetClient.queryBuilder.select(["name"]).from("student").and(["age", "class"]).from("student").execute()
+console.log(tt)
+// const result = await spreadsheetClient.queryBuilder.delete().from("class")
 
 // const test = await spreadsheetClient.queryBuilder.select().execute()
 // const result = await spreadsheetClient.queryBuilder.select().from("class").execute()

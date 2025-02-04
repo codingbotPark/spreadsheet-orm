@@ -1,20 +1,24 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import assertNotNull from "types/assertType";
-import Tail from "types/Tail";
+import BuilderCtorParamType, { Tail } from "types/BuilderCtorParamType";
 
-type SelectBuilderCtorParamType = Tail<ConstructorParameters<typeof SelectBuilder>>
+type TargetColumnType = string[]
+type SelectQueryQueueType = {targetColumn:TargetColumnType} & ConditionQueueType
 
-class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<SelectBuilderCtorParamType>{
+class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<typeof SelectBuilder>{
     protected sheetName?: T["sheetName"]; // 필수
 
-    queryQueue: ConditionQueueType[] = [];
+    queryQueue: SelectQueryQueueType[] = [];
 
-    protected createQueryForQueue(): ConditionQueueType {
+    protected createQueryForQueue(): SelectQueryQueueType {
         assertNotNull(this.sheetName)
         assertNotNull(this.targetColumn)
-
-        const queryQueue = this.getCurrentCondition()
+        console.log(this.queryQueue)
+        const queryQueue:SelectQueryQueueType = {
+            ...this.getCurrentCondition(),
+            targetColumn:this.targetColumn
+        }
         return queryQueue
     }
     
@@ -26,22 +30,20 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
     }
 
     async execute(this:SelectBuilder<T & {sheetName:string}>){
-        this.addQueryToQueue(this.createQueryForQueue())
-
-        const specifiedColumn = this.compseColumn(this.targetColumn)
-        const specifiedRange = this.compseRange(this.sheetName!, this.config.DATA_STARTING_ROW, specifiedColumn)
-        console.log("specifiedRange", specifiedRange)
+        this.saveCurrentQueryToQueue()
+        // console.log("queryQueue", this.queryQueue)
+        const compsedRanges = this.queryQueue.map((query) => {
+            // const specifiedColumn = this.specifyColumn(query.targetColumn)
+            const specifiedColumn = this.specifyColumn(query.targetColumn)
+            const composedRange = this.composeRange(query.sheetName!, this.config.DATA_STARTING_ROW, specifiedColumn)
+            return composedRange
+        })
+        const requestBody = this.makeRequestBody(compsedRanges)
+        console.log("requestBody",requestBody)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,
-            requestBody:{
-                // query queue 나열
-                dataFilters:[
-                    {
-                        a1Range:specifiedRange,
-                    }
-                ]
-            }
+            requestBody:requestBody
         })
 
         const result = response.data.valueRanges
@@ -49,16 +51,23 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
 
         // extract values only
         const extractedValues = this.extractValuesFromMatch(result)
-
         // process where
         const conditionedExtractedValues = this.chainConditioning(extractedValues)
 
         // return result
         return conditionedExtractedValues
     }
+
+    makeRequestBody(ranges:string[]){
+        return {
+            dataFilters:ranges.map((range) => ({
+                a1Range:range
+            }))
+        }
+    }
     
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:SpreadsheetConfig, protected targetColumn:string[] = []){
+    constructor(config:SpreadsheetConfig, protected targetColumn:TargetColumnType = []){
         super(config)
     }
 }

@@ -1,11 +1,12 @@
 import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import assertNotNull from "types/assertType";
-import Tail from "types/Tail";
+import Tail from "types/BuilderCtorParamType";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 
 type DeleteBuilderCtorParamType = Tail<ConstructorParameters<typeof DeleteBuilder>>
 
+// class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
 class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
     protected sheetName?: T["sheetName"];
     queryQueue:ConditionQueueType[] = [];
@@ -26,7 +27,7 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             const deleteValues = this.queryQueue[idx]
             const ranges = deleteQueueData.flatMap((data) => {
                 const row = data.at(0) as number
-                return this.compseRange (this.sheetName as string, {startRow:row, endRow:row})
+                return this.composeRange (this.sheetName as string, {startRow:row, endRow:row})
             })
             return this.makeDeleteDataArr(ranges)
         }).flat()
@@ -47,9 +48,9 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
 
     private async getConditionData(this:DeleteBuilder<T & {sheetName:string}>){
 
-        this.addQueryToQueue(this.createQueryForQueue())
+        this.saveCurrentQueryToQueue()
         
-        const specifiedRange = this.compseRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
+        const specifiedRange = this.composeRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,

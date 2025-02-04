@@ -1,13 +1,13 @@
 import applyMixins from "types/mixin";
-import ChainQueryBuilder, { BasicQueryQueueType } from "../ChainQueryBuilder";
+import AndAble, { BasicQueryQueueType } from "../AndAble";
 import ConditionBuilder, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
 import BaseBuilder from "../BaseBuilder";
-import { BasicCtorParamType } from "types/Tail";
+import { BasicCtorParamType } from "types/BuilderCtorParamType";
 
 export interface ConditionQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
-interface ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends ChainQueryBuilder<CtorParamType, QueryQueueType>, ConditionBuilder{}
+interface ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends AndAble<CtorParamType, QueryQueueType>, ConditionBuilder{}
 
 abstract class ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamType, QueryQueueType extends ConditionQueueType> extends BaseBuilder{
     
@@ -21,6 +21,6 @@ abstract class ConditionChainQueryBuilder<CtorParamType extends BasicCtorParamTy
     }
 
 }
-applyMixins(ConditionChainQueryBuilder, [ChainQueryBuilder, ConditionBuilder])
+applyMixins(ConditionChainQueryBuilder, [AndAble, ConditionBuilder])
 
 export default ConditionChainQueryBuilder

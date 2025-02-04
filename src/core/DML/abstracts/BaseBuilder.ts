@@ -14,7 +14,10 @@ export interface Executable<ExecuteReturn>{
 // execute & has a basic spreadhseet methods
 abstract class BaseBuilder{
 
-    constructor(protected config:SpreadsheetConfig){}
+    constructor(protected config:SpreadsheetConfig){
+
+    }
+    // protected abstract initial
     protected abstract sheetName?:string
     // protected sheetName?:string
 
@@ -57,9 +60,9 @@ abstract class BaseBuilder{
         };
     }
 
-    protected compseRange(sheetName:string, row:RowSpecificationType, specifiedColumn?:ColumnSpecificationType):string
-    protected compseRange(sheetName:string, row:number, specifiedColumn?:ColumnSpecificationType):string
-    protected compseRange(sheetName:string, row:RowSpecificationType | number, specifiedColumn?:ColumnSpecificationType):string{
+    protected composeRange(sheetName:string, row:RowSpecificationType, specifiedColumn?:ColumnSpecificationType):string
+    protected composeRange(sheetName:string, row:number, specifiedColumn?:ColumnSpecificationType):string
+    protected composeRange(sheetName:string, row:RowSpecificationType | number, specifiedColumn?:ColumnSpecificationType):string{
 
         const startRow = typeof row === "number" ? row : row.startRow
         const endRow = typeof row === "number" ? '' : (row.endRow ?? startRow)
@@ -69,7 +72,7 @@ abstract class BaseBuilder{
         return `${sheetName}!${startColumn}${startRow}:${endColumn}${endRow}`
     }
 
-    protected compseColumn(columnNames:string[]):ColumnSpecificationType{
+    protected specifyColumn(columnNames:string[]):ColumnSpecificationType{
         const defaultColumns = { startColumn: null, endColumn: null } 
 
         // DDL이함들어와야함
@@ -122,6 +125,9 @@ const dummyDefinedColumn:Record<string, DummyColumnOptions> = {
     },
     "class":{
         column:"B"
+    },
+    "age":{
+        column:"C"
     }
 }
 

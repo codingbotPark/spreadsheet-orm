@@ -18,8 +18,7 @@ abstract class WhereAble extends BaseBuilder{
 
     // for one get ConditionedData
     protected async getConditionedData():Promise<DataWithRowType[]>{
-        assertNotNull(this.sheetName)
-        const range = this.compseRange(this.sheetName, this.config.DATA_STARTING_ROW)
+        const range = this.composeRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
         const dataFilters = this.makeDataFilters([range])
         const batchData = await this.fetchBatchData(this.config.spreadsheetID, dataFilters)
         const batchValues = this.extractValuesFromMatch(batchData)

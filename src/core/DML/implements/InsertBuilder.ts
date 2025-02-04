@@ -1,5 +1,5 @@
-import Tail from "types/Tail";
-import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/ChainQueryBuilder";
+import Tail from "types/BuilderCtorParamType";
+import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/AndAble";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 
 type InsertBuilderCtorParamType = Tail<ConstructorParameters<typeof InsertBuilder>>

@@ -3,7 +3,7 @@ import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mi
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import { DataTypes } from "core/DDL/SchemaManager";
 import assertNotNull from "types/assertType";
-import Tail from "types/Tail";
+import Tail from "types/BuilderCtorParamType";
 
 export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
@@ -37,7 +37,7 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             const updateValues = this.queryQueue[idx].updateValues
             const ranges = updateQueueData.flatMap((data) => {
                 const row = data.at(0) as number
-                return this.compseRange (this.sheetName as string, {startRow:row, endRow:row})  
+                return this.composeRange (this.sheetName as string, {startRow:row, endRow:row})  
             })
             return this.makeUpdateDataArr(ranges, updateValues)
         }).flat()
@@ -81,11 +81,11 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
 
     private async getConditionData(this:UpdateBuilder<T & {sheetName:string}>){
 
-        this.addQueryToQueue(this.createQueryForQueue())
+        this.saveCurrentQueryToQueue()
 
         // where 문에 컬럼을 받게 된다면 구현
         // const specifiedColumn = this.specifyColumn(this.targetColumn)
-        const specifiedRange = this.compseRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
+        const specifiedRange = this.composeRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
 
         const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spreadsheetID,
