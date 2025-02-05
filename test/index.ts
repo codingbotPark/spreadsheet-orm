@@ -15,7 +15,7 @@ const spreadsheetClient = createSpreadsheetClient({
     spreadsheetID:connectionParameters.spreadsheetID
 })
 
-const tt = await spreadsheetClient.queryBuilder.insert(["3","test"]).into("class").and(["Park", "3", "21"]).into("student").execute()
+const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
 console.log(tt)
 // const result = await spreadsheetClient.queryBuilder.delete().from("class")
 

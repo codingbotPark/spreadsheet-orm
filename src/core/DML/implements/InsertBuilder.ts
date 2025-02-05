@@ -28,11 +28,11 @@ class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<typ
     }
 
 
-    async execute(this:InsertBuilder<T & {sheetName:string}>): Promise<number[]> {
+    async execute(this:InsertBuilder<T & {sheetName:string}>) {
         this.saveCurrentQueryToQueue();
 
         // append 대신 update 로 한 번에 api query 최적화 가능
-        const results:number[] = []
+        const results = []
         for (let i = 0 ; i < this.queryQueue.length ; i++){
             const response = await this.config.spreadsheetAPI.spreadsheets.values.append({
                 spreadsheetId:this.config.spreadsheetID,
@@ -43,9 +43,8 @@ class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<typ
                 }
             })
             if (response.status !== 200) throw Error("error")
-            results.push(response.data.updates?.updatedRows as number) 
+            results.push(response.data.updates?.updatedRows) 
         }
-        console.log("result",results)
         return results
     }
 

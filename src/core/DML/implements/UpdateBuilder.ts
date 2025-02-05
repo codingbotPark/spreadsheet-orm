@@ -48,11 +48,9 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             }
         })
 
-        const result = response.data.totalUpdatedRows
 
         if (response.status !== 200) throw Error("error")
-
-        return result
+        return response.data.totalUpdatedRows
     }
     
     constructor(config:SpreadsheetConfig, private updateValues:InputValueType){
