@@ -14,8 +14,14 @@
 .todo
 security
 .env
-/examples/
+examples/
+dist/
+build/
 
 .DS_Store
 .AppleDouble
 .LSOverride
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

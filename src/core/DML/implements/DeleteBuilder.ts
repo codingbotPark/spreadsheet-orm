@@ -22,7 +22,7 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         const conditionedBatchValues = await this.getChainConditionedData()
 
         const deleteDataArr = conditionedBatchValues.map((conditionedBatchValue,idx) => {
-            const {sheetName} = this.queryQueue[idx] 
+            const {sheetName} = this.queryQueue[idx]
             const ranges = conditionedBatchValue.flatMap((data) => {
             const row = data.at(0) as number
                 return this.composeRange (sheetName as string, {startRow:row, endRow:row})
