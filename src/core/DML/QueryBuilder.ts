@@ -1,14 +1,15 @@
 import SpreadsheetConfig from "config/SpreadsheetConfig";
 import SelectBuilder from "./implements/SelectBuilder";
-import UpdateBuilder, { UpdateValueType } from "./implements/UpdateBuilder";
+import UpdateBuilder from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
+import { DataTypes, InputValueType } from "core/DDL/SchemaManager";
 
 class QueryBuilder {
     constructor(private config: SpreadsheetConfig) {}
 
 
-    insert(insertValues:string[]){
+    insert(insertValues:DataTypes[]){
         return new InsertBuilder(this.config,insertValues)
     }
     
@@ -16,7 +17,7 @@ class QueryBuilder {
         return new SelectBuilder(this.config, targetColumn)
     }   
 
-    update(updateValues:UpdateValueType){
+    update(updateValues:DataTypes[]){
         return new UpdateBuilder(this.config, updateValues)
     }
 

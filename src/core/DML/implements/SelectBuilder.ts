@@ -58,7 +58,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         return conditionedExtractedValues
     }
 
-    makeRequestBody(ranges:string[]){
+    private makeRequestBody(ranges:string[]){
         return {
             dataFilters:ranges.map((range) => ({
                 a1Range:range

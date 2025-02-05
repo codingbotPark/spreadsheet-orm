@@ -16,12 +16,14 @@ abstract class AndAble<CtorParam extends CtorType, QueueType extends BasicQueryQ
     and(...ctorParam:BuilderCtorParamType<CtorParam>):this{
         // console.log(ctorParam)
         this.saveCurrentQueryToQueue()
+        console.log("queryQueue", this.queryQueue)
         // console.log("beforeEx", this)
         const Constructor = this.constructor as new (...args: any[]) => this;
         const instance = new Constructor(this.config, ...ctorParam)
         instance["queryQueue"] = this.queryQueue // save queryQueue
         instance["sheetName"] = this.sheetName // save sheetName
         // console.log("afterEx", instance)
+
         return instance
     }
 

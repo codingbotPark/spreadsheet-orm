@@ -21,7 +21,7 @@ abstract class BaseBuilder{
     protected abstract sheetName?:string
     // protected sheetName?:string
 
-    parseCell(cellAddress:string){
+    protected parseCell(cellAddress:string){
         
 
         const match = cellAddress.match(/^([A-Z]+)(\d+)$/);
@@ -36,7 +36,7 @@ abstract class BaseBuilder{
         return { column, row };
     }
 
-    parseRange(range: string): ParsedRange {
+    protected parseRange(range: string): ParsedRange {
         // sheetName과 Range 분리
         const [sheetNameOrCells, endPart] = range.split("!");
         const hasSheetName = endPart !== undefined;
@@ -76,6 +76,7 @@ abstract class BaseBuilder{
         const defaultColumns = { startColumn: null, endColumn: null } 
 
         // DDL이함들어와야함
+        return defaultColumns
         if (!dummyDefinedColumn) return defaultColumns
 
         const columnSpecification = columnNames.reduce((columnSpecification: ColumnSpecificationType, columnName: string) => {
@@ -119,6 +120,7 @@ interface DummyColumnOptions{
 }
 
 // 문자열 key는 삽입 순서
+// const dummyDefinedColumn = false
 const dummyDefinedColumn:Record<string, DummyColumnOptions> = {
     "name":{
         column:"A"

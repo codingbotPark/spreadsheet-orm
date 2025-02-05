@@ -1,19 +1,22 @@
-import Tail from "types/BuilderCtorParamType";
 import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/AndAble";
 import SpreadsheetConfig from "config/SpreadsheetConfig";
+import { DataTypes, InputValueType } from "core/DDL/SchemaManager";
 
-type InsertBuilderCtorParamType = Tail<ConstructorParameters<typeof InsertBuilder>>
-class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<InsertBuilderCtorParamType>{
+interface InsertQueueType extends BasicQueryQueueType{
+    insertValues:DataTypes[]
+}
+
+class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<typeof InsertBuilder>{
     protected sheetName?: T["sheetName"]
     
-    protected queryQueue: BasicQueryQueueType[] = [];
+    protected queryQueue: InsertQueueType[] = [];
 
-    protected createQueryForQueue(this:InsertBuilder<T & {sheetName:string}>): BasicQueryQueueType {
+    protected createQueryForQueue(this:InsertBuilder<T & {sheetName:string}>): InsertQueueType {
         // Implementation for creating a query for the queue
         return {
             // Example structure, adjust as needed
-            sheetName: this.sheetName,
-
+            sheetName:this.sheetName,
+            insertValues:this.insertValues
         };
     }
 
@@ -25,25 +28,29 @@ class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<Ins
     }
 
 
-    async execute(this:InsertBuilder<T & {sheetName:string}>): Promise<number> {
-        this.addQueryToQueue(this.createQueryForQueue());
+    async execute(this:InsertBuilder<T & {sheetName:string}>): Promise<number[]> {
+        this.saveCurrentQueryToQueue();
 
-        const response = await this.config.spreadsheetAPI.spreadsheets.values.append({
-            spreadsheetId:this.config.spreadsheetID,
-            valueInputOption:"RAW",
-            range:this.sheetName,
-            requestBody:{
-                values:[this.insertValues]
-            }
-        })
-
-        const result = response.data.updates?.updatedRows
-        console.log(result)
-        if (!result) throw Error("error")
-        return result
+        // append 대신 update 로 한 번에 api query 최적화 가능
+        const results:number[] = []
+        for (let i = 0 ; i < this.queryQueue.length ; i++){
+            const response = await this.config.spreadsheetAPI.spreadsheets.values.append({
+                spreadsheetId:this.config.spreadsheetID,
+                valueInputOption:"RAW",
+                range:this.queryQueue[i].sheetName,
+                requestBody:{
+                    values:[this.queryQueue[i].insertValues]
+                }
+            })
+            if (response.status !== 200) throw Error("error")
+            results.push(response.data.updates?.updatedRows as number) 
+        }
+        console.log("result",results)
+        return results
     }
 
-    constructor(config: SpreadsheetConfig, private insertValues:string[]) {
+
+    constructor(config: SpreadsheetConfig, private insertValues:DataTypes[]) {
         super(config);
     }
 

@@ -22,7 +22,6 @@ abstract class WhereAble extends BaseBuilder{
         const dataFilters = this.makeDataFilters([range])
         const batchData = await this.fetchBatchData(this.config.spreadsheetID, dataFilters)
         const batchValues = this.extractValuesFromMatch(batchData)
-        console.log("batchValues",batchValues)
         const indexedBatchValue = this.indexingBatchData(batchValues[0])
         const conditionedBatchValue = this.conditioning(indexedBatchValue)
         return conditionedBatchValue
@@ -30,7 +29,6 @@ abstract class WhereAble extends BaseBuilder{
 
     protected getCurrentCondition(){
         return {
-            sheetName:this.sheetName,
             filterFN:this.filterFN
         }
     }
