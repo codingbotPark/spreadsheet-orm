@@ -10,17 +10,16 @@
     "noImplicitThis": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "rootDir": "./",
-    "baseUrl": "./src",
-    "outDir": "./dist",
+    "rootDir": "src",
+    "baseUrl": "src",
+    "outDir": "dist",
     "paths": {
-      "@src/*":["src/*"],
-      "@test/*":["test/*"]
+      "*":["*"],
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators":true,
   },
   "ts-node": {"esm":true},
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*"],
 }
  

@@ -1,6 +1,5 @@
 import SpreadsheetConfig, { SpreadsheetConfigOptions } from "config/SpreadsheetConfig";
 import { sheets_v4 } from "googleapis";
-import { GaxiosError } from "gaxios";
 import QueryBuilder from "core/DML/QueryBuilder";
 
 // serve method to user 

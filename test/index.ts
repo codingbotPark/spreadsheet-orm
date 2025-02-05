@@ -1,22 +1,14 @@
-import createSpreadsheetClient from "client/createSpreadsheetClient";
 import credentials from "../security/credentials.json"
 
-const connectionParameters:Credentials = credentials
+// const connectionParameters:Credential = credentials
+// const spreadsheetClient = createSpreadsheetClient({
+//     email:connectionParameters.client_email,
+//     privateKey:connectionParameters.private_key,
+//     spreadsheetID:connectionParameters.spreadsheetID
+// })
 
-export interface Credentials {
-    client_email: string;
-    spreadsheetID: string;
-    private_key: string;
-}
-
-const spreadsheetClient = createSpreadsheetClient({
-    email:connectionParameters.client_email,
-    privateKey:connectionParameters.private_key,
-    spreadsheetID:connectionParameters.spreadsheetID
-})
-
-const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
-console.log(tt)
+// const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
+// console.log(tt)
 // const result = await spreadsheetClient.queryBuilder.delete().from("class")
 
 // const test = await spreadsheetClient.queryBuilder.select().execute()
