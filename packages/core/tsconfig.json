@@ -3,23 +3,25 @@
     "target": "ESNext",
     "module": "ESNext",
     "esModuleInterop": true,
-    "resolveJsonModule":true,
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "rootDir": "src",
-    "baseUrl": "src",
+    "rootDir": ".",  
+    "baseUrl": ".",          
     "outDir": "dist",
     "paths": {
-      "*":["*"],
+      "@src/*": ["src/*"],       
+      "@test/*": ["test/*"] 
     },
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators":true,
+    "experimentalDecorators": true
   },
-  "ts-node": {"esm":true},
-  "include": ["src/**/*"],
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*", "test/**/*"]  
 }
- 

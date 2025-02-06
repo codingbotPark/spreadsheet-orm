@@ -1,11 +1,12 @@
-import credentials from "../security/credentials.json"
+import { createSpreadsheetClient, Credentials } from "@src/index"
+import credentials from "../../../security/credentials.json"
 
-// const connectionParameters:Credential = credentials
-// const spreadsheetClient = createSpreadsheetClient({
-//     email:connectionParameters.client_email,
-//     privateKey:connectionParameters.private_key,
-//     spreadsheetID:connectionParameters.spreadsheetID
-// })
+const connectionParameters:Credentials = credentials
+const spreadsheetClient = createSpreadsheetClient({
+    email:connectionParameters.client_email,
+    privateKey:connectionParameters.private_key,
+    spreadsheetID:connectionParameters.spreadsheetID
+})
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
 // console.log(tt)

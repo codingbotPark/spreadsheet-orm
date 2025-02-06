@@ -1,0 +1,42 @@
+{
+  "name": "spreadsheet-orm",
+  "version": "0.1.2",
+  "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
+  "keywords": [
+    "google-spreadsheet",
+    "spreadsheet-orm",
+    "spreadsheet-database",
+    "google-sheets-api",
+    "orm",
+    "database",
+    "query-builder"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "packageManager": "yarn@4.5.3",
+  "dependencies": {
+    "gaxios": "^6.7.1",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "tsx test/index.ts",
+    "dev": "nodemon --exec tsx test/index.ts",
+    "prepublishOnly": "yarn build"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codingbotPark/spreadsheet-orm.git"
+  }
+}
