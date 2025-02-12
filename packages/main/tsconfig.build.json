@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+
+      "moduleResolution": "bundler",
+      "baseUrl": ".",
+      "rootDir": "src",
+      "outDir": "./dist",
+      "declaration": true, // for composit
+      "declarationMap": true, // for composit
+      "composite": true
+    },
+    "include": ["src/**/*"],
+  }

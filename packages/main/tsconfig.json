@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "rootDir": ".",  
+    "baseUrl": ".",          
+    "outDir": "dist",
+    "paths": {
+      "@src/*": ["src/*"],       
+    },
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "composite": true, // for first priority compile
+
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*"]  
+}

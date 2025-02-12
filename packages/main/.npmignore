@@ -1,0 +1,23 @@
+# 개발 관련 파일/폴더
+test/
+security/
+*.test.ts
+tsconfig.json
+nodemon.json
+
+# 소스맵
+*.map
+
+# 타입스크립트 소스
+src/
+
+# 개발 도구 설정
+.vscode/
+.idea/
+.git/
+.gitignore
+.yarn/
+.yarnrc.yml
+
+# 기타
+yarn.lock
