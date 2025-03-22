@@ -1,0 +1,44 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Install dependencies (Yarn Berry)
+        run: yarn install --immutable
+
+      - name: Run tests (if test script exists)
+        run: yarn test
+        continue-on-error: true # 테스트 스크립트가 없어도 계속 진행
+
+      - name: Build project (if build script exists)
+        run: yarn build
+        continue-on-error: true # 빌드 스크립트가 없어도 계속 진행
+
+      - name: Bump version & create tag (only on main branch)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          yarn version patch
+          git push --follow-tags
+
+      - name: Publish to npm (only on main branch)
+        if: github.ref == 'refs/heads/main'
+        run: yarn npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

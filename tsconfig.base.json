@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "resolveJsonModule": true,
+      "rootDirs": ["packages"],
+      "declaration": true,
+      "paths":{
+        "@pcakges/spreadsheet-orm":["packages/spreadsheet-orm/dist"]
+      }
+    },
+    "references": [
+      { "path": "./packages/main" }
+    ]
+  }

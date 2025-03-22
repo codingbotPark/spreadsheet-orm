@@ -1,15 +1,15 @@
 {
-    "pipeline": {
-      "build": {
-        "dependsOn": ["^build"],
-        "outputs": ["dist/**"]
-      },
-      "dev": {
-        "dependsOn": ["^build"], 
-        "cache": false
-      },
-      "test": {
-        "dependsOn": ["build"]
-      }
+  "tasks": { 
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"], 
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["build"]
     }
   }
+}

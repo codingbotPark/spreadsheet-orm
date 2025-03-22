@@ -1,0 +1,27 @@
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            **New Release: ${{ github.ref_name }}**
+            
+            - 📦 **NPM Package**: [View on npm](https://www.npmjs.com/package/spreadsheet-orm)
+
+          draft: false
+          prerelease: false
