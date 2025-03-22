@@ -1,15 +1,16 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-
+      "module": "ESNext",
+      "target": "ESNext",
       "moduleResolution": "bundler",
       "baseUrl": ".",
       "rootDir": "src",
       "outDir": "./dist",
+      "emitDeclarationOnly": true, // 타입 선언 파일만 생성 (JS 파일 생성 X)
+      // "outDir": "./tscDist",
       "declaration": true, // for composit
       "declarationMap": true, // for composit
-      "composite": true
+      "composite": true,
     },
-    "include": ["src/**/*"],
   }

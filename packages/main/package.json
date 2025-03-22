@@ -1,5 +1,5 @@
 {
-  "name": "@spreadsheet-orm/main",
+  "name": "@packages/spreadsheet-orm",
   "version": "0.1.2",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
@@ -23,23 +23,30 @@
     "googleapis": "^144.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@babel/core": "^7.26.8",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
+    "@babel/preset-env": "^7.26.8",
+    "@babel/preset-typescript": "^7.26.0",
+    "esbuild": "^0.25.0",
     "nodemon": "^3.1.9",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
   "scripts": {
-    "clean": "rm -rf tsconfig.build.tsbuildinfo",
-    "build": "yarn run clean && tsc -p tsconfig.build.json",
+    "clean": "rm -rf tsconfig.build.tsbuildinfo && rm -rf dist",
+    "bundle": "yarn node esbuild.config.js",
+    "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
     "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
     "prepublishOnly": "yarn build"
   },
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs",
-    "types": "./dist/index.d.ts",
-    "default": "./dist/index.js"
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "type": "module",
   "repository": {

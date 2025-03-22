@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "@babel/preset-env", // 최신 JavaScript 기능을 지원
+    "@babel/preset-typescript" // TypeScript 지원
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime", // 런타임 헬퍼를 사용하여 코드 크기 감소
+    "@babel/plugin-transform-modules-commonjs" // ES 모듈을 CommonJS로 변환
+  ]
+}
