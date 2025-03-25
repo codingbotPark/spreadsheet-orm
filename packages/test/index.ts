@@ -1,5 +1,5 @@
 // import createSpreadsheetClient, { Credentials } from "../main/dist"
-import createSpreadsheetClient,{ Credentials } from "@packages/spreadsheet-orm"
+import createSpreadsheetClient,{ Credentials } from "spreadsheet-orm"
 import credentials from "./security/credentials.json"
 
 const connectionParameters:Credentials = credentials

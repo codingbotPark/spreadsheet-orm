@@ -1,6 +1,6 @@
 {
     "name": "@packages/docs",
     "dependencies": {
-        "@packages/spreadsheet-orm": "workspace:*"
+        "spreadsheet-orm": "workspace:*"
     }
 }

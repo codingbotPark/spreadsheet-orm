@@ -1800,35 +1800,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@packages/docs@workspace:packages/docs"
   dependencies:
-    "@packages/spreadsheet-orm": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@packages/spreadsheet-orm-test@workspace:packages/test":
-  version: 0.0.0-use.local
-  resolution: "@packages/spreadsheet-orm-test@workspace:packages/test"
-  dependencies:
-    "@packages/spreadsheet-orm": "workspace:*"
-    "@types/jest": "npm:^27.0.0"
-    jest: "npm:^27.0.0"
-    tsx: "npm:^4.19.2"
-  languageName: unknown
-  linkType: soft
-
-"@packages/spreadsheet-orm@workspace:*, @packages/spreadsheet-orm@workspace:packages/main":
-  version: 0.0.0-use.local
-  resolution: "@packages/spreadsheet-orm@workspace:packages/main"
-  dependencies:
-    "@babel/core": "npm:^7.26.8"
-    "@babel/plugin-transform-modules-commonjs": "npm:^7.26.3"
-    "@babel/preset-env": "npm:^7.26.8"
-    "@babel/preset-typescript": "npm:^7.26.0"
-    esbuild: "npm:^0.25.0"
-    gaxios: "npm:^6.7.1"
-    googleapis: "npm:^144.0.0"
-    nodemon: "npm:^3.1.9"
-    tsx: "npm:^4.19.2"
-    typescript: "npm:^5.7.3"
+    spreadsheet-orm: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -1856,6 +1828,17 @@ __metadata:
   checksum: 10c0/d6b795f9ddaf044daf184c151555ca557ccd23636f2ee3d2f76a9d128329f81fc1aac412f6f67239ab92cb9390aad9955b71df93cf4bd442c68b1f341e381ab6
   languageName: node
   linkType: hard
+
+"@spreadsheet-orm/test@workspace:packages/test":
+  version: 0.0.0-use.local
+  resolution: "@spreadsheet-orm/test@workspace:packages/test"
+  dependencies:
+    "@types/jest": "npm:^27.0.0"
+    jest: "npm:^27.0.0"
+    spreadsheet-orm: "workspace:^"
+    tsx: "npm:^4.19.2"
+  languageName: unknown
+  linkType: soft
 
 "@tootallnate/once@npm:1":
   version: 1.1.2
@@ -2403,9 +2386,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001688":
-  version: 1.0.30001706
-  resolution: "caniuse-lite@npm:1.0.30001706"
-  checksum: 10c0/b502d0a509611fd5b009e1123d482e983696984b6b749c3f485fd8d02cc58376c59cf0bb15f22fa2d337da104970edd27dd525d4663cebc728e26ac4adedff0d
+  version: 1.0.30001707
+  resolution: "caniuse-lite@npm:1.0.30001707"
+  checksum: 10c0/a1beaf84bad4f6617bbc5616d6bc0c9cab73e73f7e9e09b6466af5195b1bc393e0f6f19643d7a1c88bd3f4bfa122d7bea81cf6225ec3ade57d5b1dd3478c1a1b
   languageName: node
   linkType: hard
 
@@ -5213,6 +5196,23 @@ __metadata:
   checksum: 10c0/dc0cf3768fe23c345ea8760487f8c97ef6fca8a73c83cd7c9bf2fde8bc2c34adb9c0824d6feb14bc4f9e37fb522e18af621543f1289038a66ac7586da29aa7dc
   languageName: node
   linkType: hard
+
+"spreadsheet-orm@workspace:*, spreadsheet-orm@workspace:^, spreadsheet-orm@workspace:packages/main":
+  version: 0.0.0-use.local
+  resolution: "spreadsheet-orm@workspace:packages/main"
+  dependencies:
+    "@babel/core": "npm:^7.26.8"
+    "@babel/plugin-transform-modules-commonjs": "npm:^7.26.3"
+    "@babel/preset-env": "npm:^7.26.8"
+    "@babel/preset-typescript": "npm:^7.26.0"
+    esbuild: "npm:^0.25.0"
+    gaxios: "npm:^6.7.1"
+    googleapis: "npm:^144.0.0"
+    nodemon: "npm:^3.1.9"
+    tsx: "npm:^4.19.2"
+    typescript: "npm:^5.7.3"
+  languageName: unknown
+  linkType: soft
 
 "sprintf-js@npm:^1.1.3":
   version: 1.1.3

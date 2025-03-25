@@ -1,5 +1,5 @@
 {
-    "name": "@packages/spreadsheet-orm-test",
+    "name": "@spreadsheet-orm/test",
     "version": "0.1.0",
     "description": "Test suite for spreadsheet-orm",
     "scripts": {
@@ -7,8 +7,8 @@
         "start": "tsx index.ts"
     },
     "dependencies": {
-        "@packages/spreadsheet-orm": "workspace:*",
-        "jest": "^27.0.0"
+        "jest": "^27.0.0",
+        "spreadsheet-orm": "workspace:*"
     },
     "devDependencies": {
         "@types/jest": "^27.0.0",
