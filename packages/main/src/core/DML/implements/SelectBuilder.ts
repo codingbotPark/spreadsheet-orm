@@ -16,6 +16,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         console.log(this.queryQueue)
         const queryQueue:SelectQueryQueueType = {
             ...this.getCurrentCondition(),
+            sheetName:this.sheetName,
             targetColumn:this.targetColumn
         }
         return queryQueue
@@ -32,6 +33,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         this.saveCurrentQueryToQueue()
         // console.log("queryQueue", this.queryQueue)
         const compsedRanges = this.queryQueue.map((query) => {
+            console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.targetColumn)
             const composedRange = this.composeRange(query.sheetName!, this.config.DATA_STARTING_ROW, specifiedColumn)
