@@ -18,87 +18,55 @@ yarn add spreadsheet-orm
 
 ### Connection
 ```typescript
-import { SpreadsheetClient, Credentials } from 'spreadsheet-orm';
+import createSpreadsheetClient,{ Credentials } from "spreadsheet-orm"
 import credentials from "./yourGoogleCredentials.json"
 
 const connectionParameters:Credentials = credentials
-const spreadsheetClient = new SpreadsheetClient({
-  email: credentials.client_email,
-  privateKey: credentials.private_key,
-  spreadsheetID: credentials.spreadsheetID
-});
+const spreadsheetClient = createSpreadsheetClient({
+    email:connectionParameters.client_email,
+    privateKey:connectionParameters.private_key,
+    spreadsheetID:connectionParameters.spreadsheetID
+})
 ```
-
 ### Query Operations
 
 #### Select
 ```typescript
 // Select all data from sheet
-const results = await spreadsheetClient
-  .query()
-  .select()
-  .from('Users')
-  .execute();
+const results = await spreadsheetClient.queryBuilder.select().from('Users').execute();
 
 // Select with condition
-const filtered = await spreadsheetClient
-  .query()
-  .select(['name', 'class'])
-  .from('Users')
-  .where(row => row[1] === 'John')
-  .execute();
+const filtered = await spreadsheetClient.queryBuilder.select(['name', 'class']).from('Users').where(row => row[1] === 'John').execute();
 
 // Chain multiple selects
-const multiSelect = await spreadsheetClient
-  .query()
-  .select(['name'])
-  .from('Users')
-  .where(row => row[1] === 'John')
-  .and(['class'])
-  .from('Students')
-  .where(row => row[2] === 'A')
-  .execute();
+const multiSelect = await spreadsheetClient.queryBuilder
+.select(['name']).from('Users').where(row => row[1] === 'John')
+.and(['class']).from('Students').where(row => row[2] === 'A')
+.execute();
 ```
 
 #### Insert
 ```typescript
 // Insert single row
-const result = await spreadsheetClient
-  .query()
-  .insert(['John', 'A', '25'])
-  .into('Users')
-  .execute();
+const result = await spreadsheetClient.queryBuilder.insert(['John', 'A', '25']).into('Users').execute();
 
 // Chain multiple inserts
-const multiInsert = await spreadsheetClient
-  .query()
-  .insert(['John', 'A', '25'])
-  .into('Users')
-  .and(['Jane', 'B', '23'])
-  .into('Users')
-  .execute();
+const multiInsert = await spreadsheetClient.queryBuilder.
+insert(['John', 'A', '25']).into('Users')
+.and(['Jane', 'B', '23']).into('Users')
+.execute();
 ```
 
 #### Update
 ```typescript
 // Update with condition
-const updated = await spreadsheetClient
-  .query()
-  .update(['John Doe', 'A+', '26'])
-  .from('Users')
-  .where(row => row[1] === 'John')
-  .execute();
+const updated = await spreadsheetClient.queryBuilder.update(['John Doe', 'A+', '26']).from('Users').where(row => row[1] === 'John').execute();
 ```
 
 #### Delete
 ```typescript
 // Delete with condition
-const deleted = await spreadsheetClient
-  .query()
-  .delete()
-  .from('Users')
-  .where(row => row[1] === 'John')
-  .execute();
+const deleted = await spreadsheetClient.queryBuilder.delete().from('Users').where(row => row[1] === 'John').execute();
 ```
 
 ## Error Handling
@@ -124,11 +92,7 @@ try {
 ### Query Execution Errors
 ```typescript
 try {
-  const result = await spreadsheetClient
-    .query()
-    .select(['name'])
-    .from('NonExistentSheet')
-    .execute();
+  const result = await spreadsheetClient.queryBuilder.select(['name']).from('NonExistentSheet').execute();
 } catch (error) {
   if (error.message.includes("cannot find spreadsheet")) {
     // Handle invalid spreadsheet ID
@@ -154,9 +118,3 @@ try {
   ```bash
   yarn dev
   ```
-
-## Contributing
-Contributions are welcome! Open an issue or submit a pull request.
-
-## License
-This project is licensed under the MIT License.
