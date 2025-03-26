@@ -14,19 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org/"
-          cache: 'yarn' # yarn 캐시 사용
-          check-latest: true
-          
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Prepare correct Yarn version
-        run: corepack prepare yarn@4.5.3 --activate
 
       - name: Install dependencies (Yarn Berry)
         run: yarn install --immutable
