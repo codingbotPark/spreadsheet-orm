@@ -1835,7 +1835,7 @@ __metadata:
   dependencies:
     "@types/jest": "npm:^27.0.0"
     jest: "npm:^27.0.0"
-    spreadsheet-orm: "workspace:^"
+    spreadsheet-orm: "workspace:*"
     tsx: "npm:^4.19.2"
   languageName: unknown
   linkType: soft
@@ -5197,7 +5197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spreadsheet-orm@workspace:*, spreadsheet-orm@workspace:^, spreadsheet-orm@workspace:packages/main":
+"spreadsheet-orm@workspace:*, spreadsheet-orm@workspace:packages/main":
   version: 0.0.0-use.local
   resolution: "spreadsheet-orm@workspace:packages/main"
   dependencies:
