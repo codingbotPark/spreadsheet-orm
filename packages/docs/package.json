@@ -1,5 +1,6 @@
 {
     "name": "@packages/docs",
+    "version": "0.1.3",
     "dependencies": {
         "spreadsheet-orm": "workspace:*"
     }

@@ -37,7 +37,7 @@ jobs:
       - name: Bump version & create tag (only on main branch)
         if: github.ref == 'refs/heads/main'
         run: |
-          yarn version patch
+          yarn workspaces foreach --all version patch
           git push --follow-tags
 
       - name: Publish to npm (only on main branch)
