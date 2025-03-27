@@ -46,6 +46,6 @@ jobs:
 
       - name: Publish to npm (only on main branch)
         if: github.ref == 'refs/heads/main'
-        run: yarn workspaces foreach --topological --no-private npm publish --access public
+        run: yarn workspaces foreach --all --topological --no-private npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
