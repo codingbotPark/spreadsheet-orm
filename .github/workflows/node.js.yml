@@ -41,8 +41,8 @@ jobs:
         run: |
           yarn workspaces foreach --all version patch
           git push --follow-tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm (only on main branch)
         if: github.ref == 'refs/heads/main'
