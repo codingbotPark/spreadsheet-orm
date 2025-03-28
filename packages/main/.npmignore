@@ -21,3 +21,4 @@ src/
 
 # 기타
 yarn.lock
+.npmrc

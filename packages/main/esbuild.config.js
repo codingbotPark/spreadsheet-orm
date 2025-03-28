@@ -10,5 +10,5 @@ esbuild.build({
   loader: {
     '.ts': 'ts', // TypeScript 파일 로드
   },
-  external: ['https',"googleapis", "gaxios"], // ✅ Node.js 내장 모듈을 번들에서 제외
+  external: ["googleapis", "gaxios"], // ✅ Node.js 내장 모듈을 번들에서 제외
 })
