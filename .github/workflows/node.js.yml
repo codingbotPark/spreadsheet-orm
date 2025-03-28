@@ -44,9 +44,11 @@ jobs:
 
       # - name: Setup .npmrc for authentication
       #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-
+      - name: Enable Debug Mode
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
       - name: Publish to npm (only on main branch)
         if: github.ref == 'refs/heads/main'
-        run: yarn workspaces foreach --all --topological --no-private npm publish --access public
+        # run: yarn workspaces foreach --all --topological --no-private npm publish --access public
+        run: cd ./packages/main && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
