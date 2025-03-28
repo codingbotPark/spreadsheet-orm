@@ -27,3 +27,4 @@ build/
 !.vscode/extensions.json
 
 .turbo
+.npmrc

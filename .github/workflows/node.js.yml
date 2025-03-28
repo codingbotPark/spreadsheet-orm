@@ -36,18 +36,17 @@ jobs:
         run: yarn workspaces foreach --all --topological --parallel --no-private run build
         continue-on-error: true # 빌드 스크립트가 없어도 계속 진행
 
-
       - name: Bump version & create tag (only on main branch)
         if: github.ref == 'refs/heads/main'
         run: |
           yarn workspaces foreach --all version patch
           git push --follow-tags
 
-      - name: Setup .npmrc for authentication
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      # - name: Setup .npmrc for authentication
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
 
       - name: Publish to npm (only on main branch)
         if: github.ref == 'refs/heads/main'
-        run: yarn workspaces foreach --recursive --topological --no-private --from 'spreadsheet-orm' npm publish --access public
+        run: yarn workspaces foreach --all --topological --no-private npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

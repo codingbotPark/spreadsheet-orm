@@ -1,6 +1,6 @@
 {
   "name": "spreadsheet-orm",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
     "google-spreadsheet",
@@ -15,7 +15,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist", "README.md"
   ],
   "packageManager": "yarn@4.5.3",
   "dependencies": {
