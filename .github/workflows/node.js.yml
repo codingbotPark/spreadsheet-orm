@@ -42,20 +42,11 @@ jobs:
           yarn workspaces foreach --all version patch
           git push --follow-tags
 
-      # - name: Create .npmrc file
-      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      # - name: Check .npmrc
-      #   run: cat ~/.npmrc
-
-      - name: Setup .yarnrc.yml for authentication
-        run: echo "npmAuthToken:\t${{ secrets.NPM_TOKEN }}" >> .yarnrc.yml
-
       - name: Publish to npm using yarn workspaces
         if: github.ref == 'refs/heads/main'
-        run: yarn workspaces foreach --verbose --all --no-private npm publish --access public
+        run: yarn workspaces foreach --verbose --all --topological --no-private npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # - name: Publish to npm (only on main branch)
       #   if: github.ref == 'refs/heads/main'
