@@ -1,6 +1,6 @@
 {
   "name": "spreadsheet-orm",
-  "version": "0.1.6",
+  "version": "0.1.12",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
     "google-spreadsheet",
@@ -15,7 +15,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist", "README.md"
+    "dist",
+    "README.md"
   ],
   "packageManager": "yarn@4.5.3",
   "dependencies": {
@@ -38,7 +39,7 @@
     "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
     "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
-    "prepublishOnly": "yarn build"
+    "publish": "yarn publish"
   },
   "exports": {
     ".": {
