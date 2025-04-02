@@ -24,11 +24,19 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
       - name: Install dependencies (Yarn Berry)
         run: yarn install --immutable
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Debug .npmrc
+        run: cat .npmrc
+  
+      - name: Debug .yarnrc.yml
+        run: cat .yarnrc.yml
 
       - name: Run tests (if test script exists)
         run: yarn workspaces foreach --all --topological --parallel --no-private run test
@@ -43,12 +51,6 @@ jobs:
         run: |
           yarn workspaces foreach --all version patch
           git push --follow-tags
-
-      - name: Debug .npmrc
-        run: cat .npmrc
-
-      - name: Debug .yarnrc.yml
-        run: cat .yarnrc.yml
       
       - name: Check NPM Authentication
         run: npm whoami
