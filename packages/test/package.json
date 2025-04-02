@@ -1,6 +1,6 @@
 {
     "name": "@spreadsheet-orm/test",
-    "version": "0.1.12",
+    "version": "0.1.13",
     "private": true,
     "description": "Test suite for spreadsheet-orm",
     "scripts": {
