@@ -42,6 +42,15 @@ jobs:
           yarn workspaces foreach --all version patch
           git push --follow-tags
 
+      - name: Set up .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Debug .npmrc
+        run: cat ~/.npmrc
+      
+      - name: Check NPM Authentication
+        run: npm whoami
+
       # - name: Publish to npm using yarn workspaces
       #   if: github.ref == 'refs/heads/main'
       #   run: yarn workspaces foreach --verbose --all --topological --no-private npm publish --access public
