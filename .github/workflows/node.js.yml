@@ -34,9 +34,11 @@ jobs:
 
       - name: Debug .npmrc
         run: cat .npmrc
+        continue-on-error: true # 빌드 스크립트가 없어도 계속 진행
   
       - name: Debug .yarnrc.yml
         run: cat .yarnrc.yml
+        continue-on-error: true # 빌드 스크립트가 없어도 계속 진행
 
       - name: Run tests (if test script exists)
         run: yarn workspaces foreach --all --topological --parallel --no-private run test
