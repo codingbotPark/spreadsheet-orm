@@ -53,9 +53,6 @@ jobs:
         run: |
           yarn workspaces foreach --all version patch
           git push --follow-tags
-      
-      - name: Check NPM Authentication
-        run: npm whoami
 
       # - name: Publish to npm using yarn workspaces
       #   if: github.ref == 'refs/heads/main'
