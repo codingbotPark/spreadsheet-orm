@@ -65,9 +65,9 @@ jobs:
         run: cd ./packages/main && npm publish --access public
 
 
-      - name: Configure Yarn authentication
-        run: |
-          echo 'npmRegistryServer: "https://registry.npmjs.org"' >> .yarnrc.yml
-          echo 'npmAlwaysAuth: true' >> .yarnrc.yml
-          echo 'npmAuthToken: "${{ secrets.NPM_TOKEN }}"' >> .yarnrc.yml
+      # - name: Configure Yarn authentication
+      #   run: |
+      #     echo 'npmRegistryServer: "https://registry.npmjs.org"' >> .yarnrc.yml
+      #     echo 'npmAlwaysAuth: true' >> .yarnrc.yml
+      #     echo 'npmAuthToken: "${{ secrets.NPM_TOKEN }}"' >> .yarnrc.yml
 
