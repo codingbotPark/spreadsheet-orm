@@ -1,6 +1,6 @@
 {
   "name": "spreadsheet-orm",
-  "version": "0.1.26",
+  "version": "0.1.29",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
     "google-spreadsheet",
