@@ -3,7 +3,7 @@
     "workspaces": [
         "packages/*"
     ],
-    "version": "0.1.14",
+    "version": "0.1.26",
     "packageManager": "yarn@4.5.3",
     "scripts": {
         "build": "yarn workspaces foreach --all npm run build",

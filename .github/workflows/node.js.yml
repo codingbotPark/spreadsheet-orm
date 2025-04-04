@@ -62,7 +62,7 @@ jobs:
 
       - name: Publish to npm (only on main branch)
         if: github.ref == 'refs/heads/main'
-        run: cd ./packages/main && npm publish --access public
+        run: cd ./packages/main && npm publish --verbose --access public
 
 
       # - name: Configure Yarn authentication

@@ -1,6 +1,6 @@
 {
   "name": "spreadsheet-orm",
-  "version": "0.1.14",
+  "version": "0.1.26",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
     "google-spreadsheet",
@@ -38,8 +38,7 @@
     "bundle": "yarn node esbuild.config.js",
     "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
     "start": "tsx src/index.ts",
-    "dev": "nodemon --exec tsx src/index.ts",
-    "publish": "yarn publish"
+    "dev": "nodemon --exec tsx src/index.ts"
   },
   "exports": {
     ".": {

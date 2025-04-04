@@ -1,6 +1,6 @@
 {
     "name": "@spreadsheet-orm/docs",
-    "version": "0.1.14",
+    "version": "0.1.26",
     "private": true,
     "dependencies": {
         "spreadsheet-orm": "workspace:*"
