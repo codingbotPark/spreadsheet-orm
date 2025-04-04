@@ -38,7 +38,8 @@
     "bundle": "yarn node esbuild.config.js",
     "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
     "start": "tsx src/index.ts",
-    "dev": "nodemon --exec tsx src/index.ts"
+    "dev": "nodemon --exec tsx src/index.ts",
+    "prepublishOnly": "if [ -z \"$CI\" ]; then echo '❌ 로컬에서 publish 금지!' && exit 1; fi"
   },
   "exports": {
     ".": {

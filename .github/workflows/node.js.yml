@@ -60,9 +60,6 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: yarn workspaces foreach --verbose --all --topological --no-private npm publish --access public
 
-      # - name: Publish to npm (only on main branch)
-      #   if: github.ref == 'refs/heads/main'
-      #   run: cd ./packages/main && npm publish --verbose --access public
 
 
 
