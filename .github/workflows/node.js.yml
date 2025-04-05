@@ -50,10 +50,17 @@ jobs:
         run: yarn workspaces foreach --all --topological --parallel --no-private run build
         continue-on-error: true 
 
-      - name: Bump version & create tag (only on main branch)
+      - name: Bump version & commit (only on main)
         if: github.ref == 'refs/heads/main'
         run: |
           yarn workspaces foreach --all version patch
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(release): bump versions"
+          git tag v$(jq -r .version package.json)
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git push --follow-tags
 
       - name: Publish to npm using yarn workspaces
