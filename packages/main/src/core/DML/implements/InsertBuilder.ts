@@ -1,12 +1,12 @@
-import ChainQueryBuilder, { BasicQueryQueueType } from "../abstracts/AndAble";
+import AndAble, { BasicQueryQueueType } from "../abstracts/AndAble";
 import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
-import { DataTypes} from "@src/core/DDL/SchemaManager";
+import { DataTypes} from "@src/core/DDL/defineTable";
 
 interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
 }
 
-class InsertBuilder<T extends {sheetName?:string}> extends ChainQueryBuilder<typeof InsertBuilder>{
+class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
     protected sheetName?: T["sheetName"]
     
     protected queryQueue: InsertQueueType[] = [];

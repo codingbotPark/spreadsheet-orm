@@ -1,14 +1,13 @@
 import applyMixins from "@src/types/mixin";
 import AndAble, { BasicQueryQueueType } from "../AndAble";
-import ConditionBuilder, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
+import WhereAble, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
 import BaseBuilder from "../BaseBuilder";
 import { CtorType } from "@src/types/BuilderCtorParamType";
-import { sheets_v4 } from "googleapis";
 
 export interface ConditionQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
-interface ConditionChainQueryBuilder<TypeofClass extends CtorType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends AndAble<TypeofClass, QueryQueueType>, ConditionBuilder{}
+interface ConditionChainQueryBuilder<TypeofClass extends CtorType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends AndAble<TypeofClass, QueryQueueType>, WhereAble{}
 
 abstract class ConditionChainQueryBuilder<TypeofClass extends CtorType, QueryQueueType extends ConditionQueueType> extends BaseBuilder{
     
@@ -34,6 +33,6 @@ abstract class ConditionChainQueryBuilder<TypeofClass extends CtorType, QueryQue
 
 
 }
-applyMixins(ConditionChainQueryBuilder, [AndAble, ConditionBuilder])
+applyMixins(ConditionChainQueryBuilder, [AndAble, WhereAble])
 
 export default ConditionChainQueryBuilder

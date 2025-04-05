@@ -47,6 +47,7 @@ class SpreadsheetConfig{
             version:'v4',
             auth:this.authJWT
         })
+
     }
 
     async getSpreadsheetInfo({cached}:{cached:boolean}={cached:false}){
@@ -73,7 +74,6 @@ class SpreadsheetConfig{
             }
         }
     }
-
 
     private checkFormat(options:SpreadsheetConfigOptions){
         if (!this.isValidEmail(options.email)){

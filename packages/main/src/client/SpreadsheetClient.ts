@@ -26,8 +26,6 @@ class SpreadsheetClient{
 
         return this.executeSql(sql, values)
     }
-    
-    
     async executeSql(sql:string, values?:[string | number]):Promise<any>{
         return this.spreadsheetAPI.spreadsheets.values.get({
             spreadsheetId:this.spreadsheetID,

@@ -1,8 +1,9 @@
 import { sheets_v4 } from "googleapis";
 import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
-import { InputValueType } from "@src/core/DDL/SchemaManager";
+import { DataTypes } from "@src/core/DDL/defineTable";
 
+export type InputValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
     updateValues:InputValueType
 }

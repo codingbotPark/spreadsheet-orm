@@ -8,7 +8,7 @@ export { SpreadsheetConfig };
 
 // Types
 export type { SpreadsheetConfigOptions } from './config/SpreadsheetConfig.ts';
-export type { SchemaConfig } from './core/DDL/SchemaManager.ts';
-export type { DataTypes } from './core/DDL/SchemaManager.ts';
+export type { SchemaConfig } from './core/DDL/defineTable';
+export type { DataTypes } from './core/DDL/defineTable';
 export type { Credentials } from "./types/Credentials.ts"
 

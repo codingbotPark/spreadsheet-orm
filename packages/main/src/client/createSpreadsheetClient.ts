@@ -1,9 +1,9 @@
 import SpreadsheetClient from "@src/client/SpreadsheetClient";
+import { SchemaConfigOptions } from "@src/config/SchemaConfig";
 import SpreadsheetConfig, { SpreadsheetConfigOptions } from "@src/config/SpreadsheetConfig";
-import { SchemaConfig } from "@src/core/DDL/SchemaManager";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
 
-interface ClientOptions extends SpreadsheetConfigOptions, SchemaConfig{}
+interface ClientOptions extends SpreadsheetConfigOptions, SchemaConfigOptions{}
 
 function createSpreadsheetClient(opts:ClientOptions){
     const config = new SpreadsheetConfig(opts)
