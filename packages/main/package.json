@@ -1,6 +1,6 @@
 {
   "name": "spreadsheet-orm",
-  "version": "0.1.29",
+  "version": "0.1.31",
   "description": "ORM for Google Spreadsheet - Query Builder and Schema Management for spreadsheet database",
   "keywords": [
     "google-spreadsheet",
@@ -39,7 +39,7 @@
     "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
     "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
-    "prepublishOnly": "if [ -z \"$CI\" ]; then echo '❌ 로컬에서 publish 금지!' && exit 1; fi"
+    "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
   },
   "exports": {
     ".": {

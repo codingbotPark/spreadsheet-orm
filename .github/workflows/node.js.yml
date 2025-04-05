@@ -27,11 +27,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Configure Yarn authentication
-        run: |
-          echo 'npmRegistryServer: "https://registry.npmjs.org"' >> .yarnrc.yml
-          echo 'npmAlwaysAuth: true' >> .yarnrc.yml
-          echo 'npmAuthToken: "${{ secrets.NPM_TOKEN }}"' >> .yarnrc.yml
+      # - name: Configure Yarn authentication
+      #   run: |
+      #     echo 'npmRegistryServer: "https://registry.npmjs.org"' >> .yarnrc.yml
+      #     echo 'npmAlwaysAuth: true' >> .yarnrc.yml
+      #     echo 'npmAuthToken: "${{ secrets.NPM_TOKEN }}"' >> .yarnrc.yml
           
       - name: Install dependencies (Yarn Berry)
         run: yarn install --immutable
