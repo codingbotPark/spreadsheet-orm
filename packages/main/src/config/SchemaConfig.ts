@@ -11,13 +11,15 @@ class SchemaConfig{
     definedSchema:SchemaType[]
     missingSchemaStrategy:MissingSchemaStrategy
 
+    DEFAULT_MISSING_STRATEGY:MissingSchemaStrategy = 'create'
+
     constructor(options:SchemaConfigOptions){
-       this.checkFormat(options)
+       this.checkSchemaFormat(options)
        this.definedSchema = options.schemas
-       this.missingSchemaStrategy = options.onMissingSchema ?? 'create'
+       this.missingSchemaStrategy = options.onMissingSchema ?? this.DEFAULT_MISSING_STRATEGY
     }
 
-    private checkFormat(options:SchemaConfigOptions){}
+    private checkSchemaFormat(options:SchemaConfigOptions){}
 }
 
 export default SchemaConfig
