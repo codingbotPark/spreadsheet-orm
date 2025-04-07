@@ -2,7 +2,7 @@ import { sheets_v4 } from "googleapis";
 import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { DataTypes } from "@src/core/DDL/defineTable";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 
 export type InputValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
@@ -55,7 +55,7 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         return response.data.totalUpdatedRows
     }
     
-    constructor(config:QueryConfig, private updateValues:InputValueType){
+    constructor(config:QueryBuilderConfig, private updateValues:InputValueType){
         super(config)
     }
 

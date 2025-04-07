@@ -1,6 +1,6 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import SpreadsheetConfig from "@src/config/SpreadConfig";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
 
 type TargetColumnType = string[]
@@ -69,7 +69,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
     }
     
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:QueryConfig, protected targetColumn:TargetColumnType = []){
+    constructor(config:QueryBuilderConfig, protected targetColumn:TargetColumnType = []){
         super(config)
     }
 }

@@ -3,10 +3,10 @@ import UpdateBuilder from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
 import { DataTypes } from "../DDL/defineTable";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 
 class QueryBuilder {
-    constructor(private config: QueryConfig) {
+    constructor(private config: QueryBuilderConfig) {
     }
 
 

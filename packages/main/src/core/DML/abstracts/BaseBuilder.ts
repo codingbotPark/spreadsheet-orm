@@ -1,5 +1,5 @@
 import ClientConfig from "@src/config/ClientConfig";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 import { sheets_v4 } from "googleapis";
 
 interface ParsedRange {
@@ -16,7 +16,7 @@ export interface Executable<ExecuteReturn>{
 // execute & has a basic spreadhseet methods
 abstract class BaseBuilder{
 
-    constructor(protected config:QueryConfig){
+    constructor(protected config:QueryBuilderConfig){
 
     }
     // protected abstract initial

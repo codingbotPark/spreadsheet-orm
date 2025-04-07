@@ -2,7 +2,7 @@ import ClientConfig from "@src/config/ClientConfig";
 import AndAble, { BasicQueryQueueType } from "../abstracts/AndAble";
 import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { DataTypes} from "@src/core/DDL/defineTable";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 
 interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
@@ -51,7 +51,7 @@ class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof Insert
     }
 
 
-    constructor(config: QueryConfig, private insertValues:DataTypes[]) {
+    constructor(config: QueryBuilderConfig, private insertValues:DataTypes[]) {
         super(config);
     }
 

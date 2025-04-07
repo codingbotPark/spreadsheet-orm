@@ -2,7 +2,7 @@ import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import assertNotNull from "@src/types/assertType";
 import SpreadsheetConfig from "@src/config/SpreadConfig";
-import { QueryConfig } from "@src/types/\bconfigPicks";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
@@ -58,7 +58,7 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         }, [])
     }
 
-    constructor(config:QueryConfig){
+    constructor(config:QueryBuilderConfig){
         super(config)
     }
 
