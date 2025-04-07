@@ -1,6 +1,8 @@
+import ClientConfig from "@src/config/ClientConfig";
 import AndAble, { BasicQueryQueueType } from "../abstracts/AndAble";
-import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
+import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { DataTypes} from "@src/core/DDL/defineTable";
+import { QueryConfig } from "@src/types/\bconfigPicks";
 
 interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
@@ -34,8 +36,8 @@ class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof Insert
         // append 대신 update 로 한 번에 api query 최적화 가능
         const results = []
         for (let i = 0 ; i < this.queryQueue.length ; i++){
-            const response = await this.config.spreadsheetAPI.spreadsheets.values.append({
-                spreadsheetId:this.config.spreadsheetID,
+            const response = await this.config.spread.API.spreadsheets.values.append({
+                spreadsheetId:this.config.spread.ID,
                 valueInputOption:"RAW",
                 range:this.queryQueue[i].sheetName,
                 requestBody:{
@@ -49,7 +51,7 @@ class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof Insert
     }
 
 
-    constructor(config: SpreadsheetConfig, private insertValues:DataTypes[]) {
+    constructor(config: QueryConfig, private insertValues:DataTypes[]) {
         super(config);
     }
 

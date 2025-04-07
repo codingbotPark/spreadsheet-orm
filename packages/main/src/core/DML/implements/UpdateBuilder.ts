@@ -1,7 +1,8 @@
 import { sheets_v4 } from "googleapis";
 import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
-import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
+import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { DataTypes } from "@src/core/DDL/defineTable";
+import { QueryConfig } from "@src/types/\bconfigPicks";
 
 export type InputValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
@@ -41,8 +42,8 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             return this.makeUpdateDataArr(ranges, updateValues)
         }).flat()
 
-        const response = await this.config.spreadsheetAPI.spreadsheets.values.batchUpdateByDataFilter({
-            spreadsheetId:this.config.spreadsheetID,
+        const response = await this.config.spread.API.spreadsheets.values.batchUpdateByDataFilter({
+            spreadsheetId:this.config.spread.ID,
             requestBody:{
                 data:updateDataArr,
                 valueInputOption:"RAW"
@@ -54,7 +55,7 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         return response.data.totalUpdatedRows
     }
     
-    constructor(config:SpreadsheetConfig, private updateValues:InputValueType){
+    constructor(config:QueryConfig, private updateValues:InputValueType){
         super(config)
     }
 

@@ -1,5 +1,6 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
-import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
+import SpreadsheetConfig from "@src/config/SpreadConfig";
+import { QueryConfig } from "@src/types/\bconfigPicks";
 import assertNotNull from "@src/types/assertType";
 
 type TargetColumnType = string[]
@@ -36,14 +37,14 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.targetColumn)
-            const composedRange = this.composeRange(query.sheetName!, this.config.DATA_STARTING_ROW, specifiedColumn)
+            const composedRange = this.composeRange(query.sheetName!, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
         const requestBody = this.makeRequestBody(compsedRanges)
         console.log("requestBody",requestBody)
 
-        const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
-            spreadsheetId:this.config.spreadsheetID,
+        const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
+            spreadsheetId:this.config.spread.ID,
             requestBody:requestBody
         })
 
@@ -68,7 +69,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
     }
     
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:SpreadsheetConfig, protected targetColumn:TargetColumnType = []){
+    constructor(config:QueryConfig, protected targetColumn:TargetColumnType = []){
         super(config)
     }
 }

@@ -2,11 +2,12 @@ import SelectBuilder from "./implements/SelectBuilder";
 import UpdateBuilder from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
-// import { DataTypes, SpreadsheetConfig } from "@src/config/SpreadsheetConfig";
-import { DataTypes, SpreadsheetConfig } from "@src/index";
+import { DataTypes } from "../DDL/defineTable";
+import { QueryConfig } from "@src/types/\bconfigPicks";
 
 class QueryBuilder {
-    constructor(private config: SpreadsheetConfig) {}
+    constructor(private config: QueryConfig) {
+    }
 
 
     insert(insertValues:DataTypes[]){

@@ -15,13 +15,14 @@ function defineTable<T extends SchemaType>(
 }
 export default defineTable
 
-export type DataTypes = string | number | Date | boolean
 
+export type DataTypes = string | number | Date | boolean
 export interface FieldType {
    dataType:DataTypes
    optional?:Boolean
    default?:DataTypes
 }
+
 
 interface FieldBuilder {
    string(): FieldType
@@ -30,6 +31,7 @@ interface FieldBuilder {
    date(): FieldType
 }
 export type FieldsType =Record<string, FieldType> 
+
 
 export interface SchemaType {
    name: string

@@ -1,7 +1,8 @@
 import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import assertNotNull from "@src/types/assertType";
-import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
+import SpreadsheetConfig from "@src/config/SpreadConfig";
+import { QueryConfig } from "@src/types/\bconfigPicks";
 
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
@@ -28,8 +29,8 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             })
             return this.makeDeleteDataArr(ranges)
         }).flat()
-        const response = await this.config.spreadsheetAPI.spreadsheets.values.batchClearByDataFilter({
-            spreadsheetId:this.config.spreadsheetID,
+        const response = await this.config.spread.API.spreadsheets.values.batchClearByDataFilter({
+            spreadsheetId:this.config.spread.ID,
             requestBody:{
                 dataFilters: deleteDataArr
             }
@@ -57,7 +58,7 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         }, [])
     }
 
-    constructor(config:SpreadsheetConfig){
+    constructor(config:QueryConfig){
         super(config)
     }
 

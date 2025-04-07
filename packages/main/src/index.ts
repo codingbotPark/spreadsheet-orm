@@ -2,13 +2,12 @@
 // export default createSpreadsheetClient
 
 import createSpreadsheetClient from "./client/createSpreadsheetClient";
-import SpreadsheetConfig from "./config/SpreadsheetConfig";
+import SpreadsheetConfig from "./config/SpreadConfig";
 export default createSpreadsheetClient
 export { SpreadsheetConfig };
 
 // Types
-export type { SpreadsheetConfigOptions } from './config/SpreadsheetConfig.ts';
-export type { SchemaConfig } from './core/DDL/defineTable';
+export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
 export type { DataTypes } from './core/DDL/defineTable';
 export type { Credentials } from "./types/Credentials.ts"
 

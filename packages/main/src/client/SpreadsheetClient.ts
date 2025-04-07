@@ -1,6 +1,7 @@
-import SpreadsheetConfig from "@src/config/SpreadsheetConfig";
+import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { sheets_v4 } from "googleapis";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
+import ClientConfig from "@src/config/ClientConfig";
 
 // serve method to user 
 class SpreadsheetClient{
@@ -8,9 +9,9 @@ class SpreadsheetClient{
     spreadsheetID:string
 
 
-    constructor(private config:SpreadsheetConfig, public queryBuilder:QueryBuilder){
-        this.spreadsheetAPI = config.spreadsheetAPI
-        this.spreadsheetID = config.spreadsheetID
+    constructor(private config:ClientConfig, public queryBuilder:QueryBuilder){
+        this.spreadsheetAPI = config.spread.API
+        this.spreadsheetID = config.spread.ID
     }
 
     
@@ -27,10 +28,10 @@ class SpreadsheetClient{
         return this.executeSql(sql, values)
     }
     async executeSql(sql:string, values?:[string | number]):Promise<any>{
-        return this.spreadsheetAPI.spreadsheets.values.get({
-            spreadsheetId:this.spreadsheetID,
-            range:"class!A1:B3"
-        })
+        // return this.spreadsheetAPI.spreadsheets.values.get({
+        //     spreadsheetId:this.spreadsheetID,
+        //     range:"class!A1:B3"
+        // })
     }
 }
 
