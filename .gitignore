@@ -28,3 +28,4 @@ build/
 
 .turbo
 .npmrc
+.yarnrc.local.yml

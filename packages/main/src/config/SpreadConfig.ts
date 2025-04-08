@@ -2,7 +2,7 @@ import { GaxiosError } from "gaxios";
 import { google, sheets_v4 } from "googleapis";
 
 export interface SpreadsheetConfigOptions{
-    ID:string;
+    spreadsheetID:string;
     email: string; // service acount email
     privateKey: string; // Google API key
 }
@@ -16,7 +16,7 @@ class SpreadConfig{
        }) 
     }
 
-    static extractSheetIDfromURL(url:string):SpreadsheetConfigOptions['ID'] | false{
+    static extractSheetIDfromURL(url:string):SpreadsheetConfigOptions['spreadsheetID'] | false{
         const regex = /\/d\/([a-zA-Z0-9_-]{43})/; // extract sheet id from url
         const match = url.match(regex);
         if (match && match[1]) {
@@ -36,7 +36,7 @@ class SpreadConfig{
 
     constructor(options:SpreadsheetConfigOptions){
         this.checkFormat(options)
-        this.ID = SpreadConfig.extractSheetIDfromURL(options.ID) || options.ID 
+        this.ID = SpreadConfig.extractSheetIDfromURL(options.spreadsheetID) || options.spreadsheetID 
         this.authJWT = SpreadConfig.makeAuthJWT({email:options.email, privateKey:options.privateKey}) 
         this.API = google.sheets({
             version:'v4',

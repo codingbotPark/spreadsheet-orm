@@ -1,9 +1,11 @@
 name: Create GitHub Release
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
 
 jobs:
   release:
@@ -16,12 +18,12 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ inputs.version }}
+          name: Release ${{ inputs.version }}
           body: |
-            **New Release: ${{ github.ref_name }}**
+            **New Release: ${{ inputs.version }}**
             
-            - 📦 **NPM Package**: [View on npm](https://www.npmjs.com/package/spreadsheet-orm)
+            - 📦 **NPM Package**: [View on npm](https://www.npmjs.com/package/spreadsheet-orm/v/${{ inputs.version }})
 
           draft: false
           prerelease: false

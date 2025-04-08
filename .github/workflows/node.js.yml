@@ -27,20 +27,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Configure Yarn authentication
-      #   run: |
-      #     echo 'npmRegistryServer: "https://registry.npmjs.org"' >> .yarnrc.yml
-      #     echo 'npmAlwaysAuth: true' >> .yarnrc.yml
-      #     echo 'npmAuthToken: "${{ secrets.NPM_TOKEN }}"' >> .yarnrc.yml
-          
       - name: Install dependencies (Yarn Berry)
         run: yarn install --immutable
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Debug .yarnrc.yml
-        run: cat .yarnrc.yml
-        continue-on-error: true 
 
       - name: Run tests (if test script exists)
         run: yarn workspaces foreach --all --topological --parallel --no-private run test
@@ -48,7 +38,6 @@ jobs:
 
       - name: Build project (if build script exists)
         run: yarn workspaces foreach --all --topological --parallel --no-private run build
-        continue-on-error: true 
 
       - name: Bump version & commit (only on main)
         if: github.ref == 'refs/heads/main'
@@ -66,8 +55,24 @@ jobs:
       - name: Publish to npm using yarn workspaces
         if: github.ref == 'refs/heads/main'
         run: yarn workspaces foreach --verbose --all --topological --no-private npm publish --access public
+  
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-
-
-
+      - name: Get version from package.json
+        id: get-version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+  call-publish:
+    needs: get-version
+    uses: ./.github/workflows/release.yml
+    with:
+      version: ${{ needs.get-version.outputs.version }}
 
