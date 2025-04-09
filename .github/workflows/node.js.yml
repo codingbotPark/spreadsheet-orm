@@ -71,7 +71,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
         
   call-publish:
-    needs: get-version
+    needs: [build, get-version]
     uses: ./.github/workflows/release.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
