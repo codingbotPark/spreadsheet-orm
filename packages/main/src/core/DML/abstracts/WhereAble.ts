@@ -17,9 +17,9 @@ abstract class WhereAble extends BaseBuilder{
 
     // for one get ConditionedData
     protected async getConditionedData():Promise<DataWithRowType[]>{
-        const range = this.composeRange(this.sheetName as string, this.config.DATA_STARTING_ROW)
+        const range = this.composeRange(this.sheetName as string, this.config.sheet.DATA_STARTING_ROW)
         const dataFilters = this.makeDataFilters([range])
-        const batchData = await this.fetchBatchData(this.config.spreadsheetID, dataFilters)
+        const batchData = await this.fetchBatchData(this.config.spread.ID, dataFilters)
         const batchValues = this.extractValuesFromMatch(batchData)
         const indexedBatchValue = this.indexingBatchData(batchValues[0])
         const conditionedBatchValue = this.conditioning(indexedBatchValue)
@@ -51,7 +51,7 @@ abstract class WhereAble extends BaseBuilder{
     }
 
     protected async fetchBatchData(spreadsheetID:string, dataFilters:sheets_v4.Schema$DataFilter[]):Promise<sheets_v4.Schema$MatchedValueRange[]>{
-        const response = await this.config.spreadsheetAPI.spreadsheets.values.batchGetByDataFilter({
+        const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:spreadsheetID,
             requestBody:{
                 dataFilters
@@ -65,7 +65,7 @@ abstract class WhereAble extends BaseBuilder{
     }
 
     protected indexingBatchData(data:string[][]):DataWithRowType[]{
-        return data.map((currData, idx) => [idx + this.config.DATA_STARTING_ROW, ...currData] as DataWithRowType);
+        return data.map((currData, idx) => [idx + this.config.sheet.DATA_STARTING_ROW, ...currData] as DataWithRowType);
     }
 
     protected makeDataFilters(ranges:string[]){
