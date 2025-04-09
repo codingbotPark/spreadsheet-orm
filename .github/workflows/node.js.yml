@@ -73,6 +73,8 @@ jobs:
   call-publish:
     needs: [build, get-version]
     uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
     with:
       version: ${{ needs.get-version.outputs.version }}
 
