@@ -1,43 +1,45 @@
-function defineTable<T extends SchemaType>(
+function defineTable<T extends FieldsType>(
+   sheetName: string,
    builder: (field: FieldBuilder) => T
-   ): {
-   schema: T
-   } {
+ ): SchemaType<T> { // SchemaType에 제네릭 추가
    const fieldBuilder: FieldBuilder = {
-      string: () => ({ dataType: 'string' }),
-      number: () => ({ dataType: 'number' }),
-      boolean: () => ({ dataType: 'boolean' }),
-      date: () => ({ dataType: 'date' }),
+     string: () => ({ dataType: 'string' }),
+     number: () => ({ dataType: 'number' }),
+     boolean: () => ({ dataType: 'boolean' }),
+     date: () => ({ dataType: 'date' }),
    }
-
-   const schema = builder(fieldBuilder)
-   return { schema }
-}
+   const fields = builder(fieldBuilder)
+   return { sheetName, fields }
+ }
+ 
+ // SchemaType을 제네릭으로 수정
+ export interface SchemaType<T extends FieldsType = FieldsType> {
+   sheetName: string
+   fields: T
+ }
 export default defineTable
 
 
-export type DataTypes = string | number | Date | boolean
-export interface FieldType {
-   dataType:DataTypes
-   optional?:Boolean
-   default?:DataTypes
-}
+
 
 
 interface FieldBuilder {
-   string(): FieldType
-   number(): FieldType
-   boolean(): FieldType
-   date(): FieldType
-}
+   string(): FieldType<'string'>;
+   number(): FieldType<'number'>;
+   boolean(): FieldType<'boolean'>;
+   date(): FieldType<'date'>;
+ }
 export type FieldsType =Record<string, FieldType> 
 
+export type DataTypes = 'string' | 'number' | 'boolean' | 'date'
+// export type DataTypes = string | number | Date | boolean
+export interface FieldType<T extends DataTypes = DataTypes> {
+   dataType:T
+   optional?:boolean
+   default?:any
+}
 
-export interface SchemaType {
-   name: string
-   fields: FieldsType
-   // references?: Reference[]
- }
+
 
  type InferFieldType<T> =
  T extends 'string' ? string :
@@ -45,9 +47,21 @@ export interface SchemaType {
  T extends 'boolean' ? boolean :
  T extends 'date' ? Date :
  never
+
 export type InferTableType<T extends FieldsType> = {
    [K in keyof T]: T[K]['optional'] extends true
       ? InferFieldType<T[K]['dataType']> | undefined
       : InferFieldType<T[K]['dataType']>
 }
 
+const testSchema = defineTable("cars",(field) => ({
+   name:field.string(),
+   displacement:field.number()
+}))
+testSchema.sheetName
+
+
+type Car = InferTableType<typeof testSchema.fields>
+function addCar(car:Car){
+   
+}
