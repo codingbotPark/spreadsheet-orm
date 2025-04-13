@@ -1,6 +1,7 @@
 // import createSpreadsheetClient, { Credentials } from "../main/dist"
 import createSpreadsheetClient,{ Credentials } from "spreadsheet-orm"
 import credentials from "./security/credentials.json"
+import defineTable, { InferTableType } from "spreadsheet-orm/src/core/DDL/defineTable"
 
 const connectionParameters:Credentials = credentials
 const spreadsheetClient = createSpreadsheetClient({
@@ -8,6 +9,19 @@ const spreadsheetClient = createSpreadsheetClient({
     privateKey:connectionParameters.private_key,
     spreadsheetID:connectionParameters.spreadsheetID
 })
+
+const testSchema = defineTable("cars",(field) => ({
+    name:field.string(),
+    displacement:field.number()
+}))
+testSchema.sheetName
+
+
+type Car = InferTableType<typeof testSchema.fields>
+function addCar(car:Car){
+    
+}
+
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
 // console.log(tt)
