@@ -1,3 +1,4 @@
+import Schema from "@src/core/DDL/implements/Schema";
 import BaseBuilder from "./BaseBuilder";
 import BuilderCtorParamType, { CtorType } from "@src/types/BuilderCtorParamType";
 

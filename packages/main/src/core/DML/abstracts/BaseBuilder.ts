@@ -1,12 +1,9 @@
-import ClientConfig from "@src/config/ClientConfig";
+import { ColumnSpecificationType } from "@src/config/SheetConfig";
+import Schema from "@src/core/DDL/implements/Schema";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import { sheets_v4 } from "googleapis";
 
-interface ParsedRange {
-    sheetName?: string;
-    startCell: { column: string; row: number };
-    endCell?: { column: string; row: number };
-}
+
 
 export interface Executable<ExecuteReturn>{
     execute():Promise<ExecuteReturn>
@@ -23,56 +20,9 @@ abstract class BaseBuilder{
     protected abstract sheetName?:string
     // protected sheetName?:string
 
-    protected parseCell(cellAddress:string){
-        
 
-        const match = cellAddress.match(/^([A-Z]+)(\d+)$/);
 
-        if (!match) {
-            throw new Error("Invalid A1 cell address format");
-        }
-    
-        const column = match[1]; // 문자 (열)
-        const row = parseInt(match[2], 10); // 숫자 (행)
-    
-        return { column, row };
-    }
 
-    protected parseRange(range: string): ParsedRange {
-        // sheetName과 Range 분리
-        const [sheetNameOrCells, endPart] = range.split("!");
-        const hasSheetName = endPart !== undefined;
-        const sheetName = hasSheetName ? sheetNameOrCells : undefined;
-        const rangePart = hasSheetName ? endPart : sheetNameOrCells;
-    
-        // Start와 End 셀 분리
-        const [startCell, endCell] = rangePart.split(":");
-    
-        if (!startCell) {
-            throw new Error("Invalid range format: startCell is missing");
-        }
-    
-        const start = this.parseCell(startCell);
-        const end = endCell ? this.parseCell(endCell) : undefined;
-    
-        return {
-            sheetName,
-            startCell: start,
-            endCell: end,
-        };
-    }
-
-    protected composeRange(sheetName:string, row:RowSpecificationType, specifiedColumn?:ColumnSpecificationType):string
-    protected composeRange(sheetName:string, row:number, specifiedColumn?:ColumnSpecificationType):string
-    protected composeRange(sheetName:string, row:RowSpecificationType | number, specifiedColumn?:ColumnSpecificationType):string{
-
-        const startRow = typeof row === "number" ? row : row.startRow
-        const endRow = typeof row === "number" ? '' : (row.endRow ?? startRow)
-        const startColumn = (specifiedColumn && specifiedColumn.startColumn) ?? 'A'
-        const endColumn = (specifiedColumn && specifiedColumn.endColumn) ?? 'ZZZ'
-
-        return `${sheetName}!${startColumn}${startRow}:${endColumn}${endRow}`
-    }
 
     protected specifyColumn(columnNames:string[]):ColumnSpecificationType{
         const defaultColumns = { startColumn: null, endColumn: null } 
@@ -135,11 +85,3 @@ const dummyDefinedColumn:Record<string, DummyColumnOptions> = {
     }
 }
 
-interface ColumnSpecificationType{
-    startColumn:string | null,
-    endColumn:string | null
-}
-interface RowSpecificationType{
-    startRow:number,
-    endRow?:number
-}

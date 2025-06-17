@@ -1,8 +1,7 @@
 import { sheets_v4 } from "googleapis";
 import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
-import SpreadsheetConfig from "@src/config/SpreadConfig";
-import { DataTypes } from "@src/core/DDL/defineTable";
 import { QueryBuilderConfig } from "@src/types/configPicks";
+import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 
 export type InputValueType = DataTypes[] | {[key:string]:DataTypes}
 interface UpdateQueueType extends ConditionQueueType{
@@ -36,7 +35,7 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             const ranges = conditionedBatchValue.flatMap((data) => {
                 const row = data.at(0) as number
                 // make range for one each rows(that filtered with condition)
-                return this.composeRange (sheetName as string, {startRow:row, endRow:row})  
+                return this.config.sheet.composeRange(sheetName as string, {startRow:row, endRow:row})  
             })
             // make arr because conditioned Datas are not one(1 updateValue per N conditionedData )
             return this.makeUpdateDataArr(ranges, updateValues)

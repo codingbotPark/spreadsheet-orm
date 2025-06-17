@@ -1,8 +1,7 @@
-import ClientConfig from "@src/config/ClientConfig";
+import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 import AndAble, { BasicQueryQueueType } from "../abstracts/AndAble";
-import SpreadsheetConfig from "@src/config/SpreadConfig";
-import { DataTypes} from "@src/core/DDL/defineTable";
 import { QueryBuilderConfig } from "@src/types/configPicks";
+import Schema from "@src/core/DDL/implements/Schema";
 
 interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]

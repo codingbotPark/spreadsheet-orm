@@ -1,67 +1,50 @@
-function defineTable<T extends FieldsType>(
-   sheetName: string,
-   builder: (field: FieldBuilder) => T
- ): SchemaType<T> { // SchemaType에 제네릭 추가
+import { DataTypes, FieldType } from "./abstracts/BaseFieldBuilder"
+import { BoooleanFieldBuilder, DateFieldBuilder, NumberFieldBuilder, ReferenceFieldBuilder, StringFieldBuilder } from "./implements/fieldBuilders"
+import Schema from "./implements/Schema"
+
+function defineTable<Name extends string,T extends FieldsType>(
+   sheetName: Name,
+   builder: (field: FieldBuilder) => T,
+   keyOrder?:(keyof T)[]
+ ): Schema<Name, T> { // SchemaType에 제네릭 추가
    const fieldBuilder: FieldBuilder = {
-     string: () => ({ dataType: 'string' }),
-     number: () => ({ dataType: 'number' }),
-     boolean: () => ({ dataType: 'boolean' }),
-     date: () => ({ dataType: 'date' }),
+      boolean: () => new BoooleanFieldBuilder,
+      date: () => new DateFieldBuilder,
+      number: () => new NumberFieldBuilder,
+      string: () => new StringFieldBuilder,
+      reference: 
+      <T extends FieldsType,K extends keyof T>(schema:Schema<string, T>, fields:K) => 
+         new ReferenceFieldBuilder<T, Schema<string, T>, K>(schema, fields)
    }
-   const fields = builder(fieldBuilder)
-   return { sheetName, fields }
+   const fields = builder(fieldBuilder);
+
+   const orderedKeys = Object.keys(fields) as (keyof T)[];
+   
+   return new Schema(sheetName, fields, orderedKeys);
  }
  
- // SchemaType을 제네릭으로 수정
- export interface SchemaType<T extends FieldsType = FieldsType> {
-   sheetName: string
-   fields: T
- }
 export default defineTable
 
 
-
-
-
-interface FieldBuilder {
-   string(): FieldType<'string'>;
-   number(): FieldType<'number'>;
-   boolean(): FieldType<'boolean'>;
-   date(): FieldType<'date'>;
- }
-export type FieldsType =Record<string, FieldType> 
-
-export type DataTypes = 'string' | 'number' | 'boolean' | 'date'
-// export type DataTypes = string | number | Date | boolean
-export interface FieldType<T extends DataTypes = DataTypes> {
-   dataType:T
-   optional?:boolean
-   default?:any
+export type FieldsType = Record<string,FieldType<DataTypes>>; 
+export interface FieldBuilder {
+   boolean(): BoooleanFieldBuilder;
+   date(): DateFieldBuilder;
+   number(): NumberFieldBuilder;
+   string(): StringFieldBuilder;
+   reference<T extends FieldsType,K extends keyof T>(schema:Schema<string, T>, fields:K) : ReferenceFieldBuilder<T, Schema<string, T>, K>;
 }
 
 
-
- type InferFieldType<T> =
+type InferFieldType<T> =
  T extends 'string' ? string :
  T extends 'number' ? number :
  T extends 'boolean' ? boolean :
  T extends 'date' ? Date :
- never
-
+ never;
 export type InferTableType<T extends FieldsType> = {
-   [K in keyof T]: T[K]['optional'] extends true
-      ? InferFieldType<T[K]['dataType']> | undefined
-      : InferFieldType<T[K]['dataType']>
-}
+    [K in keyof T]: T[K]['optional'] extends true
+    ? InferFieldType<T[K]['dataType']> | undefined
+    : InferFieldType<T[K]['dataType']>;
+   };
 
-const testSchema = defineTable("cars",(field) => ({
-   name:field.string(),
-   displacement:field.number()
-}))
-testSchema.sheetName
-
-
-type Car = InferTableType<typeof testSchema.fields>
-function addCar(car:Car){
-   
-}

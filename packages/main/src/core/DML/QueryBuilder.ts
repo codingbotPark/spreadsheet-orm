@@ -2,8 +2,9 @@ import SelectBuilder from "./implements/SelectBuilder";
 import UpdateBuilder from "./implements/UpdateBuilder";
 import DeleteBuilder from "./implements/DeleteBuilder";
 import InsertBuilder from "./implements/InsertBuilder";
-import { DataTypes } from "../DDL/defineTable";
 import { QueryBuilderConfig } from "@src/types/configPicks";
+import { DataTypes } from "../DDL/abstracts/BaseFieldBuilder";
+import Schema from "../DDL/implements/Schema";
 
 class QueryBuilder {
     constructor(private config: QueryBuilderConfig) {

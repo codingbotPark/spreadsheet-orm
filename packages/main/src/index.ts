@@ -8,6 +8,6 @@ export { SpreadsheetConfig };
 
 // Types
 export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
-export type { DataTypes } from './core/DDL/defineTable';
+export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"
 export type { Credentials } from "./types/Credentials.ts"
 

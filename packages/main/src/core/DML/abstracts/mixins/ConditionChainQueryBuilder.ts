@@ -22,7 +22,7 @@ abstract class ConditionChainQueryBuilder<TypeofClass extends CtorType, QueryQue
 
     protected async getChainConditionedData():Promise<DataWithRowType[][]>{
         this.saveCurrentQueryToQueue()
-        const specifiedRanges = this.queryQueue.map((query) => this.composeRange(query.sheetName as string, this.config.sheet.DATA_STARTING_ROW))
+        const specifiedRanges = this.queryQueue.map((query) => this.config.sheet.composeRange(query.sheetName as string, this.config.sheet.DATA_STARTING_ROW))
         const dataFilters = this.makeDataFilters(specifiedRanges)
         const batchDatas = await this.fetchBatchData(this.config.spread.ID, dataFilters)
         const batchValues = this.extractValuesFromMatch(batchDatas)

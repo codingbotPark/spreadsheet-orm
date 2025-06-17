@@ -1,7 +1,6 @@
 import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import assertNotNull from "@src/types/assertType";
-import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 
 
@@ -25,7 +24,7 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             const {sheetName} = this.queryQueue[idx]
             const ranges = conditionedBatchValue.flatMap((data) => {
             const row = data.at(0) as number
-                return this.composeRange (sheetName as string, {startRow:row, endRow:row})
+                return this.config.sheet.composeRange(sheetName as string, {startRow:row, endRow:row})
             })
             return this.makeDeleteDataArr(ranges)
         }).flat()

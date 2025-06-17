@@ -42,10 +42,9 @@ class SpreadConfig{
             version:'v4',
             auth:this.authJWT
         })
-
     }
 
-    async getSpreadInfo({cached}:{cached:boolean}={cached:false}){
+    async getSpreadInfo({cached}:{cached:boolean}={cached:false}):Promise<sheets_v4.Schema$Spreadsheet>{
         if (cached && this.info) return this.info
         const spreadsheetID = this.ID
 
@@ -54,6 +53,7 @@ class SpreadConfig{
             const response = await this.API.spreadsheets.get({spreadsheetId:spreadsheetID});
             // 스프레드시트가 유효하면 response를 처리
             this.info = response.data
+            return this.info 
         } catch (error) {
             if (error instanceof GaxiosError){
                 const status = error.status
@@ -67,6 +67,7 @@ class SpreadConfig{
                     throw new Error(`Error fetching spreadsheet: ${status} - ${message}`)
                 }
             }
+            throw new Error(`Unexpected error: ${(error as Error).message}`);
         }
     }
 

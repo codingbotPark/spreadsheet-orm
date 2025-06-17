@@ -1,5 +1,4 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
-import SpreadsheetConfig from "@src/config/SpreadConfig";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
 
@@ -37,7 +36,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.targetColumn)
-            const composedRange = this.composeRange(query.sheetName!, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
+            const composedRange = this.config.sheet.composeRange(query.sheetName!, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
         const requestBody = this.makeRequestBody(compsedRanges)

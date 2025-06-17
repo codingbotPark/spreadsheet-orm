@@ -1,5 +1,6 @@
 import { sheets_v4 } from "googleapis";
 import BaseBuilder from "./BaseBuilder";
+import Schema from "@src/core/DDL/implements/Schema";
 
 
 // from, where 구현
@@ -17,7 +18,8 @@ abstract class WhereAble extends BaseBuilder{
 
     // for one get ConditionedData
     protected async getConditionedData():Promise<DataWithRowType[]>{
-        const range = this.composeRange(this.sheetName as string, this.config.sheet.DATA_STARTING_ROW)
+        
+        const range = this.config.sheet.composeRange(this.sheetName as string, this.config.sheet.DATA_STARTING_ROW)
         const dataFilters = this.makeDataFilters([range])
         const batchData = await this.fetchBatchData(this.config.spread.ID, dataFilters)
         const batchValues = this.extractValuesFromMatch(batchData)
