@@ -13,14 +13,15 @@ function defineTable<Name extends string,T extends FieldsType>(
       number: () => new NumberFieldBuilder,
       string: () => new StringFieldBuilder,
       reference: 
-      <T extends FieldsType,K extends keyof T>(schema:Schema<string, T>, fields:K) => 
-         new ReferenceFieldBuilder<T, Schema<string, T>, K>(schema, fields)
+      <T extends FieldsType>(schema:Schema<string, T>, fields:keyof T) => 
+         new ReferenceFieldBuilder<T, keyof T>(schema, fields)
    }
    const fields = builder(fieldBuilder);
 
    const orderedKeys = Object.keys(fields) as (keyof T)[];
    
-   return new Schema(sheetName, fields, orderedKeys);
+   return new Schema(sheetName, fields);
+   // return new Schema(sheetName, fields, orderedKeys);
  }
  
 export default defineTable
@@ -32,7 +33,7 @@ export interface FieldBuilder {
    date(): DateFieldBuilder;
    number(): NumberFieldBuilder;
    string(): StringFieldBuilder;
-   reference<T extends FieldsType,K extends keyof T>(schema:Schema<string, T>, fields:K) : ReferenceFieldBuilder<T, Schema<string, T>, K>;
+   reference<T extends FieldsType>(schema:Schema<string, T>, fields:keyof T) : ReferenceFieldBuilder<T, keyof T>;
 }
 
 

@@ -1,6 +1,6 @@
 
 export type DataTypes = 'string' | 'number' | 'boolean' | 'date'
-export interface FieldType<T extends DataTypes = DataTypes> {
+export interface FieldType<T extends DataTypes> {
     dataType:T
     optional?:boolean
     default?:any
@@ -26,7 +26,7 @@ abstract class BaseFieldBuilder<D extends DataTypes>{
             dataType: this.getType(),
             optional: this._optional,
             default: this._default,
-        }
+        } as const
     }
 
     abstract getType(): D

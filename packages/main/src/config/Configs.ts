@@ -3,17 +3,17 @@ import SpreadConfig, { SpreadsheetConfigOptions } from "./SpreadConfig";
 import SheetConfig, { SheetConfigOptions } from "./SheetConfig";
 import Schema from "@src/core/DDL/implements/Schema";
 
-export interface ClientOptions<T extends readonly Schema[]> extends SpreadsheetConfigOptions, SchemaConfigOptions<T>, SheetConfigOptions {}
+export interface ClientOptions extends SpreadsheetConfigOptions, SchemaConfigOptions, SheetConfigOptions {}
 
-class Configs<T extends readonly Schema[] = readonly Schema[]> {
+class Configs<T extends readonly Schema[]>{
     readonly spread: SpreadConfig
     readonly sheet: SheetConfig
     readonly schema: SchemaConfig<T>
   
-    constructor(opts: ClientOptions<T>) {
+    constructor(opts: ClientOptions & {schemas:T}) {
       this.spread = new SpreadConfig(opts)
       this.sheet = new SheetConfig(opts)
-      this.schema = new SchemaConfig<T>(opts)
+      this.schema = new SchemaConfig(opts)
     }
     
     // proxy

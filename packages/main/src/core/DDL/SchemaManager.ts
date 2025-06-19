@@ -1,7 +1,6 @@
 import { SchemaManagerConfig } from "@src/types/configPicks";
 import Schema from "./implements/Schema";
 import { ColumnSpecificationType, RowSpecificationType } from "@src/config/SheetConfig";
-import SchemaConfig, { SchemaMap, SettedSchemaConfig } from "@src/config/SchemaConfig";
 import { FieldsType } from "./defineTable";
 import Configs from "@src/config/Configs";
 
@@ -16,7 +15,7 @@ export interface SyncResult {
    errors?: string[];   // 오류 발생한 시트 이름이나 메시지
 }
 
-class SchemaManager {
+class SchemaManager<T extends readonly Schema[]> {
 
    // synchronize defined schema with spreadsheet
    async sync(syncOptions?: SyncOptions) {
@@ -82,11 +81,11 @@ class SchemaManager {
       return stable
    }
 
-   constructor(private config: SchemaManagerConfig<readonly Schema[]>) {
+   constructor(public config: SchemaManagerConfig<T>) {
    }
 
 
-   private async createSheets(schemas: Schema<FieldsType>[]) {
+   private async createSheets(schemas: Schema<string, FieldsType>[]) {
       const request = {
          spreadsheetId: this.config.spread.ID,
          resource: {
@@ -149,7 +148,7 @@ class SchemaManager {
       return result as string[][]
    }
 
-   private checkSheetHeaderStable(schema:Schema<FieldsType>, data:string[][]):boolean{
+   private checkSheetHeaderStable(schema:Schema<string, FieldsType>, data:string[][]):boolean{
       const headers = data?.at(0) ?? []
       const isHavingAllFields = headers.some((header) => !Object.hasOwn(schema.fields, header)) // check fields with name
       const result = isHavingAllFields

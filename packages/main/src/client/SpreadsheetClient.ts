@@ -13,7 +13,7 @@ spreadsheetAPI: sheets_v4.Sheets
     constructor(
         public config: ClientConfig<T>,
         public queryBuilder: QueryBuilder,
-        public schemaManager: SchemaManager
+        public schemaManager: SchemaManager<T>
     ){
         this.spreadsheetAPI = this.config.spread.API
         this.spreadsheetID = this.config.spread.ID

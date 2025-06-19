@@ -4,12 +4,13 @@ import SchemaManager from "@src/core/DDL/SchemaManager";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
 import Schema from "@src/core/DDL/implements/Schema";
 
-function createSpreadsheetClient<T extends readonly Schema[] = readonly Schema[]>
-(opts: ClientOptions<T>): SpreadsheetClient<T> {
+function createSpreadsheetClient<T extends readonly Schema[]>
+(opts: ClientOptions & {schemas:T})
+: SpreadsheetClient<T> {
     const configs = new Configs<T>(opts)
     
     const queryBuilder = new QueryBuilder(configs)
-    const schemaManager = new SchemaManager(configs)
+    const schemaManager = new SchemaManager<T>(configs)
     const client = new SpreadsheetClient(configs, queryBuilder, schemaManager)
     return client
 }

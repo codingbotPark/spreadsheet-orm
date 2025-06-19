@@ -8,7 +8,7 @@ export interface BasicQueryQueueType{
 
 // implement "and" method
 // abstract class ChainQueryBuilder<CtorParam extends new (...args: any) => any, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
-abstract class AndAble<CtorParam extends CtorType, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
+    abstract class AndAble<CtorParam extends CtorType, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
     protected abstract queryQueue:Array<QueueType>
 
     protected abstract createQueryForQueue():QueueType
