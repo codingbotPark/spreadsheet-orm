@@ -14,7 +14,7 @@ export interface SchemaConfigOptions {
 //   [K in T[number] as ExtractSchemaName<K>]: ExtractSchemaFields<K>
 // };
 
-type SchemaMap<T extends readonly Schema[]> = {
+type SchemaMap<T extends Schema[]> = {
     [K in T[number]['sheetName']]: Extract<T[number], { sheetName: K }>
 }
 
@@ -25,7 +25,7 @@ type SchemaMap<T extends readonly Schema[]> = {
 
 
 // for default Schema
-class SchemaConfig<T extends readonly Schema[]>{
+class SchemaConfig<T extends Schema[]>{
     readonly schemaList: T;
     readonly schemaMap: SchemaMap<T>;
 
@@ -59,7 +59,7 @@ class SchemaConfig<T extends readonly Schema[]>{
 
 export default SchemaConfig
 
-export interface SettedSchemaConfig<T extends readonly Schema[]> extends SchemaConfig<T> {
+export interface SettedSchemaConfig<T extends Schema[]> extends SchemaConfig<T> {
     schemaList: T;
     schemaMap: SchemaMap<T>;
   }

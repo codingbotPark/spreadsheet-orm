@@ -26,7 +26,7 @@ abstract class BaseFieldBuilder<D extends DataTypes>{
             dataType: this.getType(),
             optional: this._optional,
             default: this._default,
-        } as const
+        }
     }
 
     abstract getType(): D

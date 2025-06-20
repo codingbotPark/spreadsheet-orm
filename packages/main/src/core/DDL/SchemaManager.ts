@@ -15,7 +15,7 @@ export interface SyncResult {
    errors?: string[];   // 오류 발생한 시트 이름이나 메시지
 }
 
-class SchemaManager<T extends readonly Schema[]> {
+class SchemaManager<T extends Schema[]> {
 
    // synchronize defined schema with spreadsheet
    async sync(syncOptions?: SyncOptions) {

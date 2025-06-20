@@ -11,9 +11,9 @@ export interface Executable<ExecuteReturn>{
 
 
 // execute & has a basic spreadhseet methods
-abstract class BaseBuilder{
+abstract class BaseBuilder<T extends Schema[] = Schema[]>{
 
-    constructor(protected config:QueryBuilderConfig){
+    constructor(protected config:QueryBuilderConfig<T>){
 
     }
     // protected abstract initial

@@ -5,7 +5,7 @@ import SchemaManager from "@src/core/DDL/SchemaManager";
 import Schema from "@src/core/DDL/implements/Schema";
 
 // serve method to user 
-class SpreadsheetClient<T extends readonly Schema[]>{
+class SpreadsheetClient<T extends Schema[]>{
 spreadsheetAPI: sheets_v4.Sheets
     spreadsheetID: string
 

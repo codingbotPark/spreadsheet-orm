@@ -39,6 +39,6 @@ const spreadsheetClient = createSpreadsheetClient({
     schemas
 })
 
+spreadsheetClient.config.schema.schemaMap.cars.fields.displacement
 
-
-type Test = SchemaMap<typeof schemas>;
+  

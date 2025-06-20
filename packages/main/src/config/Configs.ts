@@ -5,7 +5,7 @@ import Schema from "@src/core/DDL/implements/Schema";
 
 export interface ClientOptions extends SpreadsheetConfigOptions, SchemaConfigOptions, SheetConfigOptions {}
 
-class Configs<T extends readonly Schema[]>{
+class Configs<T extends Schema[] = Schema[]>{
     readonly spread: SpreadConfig
     readonly sheet: SheetConfig
     readonly schema: SchemaConfig<T>

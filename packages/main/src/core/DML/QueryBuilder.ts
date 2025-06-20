@@ -6,8 +6,8 @@ import { QueryBuilderConfig } from "@src/types/configPicks";
 import { DataTypes } from "../DDL/abstracts/BaseFieldBuilder";
 import Schema from "../DDL/implements/Schema";
 
-class QueryBuilder {
-    constructor(private config: QueryBuilderConfig) {
+class QueryBuilder<T extends Schema[] = Schema[]> {
+    constructor(private config: QueryBuilderConfig<T>) {
     }
 
 
