@@ -2,8 +2,8 @@ import Schema from "@src/core/DDL/implements/Schema"
 
 type MissingSchemaStrategy = 'create' | 'ignore' | 'error'
 
-export interface SchemaConfigOptions {
-    schemas: Schema[],
+export interface SchemaConfigOptions<T extends Schema[]> {
+    schemas: T,
     onMissingSchema?: MissingSchemaStrategy
 }
 
@@ -38,7 +38,7 @@ class SchemaConfig<T extends Schema[]>{
         return schemaListSetted && schemaMapSetted
     }
 
-    constructor(options: SchemaConfigOptions & {schemas:T}) {
+    constructor(options: SchemaConfigOptions<T>) {
     // constructor(schemas: L extends Schema[]) {
         this.schemaList = options.schemas
         this.schemaMap = options.schemas && this.makeSchemaMap(options.schemas)
