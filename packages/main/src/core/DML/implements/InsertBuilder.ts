@@ -3,6 +3,7 @@ import AndAble, { BasicQueryQueueType } from "../abstracts/AndAble";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";
 import BaseBuilder from "../abstracts/BaseBuilder";
+import { SchemaMap } from "@src/config/SchemaConfig";
 
 interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
@@ -10,9 +11,9 @@ interface InsertQueueType extends BasicQueryQueueType{
 
 // class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
 class InsertBuilder<T extends Schema[]> extends BaseBuilder<T>{
-    protected sheetName?: string
+    protected sheetName?: keyof SchemaMap<T>
 
-    into(sheetName: T[number]['sheetName']) {
+    into(sheetName: keyof SchemaMap<T>) {
         return new SettedInsertBuilder(this.config, this.insertValues, sheetName)
     }
 
@@ -27,10 +28,9 @@ export default InsertBuilder
 
 class SettedInsertBuilder<T extends Schema[]> extends AndAble<typeof InsertBuilder , InsertQueueType, T>{
     protected sheetName: string;
-    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], sheetName:string){
+    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], sheetName:keyof SchemaMap<T>){
         super(config)
         this.sheetName = sheetName
-
     }
 
     protected createQueryForQueue(): InsertQueueType {

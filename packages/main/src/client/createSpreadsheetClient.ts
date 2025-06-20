@@ -9,8 +9,8 @@ function createSpreadsheetClient<T extends Schema[] = Schema[]>
 : SpreadsheetClient<T> {
     const configs = new Configs<T>(opts)
     
-    const queryBuilder = new QueryBuilder<T>(configs)
-    const schemaManager = new SchemaManager<T>(configs)
+    const queryBuilder = new QueryBuilder(configs)
+    const schemaManager = new SchemaManager(configs)
     const client = new SpreadsheetClient(configs, queryBuilder, schemaManager)
     return client
 }

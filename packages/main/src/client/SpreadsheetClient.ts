@@ -12,7 +12,7 @@ spreadsheetAPI: sheets_v4.Sheets
     // config 사용자가 수정할 수 있또록 공개하는 방안
     constructor(
         public configs: Configs<T>,
-        public queryBuilder: QueryBuilder,
+        public queryBuilder: QueryBuilder<T>,
         public schemaManager: SchemaManager<T>
     ){
         this.spreadsheetAPI = this.configs.spread.API

@@ -1,17 +1,17 @@
 // import createSpreadsheetClient from './client/createSpreadsheetClient';
 // export default createSpreadsheetClient
+// export { SpreadsheetConfig };
+
+// // Types
+// export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
+// export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"
+// export type { Credentials } from "./types/Credentials.ts"
 
 import { SchemaMap } from "dist/config/SchemaConfig";
 import createSpreadsheetClient from "./client/createSpreadsheetClient";
 import SpreadsheetConfig from "./config/SpreadConfig";
 import defineTable from "./core/DDL/defineTable";
-export default createSpreadsheetClient
-export { SpreadsheetConfig };
 
-// Types
-export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
-export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"
-export type { Credentials } from "./types/Credentials.ts"
 
 const userSchema = defineTable("user", (field) => ({
     name:field.string().build(),
@@ -29,7 +29,6 @@ const carSchema = defineTable("cars",(field) => ({
 const schemas = [userSchema, carSchema]
 type SheetNames = typeof schemas[number]["sheetName"]
 
-// ↑ 여기서 "user", "car" 키가 보이면 OK
 
 
 const spreadsheetClient = createSpreadsheetClient({
@@ -39,8 +38,10 @@ const spreadsheetClient = createSpreadsheetClient({
     schemas
 })
 
-spreadsheetClient.configs.schema.schemaMap.cars.fields.displacement
+// spreadsheetClient.configs.schema.schemaMap.cars.fields.displacement
+// // spreadsheetClient.schemaManager.config.schema.schemaMap.cars
+// spreadsheetClient.queryBuilder.config.schema.schemaMap
 
-const test3 = await spreadsheetClient.queryBuilder.insert(["string", "number", "3"])
-const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("c")
+const test3 = await spreadsheetClient.queryBuilder.insert(["string", "number", "3"]).into("cars")
+// const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("usfdf") // 이럴 떄 타입에러를 내는게 맞을까?
   

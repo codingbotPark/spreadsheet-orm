@@ -14,7 +14,7 @@ export interface SchemaConfigOptions {
 //   [K in T[number] as ExtractSchemaName<K>]: ExtractSchemaFields<K>
 // };
 
-type SchemaMap<T extends Schema[]> = {
+export type SchemaMap<T extends Schema[]> = {
     [K in T[number]['sheetName']]: Extract<T[number], { sheetName: K }>
 }
 

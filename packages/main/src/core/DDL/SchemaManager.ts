@@ -81,7 +81,7 @@ class SchemaManager<T extends Schema[]> {
       return stable
    }
 
-   constructor(public config: SchemaManagerConfig<T>) {
+   constructor(private config: SchemaManagerConfig<T>) {
    }
 
 
