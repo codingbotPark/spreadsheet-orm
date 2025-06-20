@@ -1,5 +1,5 @@
 
-export type DataTypes = 'string' | 'number' | 'boolean' | 'date'
+export type DataTypes = string | number | boolean | Date
 export interface FieldType<T extends DataTypes> {
     dataType:T
     optional?:boolean

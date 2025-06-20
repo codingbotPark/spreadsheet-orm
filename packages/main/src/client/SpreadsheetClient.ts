@@ -1,6 +1,6 @@
 import { sheets_v4 } from "googleapis";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
-import ClientConfig from "@src/config/Configs";
+import Configs from "@src/config/Configs";
 import SchemaManager from "@src/core/DDL/SchemaManager";
 import Schema from "@src/core/DDL/implements/Schema";
 
@@ -11,12 +11,12 @@ spreadsheetAPI: sheets_v4.Sheets
 
     // config 사용자가 수정할 수 있또록 공개하는 방안
     constructor(
-        public config: ClientConfig<T>,
+        public configs: Configs<T>,
         public queryBuilder: QueryBuilder,
         public schemaManager: SchemaManager<T>
     ){
-        this.spreadsheetAPI = this.config.spread.API
-        this.spreadsheetID = this.config.spread.ID
+        this.spreadsheetAPI = this.configs.spread.API
+        this.spreadsheetID = this.configs.spread.ID
     }
 
 

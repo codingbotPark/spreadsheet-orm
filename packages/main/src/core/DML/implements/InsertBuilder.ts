@@ -7,12 +7,12 @@ interface InsertQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
 }
 
-class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
-    protected sheetName?: T["sheetName"]
-    
+// class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
+class InsertBuilder<T extends Schema[] ,HasSheetName extends boolean = false> extends AndAble<typeof InsertBuilder , InsertQueueType, T>{
+    protected sheetName?: string
     protected queryQueue: InsertQueueType[] = [];
 
-    protected createQueryForQueue(this:InsertBuilder<T & {sheetName:string}>): InsertQueueType {
+    protected createQueryForQueue(this: HasSheetName extends true ? InsertBuilder<T, true> : never): InsertQueueType {
         // Implementation for creating a query for the queue
         return {
             // Example structure, adjust as needed
@@ -21,15 +21,15 @@ class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof Insert
         };
     }
 
-    into(sheetName: string) {
+    into(sheetName: T[number]['sheetName']) {
         this.sheetName = sheetName;
-        const instance = new InsertBuilder<T & {sheetName:string}>(this.config, this.insertValues)
+        const instance = new InsertBuilder<T,true>(this.config, this.insertValues)
         Object.assign(instance, this)
         return instance;
     }
 
 
-    async execute(this:InsertBuilder<T & {sheetName:string}>) {
+    async execute(this: HasSheetName extends true ? InsertBuilder<T, true> : never) {
         this.saveCurrentQueryToQueue();
 
         // append 대신 update 로 한 번에 api query 최적화 가능
@@ -50,10 +50,12 @@ class InsertBuilder<T extends {sheetName?:string}> extends AndAble<typeof Insert
     }
 
 
-    constructor(config: QueryBuilderConfig, private insertValues:DataTypes[]) {
+    constructor(config: QueryBuilderConfig<T>, private insertValues:DataTypes[]) {
         super(config);
     }
 
 }
 
 export default InsertBuilder
+
+class SettedInsertBuilder<T extends>

@@ -39,6 +39,8 @@ const spreadsheetClient = createSpreadsheetClient({
     schemas
 })
 
-spreadsheetClient.config.schema.schemaMap.cars.fields.displacement
+spreadsheetClient.configs.schema.schemaMap.cars.fields.displacement
 
+const test3 = await spreadsheetClient.queryBuilder.insert(["string", "number", "3"])
+const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("c")
   
