@@ -7,9 +7,7 @@
 // export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"
 // export type { Credentials } from "./types/Credentials.ts"
 
-import { SchemaMap } from "dist/config/SchemaConfig";
 import createSpreadsheetClient from "./client/createSpreadsheetClient";
-import SpreadsheetConfig from "./config/SpreadConfig";
 import defineTable from "./core/DDL/defineTable";
 
 
@@ -42,6 +40,8 @@ spreadsheetClient.configs.schema.schemaMap.cars.fields.displacement
 // spreadsheetClient.schemaManager.config.schema.schemaMap.cars
 // spreadsheetClient.queryBuilder.config.schema.schemaMap
 
-const test3 = await spreadsheetClient.queryBuilder.insert(["string", "number", "3"]).into("cars")
+const test3 = await spreadsheetClient.queryBuilder.insert(["string", "number", "3"]).into("cars").and(["hi"])
+// const test2 = await spreadsheetClient.queryBuilder.select(["hi"]).where()
+// const test1 = await spreadsheetClient.queryBuilder.delete()
 // const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("usfdf") // 이럴 떄 타입에러를 내는게 맞을까?
   

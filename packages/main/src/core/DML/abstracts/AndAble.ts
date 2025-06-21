@@ -1,33 +1,24 @@
 import Schema from "@src/core/DDL/implements/Schema";
 import BaseBuilder from "./BaseBuilder";
-import BuilderCtorParamType, { CtorType } from "@src/types/BuilderCtorParamType";
+import BuilderCtorParamType from "@src/types/BuilderCtorParamType";
+import { QueryBuilderConfig } from "@src/types/configPicks";
 
-export interface BasicQueryQueueType{
-    sheetName?:string
-}
 
-// implement "and" method
-// abstract class ChainQueryBuilder<CtorParam extends new (...args: any) => any, QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder{
-    abstract class AndAble<CtorParam extends CtorType, QueueType extends BasicQueryQueueType = BasicQueryQueueType, T extends Schema[] = Schema[]> extends BaseBuilder<T>{
-    protected queryQueue:Array<QueueType> = []
-    protected abstract createQueryForQueue():QueueType
-
-    and(...ctorParam:BuilderCtorParamType<CtorParam>):this{
-        // console.log(ctorParam)
-        this.saveCurrentQueryToQueue()
-        console.log("queryQueue", this.queryQueue)
-        // console.log("beforeEx", this)
-        const Constructor = this.constructor as new (...args: any[]) => this;
+// abstract class AndAble<CtorParam extends CtorType, T extends Schema[] = Schema[]> extends BaseBuilder<T>{
+abstract class AndAble<
+T extends Schema[], 
+ReturnClass extends BaseBuilder<T>, 
+RCtor extends new (config: QueryBuilderConfig<T>, ...args: any[]) => ReturnClass> 
+extends BaseBuilder<T>{
+    
+    and(...ctorParam:BuilderCtorParamType<RCtor>):ReturnClass{
+        const Constructor = this.returnClass.constructor as new (...args: any[]) => ReturnClass;
         const instance = new Constructor(this.config, ...ctorParam)
-        instance["queryQueue"] = this.queryQueue // save queryQueue
-        instance["sheetName"] = this.sheetName // save sheetName
-        // console.log("afterEx", instance)
-
         return instance
     }
 
-    protected saveCurrentQueryToQueue(){
-        this.queryQueue.push(this.createQueryForQueue())
+    constructor(config:QueryBuilderConfig<T>, private returnClass:ReturnClass){
+        super(config)
     }
 }
 

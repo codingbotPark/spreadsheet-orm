@@ -7,9 +7,9 @@ import { CtorType } from "@src/types/BuilderCtorParamType";
 export interface ConditionQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
-interface ConditionChainQueryBuilder<TypeofClass extends CtorType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends AndAble<TypeofClass, QueryQueueType>, WhereAble{}
+interface ConditionChainQueryBuilder<CtorParam extends CtorType ,QueryQueueType extends ConditionQueueType = ConditionQueueType> extends AndAble<CtorParam, T>, WhereAble{}
 
-abstract class ConditionChainQueryBuilder<TypeofClass extends CtorType, QueryQueueType extends ConditionQueueType> extends BaseBuilder{
+abstract class ConditionChainQueryBuilder<CtorParam extends CtorType, QueryQueueType extends ConditionQueueType> extends BaseBuilder{
     
     protected chainConditioning(data:string[][][]):DataWithRowType[][]{
         return data.map((rangeData, idx) => {

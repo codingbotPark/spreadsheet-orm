@@ -2,11 +2,13 @@ import { sheets_v4 } from "googleapis";
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
 import assertNotNull from "@src/types/assertType";
 import { QueryBuilderConfig } from "@src/types/configPicks";
+import Schema from "@src/core/DDL/implements/Schema";
 
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
-class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<typeof DeleteBuilder>{
-    protected sheetName?: T["sheetName"];
+class DeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof DeleteBuilder>{
+    protected sheetName?: string;
+    // protected sheetName?: T[number]['sheetName'];
     queryQueue:ConditionQueueType[] = [];
 
     protected createQueryForQueue(): ConditionQueueType {
@@ -57,10 +59,17 @@ class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         }, [])
     }
 
-    constructor(config:QueryBuilderConfig){
+    constructor(config:QueryBuilderConfig<Schema[]>){
         super(config)
+        
     }
+    // constructor(config:QueryBuilderConfig<T>){
+    //     super(config)
+    // }
 
 }
 
 export default DeleteBuilder
+
+
+// class SettedDeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof>
