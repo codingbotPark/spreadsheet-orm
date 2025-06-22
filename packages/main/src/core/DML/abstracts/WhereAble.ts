@@ -5,7 +5,7 @@ import Schema from "@src/core/DDL/implements/Schema";
 
 // from, where 구현
 // 원래 where 은 data 를 다 가져온 후 실행된다
-abstract class WhereAble extends BaseBuilder{
+abstract class WhereAble<T extends Schema[]> extends BaseBuilder<T>{
     protected filterFN?:ConditionParamTypes["filterFN"]
 
     where(param:ConditionParamTypes[keyof ConditionParamTypes]):this{

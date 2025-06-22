@@ -1,5 +1,5 @@
 import { sheets_v4 } from "googleapis";
-import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
+import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 

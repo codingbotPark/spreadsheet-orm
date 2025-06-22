@@ -6,7 +6,7 @@ export interface BasicQueryQueueType{
     sheetName?:string
 }
 
-abstract class QueryStoreAble<QueueType extends BasicQueryQueueType = BasicQueryQueueType, T extends Schema[] = Schema[]> extends BaseBuilder<T>{
+abstract class QueryStore<T extends Schema[], QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder<T>{
     protected queryQueue:Array<QueueType> = []
     protected abstract createQueryForQueue():QueueType
     // instance["queryQueue"] = this.queryQueue // save queryQueue
@@ -17,4 +17,4 @@ abstract class QueryStoreAble<QueueType extends BasicQueryQueueType = BasicQuery
 }
 
 
-export default QueryStoreAble
+export default QueryStore

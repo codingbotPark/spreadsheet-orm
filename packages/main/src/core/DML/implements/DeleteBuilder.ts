@@ -1,5 +1,5 @@
 import { sheets_v4 } from "googleapis";
-import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
+import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import assertNotNull from "@src/types/assertType";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";

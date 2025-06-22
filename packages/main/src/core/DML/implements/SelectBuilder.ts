@@ -1,4 +1,4 @@
-import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/ConditionChainQueryBuilder";
+import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
 
