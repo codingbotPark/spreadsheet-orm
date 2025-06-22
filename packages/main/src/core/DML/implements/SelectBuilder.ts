@@ -1,15 +1,32 @@
-import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
+import ConditionChainQueryBuilder, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
 import WhereableAndQueryStore from "../abstracts/mixins/WhereableAndQueryStore";
+import Schema from "@src/core/DDL/implements/Schema";
+import QueryStore from "../abstracts/QueryStore";
 
-type TargetColumnType = string[]
-type SelectQueryQueueType = {targetColumn:TargetColumnType} & ConditionQueueType
+type SelectQueryQueueType = WhereAbleQueueType & {targetColumn:string[]}
 
-class SelectBuilder<T extends {sheetName?:string}> extends WhereableAndQueryStore<T, >{
-    protected sheetName?: T["sheetName"]; // 필수
+class SelectBuilder<T extends Schema[]> extends QueryStore<T, SelectQueryQueueType>{
+    from(sheetName: T[number]['sheetName']) {
+        return new SettedSelectBuilder(this.config, this.targetColumn, sheetName)
+    }
+    
+    // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
+    constructor(config:QueryBuilderConfig<T>, protected targetColumn:string[] = []){
+        super(config)
+    }
+}
 
-    queryQueue: SelectQueryQueueType[] = [];
+export default SelectBuilder
+
+
+class SettedSelectBuilder<T extends Schema[]>
+extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
+    constructor(config:QueryBuilderConfig<T>, private targetColumn:string[], sheetName:T[number]['sheetName']){
+        super(config)
+        this.sheetName = sheetName
+    }
 
     protected createQueryForQueue(): SelectQueryQueueType {
         assertNotNull(this.sheetName)
@@ -22,15 +39,9 @@ class SelectBuilder<T extends {sheetName?:string}> extends WhereableAndQueryStor
         }
         return queryQueue
     }
-    
-    from(sheetName: string) {
-        this.sheetName = sheetName
-        const instance = new SelectBuilder<T & {sheetName:string}>(this.config, this.targetColumn)
-        Object.assign(instance, this) // copy properties
-        return instance
-    }
 
-    async execute(this:SelectBuilder<T & {sheetName:string}>){
+
+    async execute(){
         this.saveCurrentQueryToQueue()
         // console.log("queryQueue", this.queryQueue)
         const compsedRanges = this.queryQueue.map((query) => {
@@ -67,15 +78,8 @@ class SelectBuilder<T extends {sheetName?:string}> extends WhereableAndQueryStor
             }))
         }
     }
-    
-    // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
-    constructor(config:QueryBuilderConfig, protected targetColumn:TargetColumnType = []){
-        super(config)
-    }
+
 }
-
-export default SelectBuilder
-
 
 
 

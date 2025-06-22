@@ -13,31 +13,20 @@ interface InsertQueryQueueType extends BasicQueryQueueType{
 
 // class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
 class InsertBuilder<T extends Schema[]> extends QueryStore<T, InsertQueryQueueType>{
-    protected sheetName?: keyof SchemaMap<T>
-
-    into(sheetName: keyof SchemaMap<T>) {
+    into(sheetName: T[number]['sheetName']) {
         return new SettedInsertBuilder(this.config, this.insertValues, sheetName)
     }
 
     constructor(config: QueryBuilderConfig<T>, private insertValues:DataTypes[]) {
         super(config);
     }
-
-    protected createQueryForQueue(): InsertQueryQueueType {
-        return {
-            sheetName:this.sheetName,
-            insertValues:this.insertValues
-        };
-    }
-
 }
 export default InsertBuilder
 
 
 
 class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, InsertBuilder<T>, InsertQueryQueueType>{
-    protected sheetName: string;
-    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], sheetName:keyof SchemaMap<T>){
+    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], sheetName:T[number]['sheetName']){
         super(config)
         this.sheetName = sheetName
     }

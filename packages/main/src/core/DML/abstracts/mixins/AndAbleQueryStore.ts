@@ -37,7 +37,6 @@ abstract class AndAbleQueryStore
     protected saveCurrentQueryToQueue(){
         this.queryQueue.push(this.createQueryForQueue())
     }
-
     
     constructor(
         config: QueryBuilderConfig<T>,

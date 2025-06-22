@@ -17,7 +17,7 @@ abstract class BaseBuilder<T extends Schema[] = Schema[]>{
 
     }
     // protected abstract initial
-    protected abstract sheetName?:string
+    protected sheetName?:T[number]['sheetName']
     // protected sheetName?:string
 
 
