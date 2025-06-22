@@ -6,7 +6,7 @@ import QueryStoreAble, { BasicQueryQueueType } from "../QueryStore";
 import Schema from "@src/core/DDL/implements/Schema";
 import AndAbleQueryStore from "./AndAbleQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
-import { BuilderConstructor } from "@src/types/BuilderCtorParamType";
+import { BuilderConstructor } from "@src/types/BuilderCtorTypes";
 
 export interface WhereAbleQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
@@ -14,14 +14,12 @@ export interface WhereAbleQueueType extends ConditionParamTypes, BasicQueryQueue
 interface WhereableAndQueryStore
 <T extends Schema[], 
 NextClass extends QueryStoreAble<T, QueryQueueType> ,
-ReturnCtor extends BuilderConstructor<T, NextClass>, 
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType,
-> extends AndAbleQueryStore<T, NextClass, ReturnCtor, QueryQueueType>, WhereAble<T>{}
+> extends AndAbleQueryStore<T, NextClass, QueryQueueType>, WhereAble<T>{}
 
 abstract class WhereableAndQueryStore
 <T extends Schema[], 
 NextClass extends QueryStoreAble<T, QueryQueueType>,
-ReturnCtor extends BuilderConstructor<T, NextClass>,
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType>
 extends BaseBuilder<T>{
 

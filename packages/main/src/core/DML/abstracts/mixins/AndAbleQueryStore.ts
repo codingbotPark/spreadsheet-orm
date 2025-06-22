@@ -1,5 +1,5 @@
 import Schema from "@src/core/DDL/implements/Schema";
-import BuilderCtorParamType, { BuilderConstructor } from "@src/types/BuilderCtorParamType";
+import BuilderCtorParamType, { BuilderConstructor, ExtractConstructor } from "@src/types/BuilderCtorTypes";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import BaseBuilder from "../BaseBuilder";
 import QueryStore, { BasicQueryQueueType } from "../QueryStore";
@@ -10,14 +10,12 @@ import WhereAble from "../WhereAble";
 interface AndAbleQueryStore
 <T extends Schema[],
 NextClass extends QueryStore<T, QueryQueueType>,
-ReturnCtor extends BuilderConstructor<T, NextClass>,
 QueryQueueType extends BasicQueryQueueType
-> extends AndAble<T, NextClass, ReturnCtor>, QueryStore<T, QueryQueueType>{}
+> extends AndAble<T, NextClass>, QueryStore<T, QueryQueueType>{}
 
 abstract class AndAbleQueryStore
     <T extends Schema[],
     NextClass extends QueryStore<T, QueryQueueType>,
-    ReturnCtor extends BuilderConstructor<T, NextClass>, 
     QueryQueueType extends BasicQueryQueueType,
     > extends BaseBuilder<T>{
         
@@ -29,7 +27,7 @@ abstract class AndAbleQueryStore
       target['queryQueue'] = this.queryQueue
     }
     
-    and(...ctorParam:BuilderCtorParamType<ReturnCtor>):NextClass{
+    and(...ctorParam:BuilderCtorParamType<ExtractConstructor<NextClass>>):NextClass{
         this.saveCurrentQueryToQueue()
         const instance = this.makeNextInstance(...ctorParam)
         this.inheritState(instance)

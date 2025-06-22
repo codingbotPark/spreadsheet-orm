@@ -2,6 +2,11 @@ import Schema from "@src/core/DDL/implements/Schema";
 import BaseBuilder from "@src/core/DML/abstracts/BaseBuilder";
 import { QueryBuilderConfig } from "./configPicks";
 
+
+export type ExtractConstructor<T> = T extends BaseBuilder<infer U> 
+? BuilderConstructor<U, T> 
+: never;
+
 export type Tail<T extends any[]> = T extends [any, ...infer Rest] ? Rest : never;
 type BuilderCtorParamType<T extends CtorType> = Tail<ConstructorParameters<T>> // remove first param(config)
 export default BuilderCtorParamType

@@ -1,11 +1,12 @@
 import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
+import WhereableAndQueryStore from "../abstracts/mixins/WhereableAndQueryStore";
 
 type TargetColumnType = string[]
 type SelectQueryQueueType = {targetColumn:TargetColumnType} & ConditionQueueType
 
-class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<typeof SelectBuilder>{
+class SelectBuilder<T extends {sheetName?:string}> extends WhereableAndQueryStore<T, >{
     protected sheetName?: T["sheetName"]; // 필수
 
     queryQueue: SelectQueryQueueType[] = [];
@@ -74,5 +75,7 @@ class SelectBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
 }
 
 export default SelectBuilder
+
+
 
 

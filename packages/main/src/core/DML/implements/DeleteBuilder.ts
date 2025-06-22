@@ -3,10 +3,11 @@ import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mix
 import assertNotNull from "@src/types/assertType";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";
+import WhereableAndQueryStore from "../abstracts/mixins/WhereableAndQueryStore";
 
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
-class DeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof DeleteBuilder>{
+class DeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, >{
     protected sheetName?: string;
     // protected sheetName?: T[number]['sheetName'];
     queryQueue:ConditionQueueType[] = [];
@@ -72,4 +73,4 @@ class DeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeo
 export default DeleteBuilder
 
 
-// class SettedDeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof>
+class SettedDeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof>
