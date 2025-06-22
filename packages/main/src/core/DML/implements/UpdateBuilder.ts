@@ -1,33 +1,34 @@
 import { sheets_v4 } from "googleapis";
-import  ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
+import QueryStore from "../abstracts/QueryStore";
+import WhereableAndQueryStore, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
+import Schema from "@src/core/DDL/implements/Schema";
 
-export type InputValueType = DataTypes[] | {[key:string]:DataTypes}
-interface UpdateQueueType extends ConditionQueueType{
-    updateValues:InputValueType
+export type UpdateValueType = DataTypes[] | {[key:string]:DataTypes}
+interface UpdateQueryQueueType extends WhereAbleQueueType{
+    updateValues:UpdateValueType
 }
 
-class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<typeof UpdateBuilder>{
-    protected sheetName?: T["sheetName"];
-    queryQueue: UpdateQueueType[] = [];
-
-    protected createQueryForQueue(this:UpdateBuilder<T & {sheetName:string}>): UpdateQueueType {
-        return {
-            ...this.getCurrentCondition(),
-            sheetName:this.sheetName,
-            updateValues:this.updateValues
-        }
-    }
-
+class UpdateBuilder<T extends Schema[]> extends QueryStore<T, UpdateQueryQueueType>{
     from(sheetName: string) {
-        this.sheetName = sheetName;
-        const instance = new UpdateBuilder<T & {sheetName:string}>(this.config, this.updateValues)
-        Object.assign(instance, this)
-        return instance; // Ensure method chaining
+        return new SettedUpdateBuilder(this.config, this.updateValues, sheetName)
+    }
+    
+    constructor(config:QueryBuilderConfig<T>, private updateValues:UpdateValueType){
+        super(config)
+    }
+}
+
+export default UpdateBuilder
+
+class SettedUpdateBuilder<T extends Schema[]>
+extends WhereableAndQueryStore<T, UpdateBuilder<T>, UpdateQueryQueueType>{
+    constructor(config:QueryBuilderConfig<T>, private updateValues:UpdateValueType, sheetName:T[number]['sheetName']){
+        super(config)
     }
 
-    async execute(this: UpdateBuilder<T & {sheetName:string}>) {
+    async execute() {
         const conditionedBatchValues = await this.getChainConditionedData()
 
         const updateDataArr = conditionedBatchValues.map((conditionedBatchValue, idx) => {
@@ -53,13 +54,18 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         if (response.status !== 200) throw Error("error")
         return response.data.totalUpdatedRows
     }
-    
-    constructor(config:QueryBuilderConfig, private updateValues:InputValueType){
-        super(config)
+
+    protected createQueryForQueue(): UpdateQueryQueueType {
+        return {
+            ...this.getCurrentCondition(),
+            sheetName:this.sheetName,
+            updateValues:this.updateValues
+        }
     }
 
+
     // and 를 위해 수정 필요
-    private makeUpdateDataArr(ranges:string[], values:InputValueType):sheets_v4.Schema$DataFilterValueRange[]{
+    private makeUpdateDataArr(ranges:string[], values:UpdateValueType):sheets_v4.Schema$DataFilterValueRange[]{
 
         if (Array.isArray(values)){
             return ranges.reduce((updateDataArr:sheets_v4.Schema$DataFilterValueRange[] ,range) => {
@@ -77,6 +83,5 @@ class UpdateBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBu
         // 객체일 땐, matchColumnWithDefine 을 DDL과 추가하기
         return []
     }
-}
 
-export default UpdateBuilder
+}

@@ -1,26 +1,41 @@
 import { sheets_v4 } from "googleapis";
-import ConditionChainQueryBuilder, { ConditionQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import assertNotNull from "@src/types/assertType";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";
-import WhereableAndQueryStore from "../abstracts/mixins/WhereableAndQueryStore";
+import QueryStore from "../abstracts/QueryStore";
+import WhereableAndQueryStore, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
-class DeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, >{
-    protected sheetName?: string;
-    // protected sheetName?: T[number]['sheetName'];
-    queryQueue:ConditionQueueType[] = [];
+class DeleteBuilder<T extends Schema[]> extends QueryStore<T, WhereAbleQueueType>{
+    from(sheetName: T[number]['sheetName']){
+        return new SettedDeleteBuilder(this.config, sheetName)
+    }
 
-    protected createQueryForQueue(): ConditionQueueType {
+    constructor(config:QueryBuilderConfig<T>){
+        super(config)
+    }
+}
+
+export default DeleteBuilder
+
+
+class SettedDeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, DeleteBuilder<T>>{
+    constructor(config:QueryBuilderConfig<T>, sheetName:T[number]['sheetName']){
+        super(config)
+        this.sheetName = sheetName
+    }
+
+    protected createQueryForQueue(): WhereAbleQueueType {
         assertNotNull(this.sheetName)
         return {
             sheetName:this.sheetName,
             filterFN:this.filterFN,
         }
     }
-    
-    async execute(this:DeleteBuilder<T & {sheetName:string}>) {
+
+
+    async execute() {
         const conditionedBatchValues = await this.getChainConditionedData()
 
         const deleteDataArr = conditionedBatchValues.map((conditionedBatchValue,idx) => {
@@ -42,13 +57,7 @@ class DeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, >{
         return response.data.clearedRanges
 
     }
-
-    from(sheetName: string){
-        this.sheetName = sheetName;
-        const instance = new DeleteBuilder<T & {sheetName:string}>(this.config)
-        Object.assign(instance,this)
-        return instance; // Ensure method chaining
-    }
+    
 
     // and 를 위해 수정 필요
     private makeDeleteDataArr(ranges:string[]){
@@ -59,18 +68,4 @@ class DeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, >{
             return deleteDataArr
         }, [])
     }
-
-    constructor(config:QueryBuilderConfig<Schema[]>){
-        super(config)
-        
-    }
-    // constructor(config:QueryBuilderConfig<T>){
-    //     super(config)
-    // }
-
 }
-
-export default DeleteBuilder
-
-
-class SettedDeleteBuilder<T extends Schema[]> extends ConditionChainQueryBuilder<typeof>
