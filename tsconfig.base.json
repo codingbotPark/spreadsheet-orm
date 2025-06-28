@@ -3,12 +3,18 @@
       "baseUrl": ".",
       "resolveJsonModule": true,
       "rootDirs": ["packages"],
+      "composite": true,
       "declaration": true,
+      "declarationMap": true,
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
       "paths":{
         "@pcakges/spreadsheet-orm":["packages/spreadsheet-orm/dist"]
       }
     },
     "references": [
-      { "path": "./packages/main" }
+      { "path": "./packages/main" },
+      { "path": "./packages/test" }
     ]
   }

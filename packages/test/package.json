@@ -5,7 +5,8 @@
     "description": "Test suite for spreadsheet-orm",
     "scripts": {
         "test": "jest",
-        "start": "tsx index.ts"
+        "start": "tsx index.ts",
+        "dev": "tsx watch index.ts"
     },
     "dependencies": {
         "jest": "^27.0.0",
@@ -16,5 +17,11 @@
         "tsx": "^4.19.2"
     },
     "packageManager": "yarn@4.5.3",
-    "type": "module"
+    "type": "module",
+    "compilerOptions": {
+        "paths": {
+          "spreadsheet-orm": ["../main/src/index.ts"],
+          "spreadsheet-orm/*": ["../main/src/*"]
+        }
+      }
 }

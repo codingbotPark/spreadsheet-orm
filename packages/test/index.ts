@@ -1,27 +1,32 @@
-// import createSpreadsheetClient, { Credentials } from "../main/dist"
-import createSpreadsheetClient,{ Credentials } from "spreadsheet-orm"
-import credentials from "./security/credentials.json"
-import defineTable, { InferTableType } from "spreadsheet-orm/src/core/DDL/defineTable"
+import createSpreadsheetClient, { Credentials, defineTable, fieldBuilder, FieldBuilder } from "spreadsheet-orm"
+import credentials from "./security/credentials.json" with {type:"json"}
 
 const connectionParameters:Credentials = credentials
+
+
+const userSchema = defineTable("user", {
+    name:fieldBuilder
+})
+
+const carSchema = defineTable("cars",(field:FieldBuilder) => ({
+    name:field.string().build(),
+    displacement:field.number().build(),
+    forKey:field.reference(userSchema, "age").build(),
+}))
+
+// type Car = InferTableType<typeof carSchema.fields>
+
+const schemas = [userSchema, carSchema]
+type SheetNames = typeof schemas[number]["sheetName"]
+
+// ↑ 여기서 "user", "car" 키가 보이면 OK
+
 const spreadsheetClient = createSpreadsheetClient({
     email:connectionParameters.client_email,
     privateKey:connectionParameters.private_key,
-    spreadsheetID:connectionParameters.spreadsheetID
+    spreadsheetID:connectionParameters.spreadsheetID,
+    // schemas
 })
-
-const testSchema = defineTable("cars",(field) => ({
-    name:field.string(),
-    displacement:field.number()
-}))
-testSchema.sheetName
-
-
-type Car = InferTableType<typeof testSchema.fields>
-function addCar(car:Car){
-    
-}
-
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
 // console.log(tt)
@@ -42,3 +47,8 @@ console.log(result)
 // const test4 = await spreadsheetClient.queryBuilder.delete().where((data) => data[2] === "Bruno").execute()
 // const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data) => data[2] === "2").execute()
 // console.log(result4)
+// 1. 타입 선언
+// 1. Person 타입
+
+// 1. Person 클래스 정의
+// 메타데이터용 타입

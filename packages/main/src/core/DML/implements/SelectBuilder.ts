@@ -42,8 +42,9 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
 
     async execute(){
+        console.log("select executed")
+        console.log("queryQueue", this.queryQueue)
         this.saveCurrentQueryToQueue()
-        // console.log("queryQueue", this.queryQueue)
         const compsedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)

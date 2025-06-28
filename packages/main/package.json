@@ -12,12 +12,7 @@
     "query-builder"
   ],
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md"
-  ],
+
   "packageManager": "yarn@4.5.3",
   "dependencies": {
     "gaxios": "^6.7.1",
@@ -41,14 +36,18 @@
     "dev": "nodemon --exec tsx src/index.ts",
     "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "source":"./src/index.ts",
+        "types": "./dist/index.d.ts"
       }
     }
   },
+  "files": ["dist"],
   "type": "module",
   "repository": {
     "type": "git",

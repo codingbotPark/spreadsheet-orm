@@ -3,7 +3,7 @@ import Schema from "@src/core/DDL/implements/Schema"
 type MissingSchemaStrategy = 'create' | 'ignore' | 'error'
 
 export interface SchemaConfigOptions<T extends Schema[]> {
-    schemas: T,
+    schemas?: T,
     onMissingSchema?: MissingSchemaStrategy
 }
 
@@ -26,8 +26,8 @@ export type SchemaMap<T extends Schema[]> = {
 
 // for default Schema
 class SchemaConfig<T extends Schema[]>{
-    readonly schemaList: T;
-    readonly schemaMap: SchemaMap<T>;
+    readonly schemaList?: T;
+    readonly schemaMap?: SchemaMap<T>;
 
     missingSchemaStrategy:MissingSchemaStrategy // for specific option for schema
     readonly DEFAULT_MISSING_STRATEGY: MissingSchemaStrategy = 'create'

@@ -15,6 +15,7 @@ class QueryBuilder<T extends Schema[] = Schema[]> {
         return new InsertBuilder(this.config,insertValues)
     }
     
+    // select(targetColumn?:string[]){
     select(targetColumn?:string[]){
         return new SelectBuilder(this.config, targetColumn)
     }   
