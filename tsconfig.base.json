@@ -9,10 +9,11 @@
       "target": "esnext",
       "module": "esnext",
       "moduleResolution": "node",
-      "paths":{
-        "@pcakges/spreadsheet-orm":["packages/spreadsheet-orm/dist"]
-      }
-    },
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "esModuleInterop": true,
+      "strict": true,
+      },
     "references": [
       { "path": "./packages/main" },
       { "path": "./packages/test" }

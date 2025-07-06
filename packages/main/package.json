@@ -24,16 +24,17 @@
     "@babel/preset-env": "^7.26.8",
     "@babel/preset-typescript": "^7.26.0",
     "esbuild": "^0.25.0",
-    "nodemon": "^3.1.9",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
   "scripts": {
     "clean": "rm -rf tsconfig.build.tsbuildinfo && rm -rf dist",
-    "bundle": "yarn node esbuild.config.js",
-    "build": "yarn run clean && tsc -p tsconfig.build.json && yarn run bundle",
+    "build:js": "yarn node esbuild.config.js",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build": "yarn run clean && yarn run build:js && yarn run build:types",
     "start": "tsx src/index.ts",
-    "dev": "nodemon --exec tsx src/index.ts",
+    "dev": "npm run build:js -- --watch",
+    "dev:types": "npm run build:types -- --watch",
     "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
   },
   "main": "dist/index.js",
@@ -41,11 +42,12 @@
   "source": "src/index.ts",
   "exports": {
     ".": {
-      "import": {
-        "source":"./src/index.ts",
-        "types": "./dist/index.d.ts"
-      }
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./src/*": "./src/*",
+    "./dist/*": "./dist/*"
   },
   "files": ["dist"],
   "type": "module",

@@ -1,3 +1,4 @@
+import { SchemaMap } from "@src/config/SchemaConfig";
 import { ColumnSpecificationType } from "@src/config/SheetConfig";
 import Schema from "@src/core/DDL/implements/Schema";
 import { QueryBuilderConfig } from "@src/types/configPicks";
@@ -24,16 +25,17 @@ abstract class BaseBuilder<T extends Schema[] = Schema[]>{
 
 
 
-    protected specifyColumn(columnNames:string[]):ColumnSpecificationType{
-        const defaultColumns = { startColumn: null, endColumn: null } 
+    protected specifyColumn(columnNames:(keyof SchemaMap<T>)[]):ColumnSpecificationType{
+        // schema 가 설정 안 됐을 때
+        const schemaMap = this.config.schema.schemaMap
+        if (!schemaMap) return {}
 
-        // DDL이함들어와야함
-        return defaultColumns
-        if (!dummyDefinedColumn) return defaultColumns
-
-        const columnSpecification = columnNames.reduce((columnSpecification: ColumnSpecificationType, columnName: string) => {
-            const targetColumn = dummyDefinedColumn[columnName]?.column;
-
+        const specifiedColumns = columnNames.reduce((columnSpecification: ColumnSpecificationType, columnName) => {
+            const targetColumn = schemaMap[columnName].fields
+            // const targetColumn = dummyDefinedColumn[columnName]?.column;
+            if (!(columnName in schemaMap)){
+                return columnSpecification;
+            }
             if (!targetColumn) return columnSpecification; // targetColumn이 없으면 그대로 리턴
             
             const { startColumn, endColumn } = columnSpecification;
@@ -48,7 +50,7 @@ abstract class BaseBuilder<T extends Schema[] = Schema[]>{
               startColumn: targetColumn < startColumn ? targetColumn : startColumn,
               endColumn: targetColumn > endColumn ? targetColumn : endColumn
             };
-          }, defaultColumns);
+          }, {});
 
 
         return columnSpecification

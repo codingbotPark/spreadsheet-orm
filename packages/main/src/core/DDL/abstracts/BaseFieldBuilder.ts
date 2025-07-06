@@ -2,6 +2,7 @@
 export type DataTypes = string | number | boolean | Date
 export interface FieldType<T extends DataTypes> {
     dataType:T
+    column?:string
     optional?:boolean
     default?:any
  }

@@ -7,8 +7,8 @@ import Schema from "@src/core/DDL/implements/Schema";
 function createSpreadsheetClient<T extends Schema[] = Schema[]>
 (opts: ClientOptions<T>)
 : SpreadsheetClient<T> {
-    const configs = new Configs<T>(opts)
     
+    const configs = new Configs(opts)
     const queryBuilder = new QueryBuilder(configs)
     const schemaManager = new SchemaManager(configs)
     const client = new SpreadsheetClient(configs, queryBuilder, schemaManager)

@@ -6,23 +6,23 @@ import QueryStoreAble, { BasicQueryQueueType } from "../QueryStore";
 import Schema from "@src/core/DDL/implements/Schema";
 import AndAbleQueryStore from "./AndAbleQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
-import { BuilderConstructor } from "@src/types/BuilderCtorTypes";
 
 export interface WhereAbleQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
 interface WhereableAndQueryStore
 <T extends Schema[], 
-NextClass extends QueryStoreAble<T, QueryQueueType> ,
+NextClass extends QueryStoreAble<T, WhereAbleQueueType> ,
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType,
-> extends AndAbleQueryStore<T, NextClass, QueryQueueType>, WhereAble<T>{}
+> extends AndAbleQueryStore<T, NextClass, WhereAbleQueueType>, WhereAble<T>{}
 
 abstract class WhereableAndQueryStore
 <T extends Schema[], 
-NextClass extends QueryStoreAble<T, QueryQueueType>,
+NextClass extends QueryStoreAble<T, WhereAbleQueueType>,
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType>
 extends BaseBuilder<T>{
-
+    protected queryQueue:Array<QueryQueueType> = []
+    
     protected inheritState(target:NextClass){
         target['sheetName'] = this.sheetName
         target['queryQueue'] = this.queryQueue
@@ -46,6 +46,10 @@ extends BaseBuilder<T>{
         const indexedBatchValues = batchValues.map((batchValue) => this.indexingBatchData(batchValue))
         const conditionedBatchValues = indexedBatchValues.map((indexedBatchValue, idx) => this.conditioning(indexedBatchValue, this.queryQueue[idx]))
         return conditionedBatchValues
+    }
+
+    constructor(config:QueryBuilderConfig<T>){
+        super(config)
     }
 
 

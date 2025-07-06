@@ -4,11 +4,16 @@ import Schema from "./implements/Schema"
 
 export default function defineTable<Name extends string,T extends FieldsType>(
    sheetName: Name,
-   builder: (field: FieldBuilder) => T | T,
-   keyOrder?:(keyof T)[]
+   builder: ((field: FieldBuilder) => T) | T,
+   // keyOrder?:(keyof T)[]
  ): Schema<Name, T> { // SchemaType에 제네릭 추가
 
-   const fields = builder(fieldBuilder);
+   let fields:T
+   if (typeof builder === "function"){
+      fields = builder(fieldBuilder);
+   } else {
+      fields = builder
+   }
 
    const orderedKeys = Object.keys(fields) as (keyof T)[];
    

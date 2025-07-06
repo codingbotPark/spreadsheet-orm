@@ -5,8 +5,8 @@
     "description": "Test suite for spreadsheet-orm",
     "scripts": {
         "test": "jest",
-        "start": "tsx index.ts",
-        "dev": "tsx watch index.ts"
+        "test:build": "USE_BUILD=true npm run test",
+        "start": "tsx index.ts"
     },
     "dependencies": {
         "jest": "^27.0.0",

@@ -58,8 +58,12 @@ class SheetConfig {
     composeRange(
         sheetName: string,
         row: RowSpecificationType | number,
-        specifiedColumn: ColumnSpecificationType = { startColumn: 'A', endColumn: 'ZZZ' }
+        specifiedColumn: ColumnSpecificationType
     ): string {
+        const settedSpecifiedColumn = { // set with default value
+            ...{startColumn:'A', endColumn:'ZZZ'},
+            ...specifiedColumn
+        }
         const isNumber = typeof row === 'number';
         const startRow = isNumber ? row : row.startRow;
         const endRow = isNumber ? '' : (row.endRow ?? row.startRow);
@@ -116,8 +120,8 @@ export interface ParsedRange {
 
 
 export interface ColumnSpecificationType {
-    startColumn: string | null,
-    endColumn: string | null
+    startColumn?: string,
+    endColumn?: string
 }
 export interface RowSpecificationType {
     startRow: number,

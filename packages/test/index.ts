@@ -5,7 +5,8 @@ const connectionParameters:Credentials = credentials
 
 
 const userSchema = defineTable("user", {
-    name:fieldBuilder
+    name:fieldBuilder.string().build(),
+    age:fieldBuilder.number().build()
 })
 
 const carSchema = defineTable("cars",(field:FieldBuilder) => ({

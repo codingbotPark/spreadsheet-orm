@@ -13,9 +13,12 @@
         "@security/*":["security/*"],
         "spreadsheet-orm":["../main/src"],
         "spreadsheet-orm/*":["../main/src/*"],
+        "@core/*": ["../main/src/*"],
+        "@core": ["../main/src/index.ts"],
+        "@core-built/*": ["../main/dist/*"],
+        "@core-built": ["../main/dist/index.js"]
       },
       "composite": true,
-      "noEmit": true
     },
     "ts-node": {
       "esm": true
@@ -24,9 +27,11 @@
       "index.ts",
       "fixtures/**/*",
       "integration/**/*",
-      "unit/**/*",    
+      "unit/**/*",
+      "src/**/*", 
+      "../main/src/**/*",
     ],
     "references": [
-      {"path": "../main"}
+      { "path": "../main" }
     ]
   }

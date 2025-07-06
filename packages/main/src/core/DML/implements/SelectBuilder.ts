@@ -1,7 +1,6 @@
-import ConditionChainQueryBuilder, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import assertNotNull from "@src/types/assertType";
-import WhereableAndQueryStore from "../abstracts/mixins/WhereableAndQueryStore";
+import WhereableAndQueryStore, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import Schema from "@src/core/DDL/implements/Schema";
 import QueryStore from "../abstracts/QueryStore";
 
@@ -45,14 +44,15 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
         console.log("select executed")
         console.log("queryQueue", this.queryQueue)
         this.saveCurrentQueryToQueue()
-        const compsedRanges = this.queryQueue.map((query) => {
+        const composedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.targetColumn)
-            const composedRange = this.config.sheet.composeRange(query.sheetName!, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
+            const composedRange = this.config.sheet.composeRange(query.sheetName, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
-        const requestBody = this.makeRequestBody(compsedRanges)
+        console.log("composedRanges",composedRanges)
+        const requestBody = this.makeRequestBody(composedRanges)
         console.log("requestBody",requestBody)
 
         const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
