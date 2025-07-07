@@ -5,7 +5,7 @@ class Schema<Name extends string = string, T extends FieldsType = FieldsType>{
     constructor(
         public sheetName:Name,
         public fields:T,
-        // public orderedKeys: (keyof T)[]
+        public orderedKeys: (keyof T)[]
     ){}
 }
 

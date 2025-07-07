@@ -1,14 +1,16 @@
 
 export type DataTypes = string | number | boolean | Date
-export interface FieldType<T extends DataTypes> {
+interface NotColumnedFieldType<T extends DataTypes>{
     dataType:T
-    column?:string
     optional?:boolean
     default?:any
+}
+export interface FieldType<T extends DataTypes> extends NotColumnedFieldType<T>{
+    columnOrder:number
  }
- 
 
-abstract class BaseFieldBuilder<D extends DataTypes>{
+
+abstract class BaseFieldBuilder<T extends DataTypes>{
     private _optional:boolean = false
     private _default:any = undefined
 
@@ -22,7 +24,7 @@ abstract class BaseFieldBuilder<D extends DataTypes>{
         return this
     }
 
-    build(): FieldType<D> {
+    build(): NotColumnedFieldType<T> {
         return {
             dataType: this.getType(),
             optional: this._optional,
@@ -30,7 +32,7 @@ abstract class BaseFieldBuilder<D extends DataTypes>{
         }
     }
 
-    abstract getType(): D
+    abstract getType(): T
 }
 
 export default BaseFieldBuilder

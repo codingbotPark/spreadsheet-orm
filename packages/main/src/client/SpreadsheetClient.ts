@@ -1,25 +1,19 @@
 import { sheets_v4 } from "googleapis";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
-import Configs from "@src/config/Configs";
 import SchemaManager from "@src/core/DDL/SchemaManager";
 import Schema from "@src/core/DDL/implements/Schema";
+import Configs, { ConfigsWithSchemas } from "@src/config/Configs";
 
-// serve method to user 
-class SpreadsheetClient<T extends Schema[]>{
-spreadsheetAPI: sheets_v4.Sheets
+export class SpreadsheetClientWithoutSchemas{
+    spreadsheetAPI: sheets_v4.Sheets
     spreadsheetID: string
-
-    // config 사용자가 수정할 수 있또록 공개하는 방안
     constructor(
-        public configs: Configs<T>,
-        public queryBuilder: QueryBuilder<T>,
-        public schemaManager?: SchemaManager<T>
+        public configs:Configs<Schema[]>,
+        public queryBuilder:QueryBuilder  
     ){
         this.spreadsheetAPI = this.configs.spread.API
         this.spreadsheetID = this.configs.spread.ID
     }
-
-
     query(): QueryBuilder;
     query(sql: string, values: [string | number]): Promise<void>
     query(sql?: string): Promise<any>
@@ -36,9 +30,14 @@ spreadsheetAPI: sheets_v4.Sheets
         //     range:"class!A1:B3"
         // })
     }
-
-    
 }
 
-
-export default SpreadsheetClient
+export class SpreadsheetClientWithSchemas<T extends Schema[]> extends SpreadsheetClientWithoutSchemas{
+    constructor(
+        public configs: ConfigsWithSchemas<T>,
+        public queryBuilder: QueryBuilder<T>,
+        public schemaManager: SchemaManager<T>
+    ){
+        super(configs,queryBuilder)
+    }
+}

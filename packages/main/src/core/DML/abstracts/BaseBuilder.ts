@@ -1,5 +1,6 @@
 import { SchemaMap } from "@src/config/SchemaConfig";
 import { ColumnSpecificationType } from "@src/config/SheetConfig";
+import { FieldsType } from "@src/core/DDL/defineTable";
 import Schema from "@src/core/DDL/implements/Schema";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import { sheets_v4 } from "googleapis";
@@ -22,38 +23,37 @@ abstract class BaseBuilder<T extends Schema[] = Schema[]>{
     // protected sheetName?:string
 
 
+    // columnNames 배열에 있는 columnName 들을 모두 가져올 수 있는 column range
+    protected specifyColumn(sheetName:(keyof SchemaMap<T>), columnNames:(keyof T[number]['fields'])[]):ColumnSpecificationType{
+        if (!this.config.schema.isSchemaSetted() || columnNames.length === 0) {
+            return {};
+        }
 
+        const schema = this.config.schema.schemaMap[sheetName];
+        if (!schema) {
+            return {};
+        }
 
+        const columnNumbers = columnNames
+            .map(columnName => {
+                const field = schema.fields[columnName as string];
+                return field ? field.columnOrder + // 순서가 곧 column 위치
+                this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) 
+                : null;
+            })
+            .filter((num): num is number => num !== null);
 
-    protected specifyColumn(columnNames:(keyof SchemaMap<T>)[]):ColumnSpecificationType{
-        // schema 가 설정 안 됐을 때
-        const schemaMap = this.config.schema.schemaMap
-        if (!schemaMap) return {}
+        if (columnNumbers.length === 0) {
+            return {};
+        }
 
-        const specifiedColumns = columnNames.reduce((columnSpecification: ColumnSpecificationType, columnName) => {
-            const targetColumn = schemaMap[columnName].fields
-            // const targetColumn = dummyDefinedColumn[columnName]?.column;
-            if (!(columnName in schemaMap)){
-                return columnSpecification;
-            }
-            if (!targetColumn) return columnSpecification; // targetColumn이 없으면 그대로 리턴
-            
-            const { startColumn, endColumn } = columnSpecification;
+        const minColumn = Math.min(...columnNumbers);
+        const maxColumn = Math.max(...columnNumbers);
 
-            // 초기값 설정
-            if (!startColumn || !endColumn) {
-              return { startColumn: targetColumn, endColumn: targetColumn };
-            }
-        
-            // startColumn, endColumn 업데이트
-            return {
-              startColumn: targetColumn < startColumn ? targetColumn : startColumn,
-              endColumn: targetColumn > endColumn ? targetColumn : endColumn
-            };
-          }, {});
-
-
-        return columnSpecification
+        return {
+            startColumn: this.config.sheet.numberToColumn(minColumn),
+            endColumn: this.config.sheet.numberToColumn(maxColumn),
+        };
     }
 
     protected extractValuesFromMatch(matchedValueRange: sheets_v4.Schema$MatchedValueRange[]): string[][][]{

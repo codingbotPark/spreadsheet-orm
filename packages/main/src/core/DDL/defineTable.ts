@@ -5,8 +5,9 @@ import Schema from "./implements/Schema"
 export default function defineTable<Name extends string,T extends FieldsType>(
    sheetName: Name,
    builder: ((field: FieldBuilder) => T) | T,
-   // keyOrder?:(keyof T)[]
+   keyOrder?:(keyof T)[]
  ): Schema<Name, T> { // SchemaType에 제네릭 추가
+
 
    let fields:T
    if (typeof builder === "function"){
@@ -14,11 +15,21 @@ export default function defineTable<Name extends string,T extends FieldsType>(
    } else {
       fields = builder
    }
-
-   const orderedKeys = Object.keys(fields) as (keyof T)[];
    
-   return new Schema(sheetName, fields);
-   // return new Schema(sheetName, fields, orderedKeys);
+   // set column attr
+   const filedsKeys = Object.keys(fields) as (keyof T)[];
+   const keyOrderSet = new Set<keyof T>(keyOrder) // add key order param first
+   for (const key of filedsKeys){
+      keyOrderSet.add(key)
+   }
+   const orederedKeys = [...keyOrderSet]
+   orederedKeys.forEach((key,idx) => { // set in Field attr
+      fields[key].columnOrder = idx + 1
+   })
+   console.log(sheetName,"orederedKeys",orederedKeys)
+   
+   // return new Schema(sheetName, fields);
+   return new Schema(sheetName, fields, orederedKeys);
  }
 
 export interface FieldBuilder {

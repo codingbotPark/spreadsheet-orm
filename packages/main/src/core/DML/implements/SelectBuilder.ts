@@ -47,7 +47,7 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
         const composedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
-            const specifiedColumn = this.specifyColumn(query.targetColumn)
+            const specifiedColumn = this.specifyColumn(query.sheetName ,query.targetColumn)
             const composedRange = this.config.sheet.composeRange(query.sheetName, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
