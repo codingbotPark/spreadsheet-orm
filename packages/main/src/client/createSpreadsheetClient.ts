@@ -9,7 +9,7 @@ function createSpreadsheetClient<T extends Schema[]>(opts: ClinetOptionsWithSche
 function createSpreadsheetClient<T extends Schema[]>(opts: ClientOptionsWithoutSchemas | ClinetOptionsWithSchemas<T>) {
     let clinet:SpreadsheetClientWithSchemas<T> | SpreadsheetClientWithoutSchemas
     if (opts.schemas){
-        const configs = new ConfigsWithSchemas(opts)
+        const configs = new ConfigsWithSchemas(opts as ClinetOptionsWithSchemas<T>)
         clinet = new SpreadsheetClientWithSchemas(
             configs,
             new QueryBuilder(configs),
