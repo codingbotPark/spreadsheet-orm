@@ -84,7 +84,7 @@ class SheetConfig {
         return result;
     }
 
-    columnToNumber(column: string): number {
+    columnToNumber(column: string): number { // a = 1
         let result = 0;
         const upper = column.toUpperCase();
 
