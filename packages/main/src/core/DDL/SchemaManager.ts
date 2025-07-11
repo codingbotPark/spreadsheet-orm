@@ -6,9 +6,11 @@ import Configs from "@src/config/Configs";
 import { DataTypes } from "./abstracts/BaseFieldBuilder";
 import { google, sheets_v4, toolresults_v1beta3 } from "googleapis";
 import { SchemaMap } from "@src/config/SchemaConfig";
+import { eventarc } from "googleapis/build/src/apis/eventarc";
+import { SchemaValidator } from "./implements/SchemaValidator";
 
 
-export type SyncModeType = "strict" | "smart" | "force"
+export type SyncModeType = "strict" | "smart" | "force" | "clean"
 export interface SyncOptions {
    mode:SyncModeType
 }
@@ -65,30 +67,30 @@ class SchemaManager<T extends Schema[]> {
       }
 
       // 기본 unstableSchema 에는 missing으로 생성, 최종적으로 생성되지 않은 요소
-      const unstableSchemaSet = new Set(...missingSheetNames)
+      const unstableSchemaSet = new Set(missingSheetNames)
       // existing = schemaList - missing
       const existingSchemas = this.config.schema.schemaList.filter((schema) => !unstableSchemaSet.has(schema.sheetName))
 
+      await this.updateSheetIDStore()
+
       // write Schema logic
       // write schema as possible as(existing)
-      if (syncOptions.mode === "force") {
+      if (syncOptions.mode === "clean") {
+         const requests = await this.makeClearAndWriteRequest(existingSchemas)
+         await this.config.spread.API.spreadsheets.batchUpdate({
+            spreadsheetId:this.config.spread.ID,
+            requestBody:{requests}
+         })
          result.written = existingSchemas.map((schema) => schema.sheetName)
-         await Promise.all(existingSchemas.map((schema) => this.writeSchema(schema)));
          return result
-      }  
+      } 
       
       // checking existing Sheets stable & create empty schema
       // to use cached sheetIDStore in check methods
-      await this.updateSheetIDStore()
-      const existingSchemaStableReports = await Promise.all(
-         existingSchemas.map((schema) => {
-         const stableReport =  this.checkSchemaStable(schema)
-         return stableReport
-      })
-      )
+      const existingSchemaStableReports = await Promise.all(existingSchemas.map((schema) => this.checkSchemaValidation(schema, this.config)))
 
       // strict <-> smart => fixable실행 차이
-      const [stableReport, fixableReport, unstableReport] = existingSchemaStableReports.reduce<[SchemaStableReport[], SchemaStableReport[], SchemaStableReport[]]>(
+      const [stableReports, fixableReports, unstableReports] = existingSchemaStableReports.reduce<[SchemaStableReport[], SchemaStableReport[], SchemaStableReport[]]>(
       (acc, report) => {
          const [stable, fixable, unstable] = acc;
          if (report.stable) {
@@ -101,29 +103,57 @@ class SchemaManager<T extends Schema[]> {
          return acc;
       }, [[], [], []]);
       
-      if (unstableReport.length) {
-         result.errors = unstableReport.map((report) => report.schema.sheetName)
-         throw("sheets already have data")
-      }
-      if (syncOptions.mode === "smart"){
-         // fixing header first(because when fixReuqest made, it based with resultHeader position)
-         const allFixRequest = fixableReport.flatMap((report) => [...report.headerValidReport.fixRequest, ...report.contentValidReport.fixRequest])
-         Boolean(allFixRequest.length) && await this.config.spread.API.spreadsheets.batchUpdate({
-            spreadsheetId:this.config.spread.ID,
-            requestBody:{
-               requests:allFixRequest
-            }
-         })
-         result.fixed = fixableReport.map((report) => report.schema.sheetName)
-         stableReport.concat(...fixableReport)
-      }
-   
 
-      await Promise.all(stableReport.map((report) => this.writeSchema(report.schema)))
-      result.written = stableReport.map((report) => report.schema.sheetName)
+      if (unstableReports.length) {
+         if (syncOptions.mode === "force"){
+            const unstablSchemas = unstableReports.map((report) => report.schema)
+            const requests = await this.makeClearAndWriteRequest(unstablSchemas)
+            await this.config.spread.API.spreadsheets.batchUpdate({
+               spreadsheetId:this.config.spread.ID,
+               requestBody:{requests}
+            })
+            result.written.concat(unstablSchemas.map((schema) => schema.sheetName))
+         } else {
+            result.errors = unstableReports.map((report) => report.schema.sheetName)
+            throw("unstable")
+         }
+      }
+      if (fixableReports.length){ 
+         // force = unstable + fixable
+         // smart = fixable only
+         if (syncOptions.mode === "smart" || syncOptions.mode === "force"){
+            const allFixRequest = fixableReports.flatMap((report) => [...report.fixRequest.dataSetting, ...report.fixRequest.columnMoving, ...report.fixRequest.headerSetting])
+            Boolean(allFixRequest.length) && await this.config.spread.API.spreadsheets.batchUpdate({
+               spreadsheetId:this.config.spread.ID,
+               requestBody:{
+                  requests:allFixRequest
+               }
+            })
+            result.fixed = fixableReports.map((report) => report.schema.sheetName)
+         }
+      }
+      if (stableReports.length){
+         const emptySheetSchemas = stableReports.filter((report) => report.fixable).map((report) => report.schema)
+         if (emptySheetSchemas.length){
+            const writeSchemaRequests = await Promise.all(emptySheetSchemas.map((schema) => this.makeWriteSchemaRequest(schema)))
    
+            await this.config.spread.API.spreadsheets.batchUpdate({
+               spreadsheetId:this.config.spread.ID,
+               requestBody:{requests:writeSchemaRequests}
+            })
+            result.written.concat(emptySheetSchemas.map(schema => schema.sheetName)) 
+         }
+      }
 
       return result
+   }
+
+   private async checkSchemaValidation(schema:Schema, config:SchemaManagerConfig<T>){
+      const data = await this.getSpecifiedSheetData(schema) // 기본적으로 데이터가 있는 부분까지 가져오게 된다
+      const sheetId = await this.getSchemaID(schema.sheetName, true) // !using cached 
+      const headers = data.at(0) ?? []
+      const validator = new SchemaValidator(schema, sheetId, data, config)
+      return validator.validate()
    }
 
 
@@ -140,93 +170,6 @@ class SchemaManager<T extends Schema[]> {
       const lastIndex = reversedIndex === -1 ? 0 : rows.length - reversedIndex;
       return rows.slice(0, lastIndex);
    }
-
-   async checkSchemaStable(schema: Schema):Promise<SchemaStableReport> {
-      const data = await this.getSpecifiedSheetData(schema) // 기본적으로 데이터가 있는 부분까지 가져오게 된다
-      const sheetId = await this.getSchemaID(schema.sheetName, true) // !using cached 
-      const headers = data.at(0) ?? []
-      const workingHeaders = [...headers]
-      const evaluableRows = this.removeNonEvaluableRows(data.slice(this.config.sheet.DEFAULT_COLUMN_NAME_SIZE))
-
-      const schemaStableReport:SchemaStableReport = {
-         stable:true,
-         fixable:undefined,
-         fieldsStatus:Object.keys(schema.orderedColumns),
-         fixRequest:{
-            // columnMoving은 에서 위치가 변경되기 때문에 dataSet -> columnMove -> columnSet 순서로 fixRequest가 사용되어야 함
-            dataSetting:[], // default값 등을 설정하는 경우
-            columnMoving:[], // header위치가 지정된 것과 다른 경우
-            columnSetting:[], // 해당 컬럼의 header 및 데이터가 빈 경우, moving할 때 actual이 존재할 수 있기 때문에 moving이 끝난 후 지정
-         },
-         schema
-      }
-
-      schema.orderedColumns.forEach((definedField, targetIdx) => {
-         const actualFieldIdx = workingHeaders.indexOf(definedField)
-         if (actualFieldIdx < 0){ // 못 찾았을 때
-            // move가 끝난 후 set가능 여부를 확인하기 위해 recording
-            schemaStableReport.stable = false
-            schemaStableReport.fieldsStatus[targetIdx] = null
-         }
-
-         // 찾았을 땐 값 확인
-         if (schema.fields[definedField].optional === false && !this.isColumnFullyFilled(evaluableRows, actualFieldIdx)){ // required인 필드가 비어있을 떄
-            schemaStableReport.fixable = false
-            schemaStableReport.stable = false
-            schemaStableReport.fieldsStatus[targetIdx] = false
-         } 
-         if (schema.fields[definedField].default !== undefined && !this.isColumnFullyFilled(evaluableRows, actualFieldIdx)){
-            schemaStableReport.fixable = schemaStableReport.fixable ?? true
-            const columnDataRowsForm:sheets_v4.Schema$RowData[] = evaluableRows.map((row) => {
-               let value = null
-               if (row[actualFieldIdx].trim() === ""){
-                  value = schema.fields[definedField].default
-               } else {
-                  value = row[actualFieldIdx]
-               }
-               return {values:[{userEnteredValue:{stringValue:value}}]}
-            })
-            const startRowIndex = this.config.sheet.DATA_STARTING_ROW - 1 
-            const columnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) - 1 + actualFieldIdx 
-            schemaStableReport.fixRequest.dataSetting.push({
-               updateCells:{
-                  range:{
-                     sheetId,
-                     startRowIndex:startRowIndex, // index 1 => 2번째 행부터
-                     endRowIndex:startRowIndex + columnDataRowsForm.length,
-                     startColumnIndex:columnIndex, // 0 ->열A열
-                     endColumnIndex:columnIndex + 1 // 열은 하나만 변경하기 때문
-                  },
-                  rows:columnDataRowsForm,
-                  fields: "userEnteredValue"
-               }
-            })
-         }
-
-         if (actualFieldIdx !== targetIdx && schemaStableReport.fieldsStatus[targetIdx]){ // 실제 위치와 다르지만, 옮길 수 있을 때(값에 문제가 없을때때)
-            const ColumnRecordingIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) - 1
-             schemaStableReport.fixRequest.columnMoving.push({
-               moveDimension:{
-                  source:{
-                     sheetId,
-                     dimension:'COLUMNS',
-                     startIndex:ColumnRecordingIndex + actualFieldIdx,
-                     endIndex:ColumnRecordingIndex + actualFieldIdx + 1
-                  },
-                  destinationIndex:ColumnRecordingIndex + targetIdx
-               }
-             })  
-             schemaStableReport.fixable = schemaStableReport.fixable ?? true
-             
-             const [moved] = workingHeaders.splice(actualFieldIdx, 1);
-             workingHeaders.splice(targetIdx, 0, moved);
-         }
-
-      })
-
-      return schemaStableReport
-   }
-
 
    constructor(private config: SchemaManagerConfig<T>) {
    }
@@ -261,8 +204,37 @@ class SchemaManager<T extends Schema[]> {
       return response.data.replies
    }
 
-   private async writeSchema(schema:Schema) {
-
+   private async makeWriteSchemaRequest(schema:Schema):Promise<sheets_v4.Schema$Request> {
+      const sheetId = await this.getSchemaID(schema.sheetName, true)
+      const startRowIndex = this.config.sheet.DATA_STARTING_ROW - 1
+      const startColumnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) - 1
+      return {updateCells:{
+            range: {
+              sheetId, // 숫자 ID
+              startRowIndex: startRowIndex, // A2이면 1 (0-based)
+              endRowIndex: startRowIndex + 1,
+              startColumnIndex: startColumnIndex,
+              endColumnIndex: startColumnIndex + schema.orderedColumns.length
+            },
+            rows: [{values:schema.orderedColumns.map((column) => ({userEnteredValue:{stringValue:column}}))}],
+            fields: 'userEnteredValue'
+      }}
+   }
+   private async makeClearSheetRequest(schema:Schema):Promise<sheets_v4.Schema$Request>{
+      const sheetId = await this.getSchemaID(schema.sheetName, true)
+      return {
+         updateCells: {
+           range: {
+             sheetId,
+           },
+           fields: '*' // 모든 필드 삭제 (값 + 포맷 포함)
+         }
+       }
+   }
+   private async makeClearAndWriteRequest(schemaList:Schema[]){
+      const clearSchemaRequests =  await Promise.all(schemaList.map((schema) => this.makeClearSheetRequest(schema)))
+      const writeSchemaRequests = await Promise.all(schemaList.map((schema) => this.makeWriteSchemaRequest(schema)))
+      return [...clearSchemaRequests, ...writeSchemaRequests]
    }
 
 
@@ -318,8 +290,8 @@ type SchemaStableReport = {
    fixRequest:{
       // dataSetting:sheets_v4.Schema$Request[], // default값 등을 설정하는 경우
       dataSetting:sheets_v4.Schema$Request[], // default값 등을 설정하는 경우
-      columnSetting:sheets_v4.Schema$Request[], // 해당 컬럼의 header 및 데이터가 빈 경우
       columnMoving:sheets_v4.Schema$Request[], // header위치가 지정된 것과 다른 경우
+      headerSetting:sheets_v4.Schema$Request[], // 해당 컬럼의 header 및 데이터가 빈 경우
    },
    schema:Schema
 }
