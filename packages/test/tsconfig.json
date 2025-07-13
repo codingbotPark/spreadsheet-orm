@@ -11,7 +11,7 @@
       "paths": {
         "@fixtures/*": ["fixtures/*"],
         "@security/*":["security/*"],
-        "spreadsheet-orm":["../main/src"],
+        "spreadsheet-orm":["../main/src/index.ts"],
         "spreadsheet-orm/*":["../main/src/*"],
         "@core/*": ["../main/src/*"],
         "@core": ["../main/src/index.ts"],

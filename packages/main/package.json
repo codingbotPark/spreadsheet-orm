@@ -32,7 +32,7 @@
     "build:js": "yarn node esbuild.config.js",
     "build:types": "tsc -p tsconfig.build.json",
     "build": "yarn run clean && yarn run build:js && yarn run build:types",
-    "start": "tsx src/index.ts",
+    "start": "tsx --tsconfig tsconfig.json src/index.ts",
     "dev": "npm run build:js -- --watch",
     "dev:types": "npm run build:types -- --watch",
     "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
@@ -40,17 +40,18 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
+  "files": ["dist"],
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./src/*": "./src/*",
-    "./dist/*": "./dist/*"
+      "import": {
+        "development": "./src/index.ts",
+        "default": "./dist/index.js"
+      },
+      "require": "./dist/index.js"
+    }
   },
-  "files": ["dist"],
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/codingbotPark/spreadsheet-orm.git"

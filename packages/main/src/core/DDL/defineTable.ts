@@ -1,43 +1,49 @@
-import { DataTypes, FieldType } from "./abstracts/BaseFieldBuilder"
+import { DataTypes, FieldType, NotColumnedFieldType } from "./abstracts/BaseFieldBuilder"
 import { BoooleanFieldBuilder, DateFieldBuilder, NumberFieldBuilder, ReferenceFieldBuilder, StringFieldBuilder } from "./implements/fieldBuilders"
 import Schema from "./implements/Schema"
 
-export default function defineTable<Name extends string,T extends FieldsType>(
+export default function defineTable<Name extends string, T extends NotColumnedFieldsType>(
    sheetName: Name,
    builder: ((field: FieldBuilder) => T) | T,
-   columnOrder?:(keyof T)[]
- ): Schema<Name, T> { // SchemaType에 제네릭 추가
-
-
-   let fields:T
-   if (typeof builder === "function"){
+   columnOrder?: (keyof T)[]
+) {
+   let fields: T; // Explicitly type fields as NotColumnedFieldsType
+   if (typeof builder === "function") {
       fields = builder(fieldBuilder);
    } else {
-      fields = builder
+      fields = builder;
    }
-   
-   // set column attr
-   const filedsNames = Object.keys(fields) as (keyof T)[];
-   const columnOrderSet = new Set<keyof T>(columnOrder) // add key order param first
-   for (const key of filedsNames){
-      columnOrderSet.add(key)
+
+   // Determine the final order of columns
+   const fieldNames = Object.keys(fields) as (keyof T)[];
+   const columnOrderSet = new Set<keyof T>(columnOrder);
+   for (const key of fieldNames) {
+      columnOrderSet.add(key);
    }
-   const orderedColumns = [...columnOrderSet]
-   orderedColumns.forEach((key,idx) => { // set in Field attr
-      fields[key].columnOrder = idx + 1
-   })
-   console.log(sheetName,"orederedKeys",orderedColumns)
-   
-   // return new Schema(sheetName, fields);
-   return new Schema(sheetName, fields, orderedColumns);
- }
+   const orderedColumns = [...columnOrderSet];
+
+   // Create the new FieldsType object with columnOrder
+   // const fieldsWithOrder = {} as Record<, FieldType<T[keyof T]['dataType']>>
+   const fieldsWithOrder = {} as {[K in keyof T]: FieldType<T[K]['dataType']>;}
+   orderedColumns.forEach((key, idx) => {
+      const notColumnedField = fields[key];
+      fieldsWithOrder[key] = {
+         ...notColumnedField,
+         columnOrder: idx + 1
+      }
+   });
+
+   console.log(sheetName, "orderedKeys", orderedColumns);
+
+   return new Schema(sheetName, fieldsWithOrder, orderedColumns); // Cast fieldsWithOrder to ColumnizeFields<T>
+}
 
 export interface FieldBuilder {
    boolean(): BoooleanFieldBuilder;
    date(): DateFieldBuilder;
    number(): NumberFieldBuilder;
    string(): StringFieldBuilder;
-   reference<T extends FieldsType>(schema:Schema<string, T>, fields:keyof T) : ReferenceFieldBuilder<T, keyof T>;
+   reference<T extends FieldsType, Key extends keyof T>(schema:Schema<string, T>, field:Key) : ReferenceFieldBuilder<T, Key, T[Key]['dataType']>;
 }
 export const fieldBuilder: FieldBuilder = {
    boolean: () => new BoooleanFieldBuilder,
@@ -45,9 +51,11 @@ export const fieldBuilder: FieldBuilder = {
    number: () => new NumberFieldBuilder,
    string: () => new StringFieldBuilder,
    reference: 
-   <T extends FieldsType>(schema:Schema<string, T>, fields:keyof T) => 
-      new ReferenceFieldBuilder<T, keyof T>(schema, fields)
+   <T extends FieldsType, Key extends keyof T>(schema:Schema<string, T>, field:Key) => 
+      new ReferenceFieldBuilder<T, Key, T[Key]['dataType']>(schema, field)
 }
+
+export type NotColumnedFieldsType = Record<string,NotColumnedFieldType<DataTypes>>;
 export type FieldsType = Record<string,FieldType<DataTypes>>; 
 
 
@@ -65,3 +73,13 @@ export type InferTableType<T extends FieldsType> = {
     : InferFieldType<T[K]['dataType']>;
    };
 
+
+function toFieldType<D extends DataTypes>(
+   field: NotColumnedFieldType<D>,
+   order: number
+   ): FieldType<D> {
+   return {
+      ...field,
+      columnOrder: order
+   };
+   }

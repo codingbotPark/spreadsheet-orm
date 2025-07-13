@@ -6,7 +6,8 @@
     "scripts": {
         "test": "jest",
         "test:build": "USE_BUILD=true npm run test",
-        "start": "tsx index.ts"
+        "start": "NODE_ENV=development tsx --tsconfig tsconfig.json index.ts",
+        "start:build": "NODE_ENV=production tsx --tsconfig tsconfig.json index.ts"
     },
     "dependencies": {
         "jest": "^27.0.0",
@@ -17,11 +18,5 @@
         "tsx": "^4.19.2"
     },
     "packageManager": "yarn@4.5.3",
-    "type": "module",
-    "compilerOptions": {
-        "paths": {
-          "spreadsheet-orm": ["../main/src/index.ts"],
-          "spreadsheet-orm/*": ["../main/src/*"]
-        }
-      }
+    "type": "module"
 }

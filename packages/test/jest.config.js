@@ -1,33 +1,32 @@
+const useBuilt = process.env.USE_BUILT === 'true';
+
 export default {
-    preset: 'ts-jest/presets/default-esm',
-    extensionsToTreatAsEsm: ['.ts'],
-    testEnvironment: 'node',
-    roots: ['<rootDir>/src'],
-    testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
-    moduleNameMapping: {
-      // 환경변수로 소스/빌드 코드 전환
-      '^@core/(.*)$': process.env.USE_BUILT 
-        ? '<rootDir>/../core/dist/$1'
-        : '<rootDir>/../core/src/$1',
-      '^@core$': process.env.USE_BUILT
-        ? '<rootDir>/../core/dist/index.js'
-        : '<rootDir>/../core/src/index.ts'
-    },
-    transform: {
-      '^.+\\.ts$': ['ts-jest', {
-        useESM: true,
-        tsconfig: {
-          module: 'ESNext',
-          target: 'ESNext',
-          moduleResolution: 'bundler',
-          allowImportingTsExtensions: true
-        }
-      }]
-    },
-    collectCoverageFrom: [
-      '../core/src/**/*.ts',
-      '!../core/src/**/*.d.ts',
-      '!../core/src/**/*.test.ts',
-      '!../core/src/**/*.spec.ts'
-    ]
-  };
+  preset: 'ts-jest/presets/default-esm',
+  extensionsToTreatAsEsm: ['.ts'],
+  testEnvironment: 'node',
+  roots: ['<rootDir>'], 
+  testMatch: [
+    '**/__tests__/**/*.ts',
+    '**/?(*.)+(spec|test).ts',
+    './index.ts'
+  ],
+  moduleNameMapper: {
+    // Dynamically map based on USE_BUILT env var
+    '^spreadsheet-orm$': useBuilt
+      ? '<rootDir>/../main/dist/index.js'
+      : '<rootDir>/../main/src/index.ts',
+    '^spreadsheet-orm/(.*)$': useBuilt
+      ? '<rootDir>/../main/dist/$1'
+      : '<rootDir>/../main/src/$1',
+  },
+  transform: {
+    '^.+\.ts$': ['ts-jest', {
+      useESM: true,
+      tsconfig: 'tsconfig.json' // Explicitly use the tsconfig.json in the test package
+    }]
+  },
+  collectCoverageFrom: [
+    '../main/src/**/*.ts',
+    '!../main/src/**/*.d.ts',
+  ]
+};

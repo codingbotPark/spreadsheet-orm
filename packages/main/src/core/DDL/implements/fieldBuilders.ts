@@ -28,17 +28,18 @@ export class DateFieldBuilder extends BaseFieldBuilder<'date'>{
 }
 
 export class ReferenceFieldBuilder<
-Fields extends FieldsType,
-  Key extends keyof Fields
-> extends BaseFieldBuilder<Fields[Key]['dataType']> {
+  RefSchemaFields extends FieldsType,
+  RefKey extends keyof RefSchemaFields,
+  RefType extends DataTypes = RefSchemaFields[RefKey]['dataType']
+> extends BaseFieldBuilder<RefType> {
   constructor(
-    private schema: Schema<string, Fields>,
-    private field:Key
+    private refSchema: Schema<string, RefSchemaFields>,
+    private field: RefKey
   ) {
     super();
   }
 
-  getType(): Fields[Key]['dataType'] {
-    return this.schema.fields[this.field].dataType;
+  getType(): RefType{
+    return this.refSchema.fields[this.field].dataType as RefType;
   }
 }

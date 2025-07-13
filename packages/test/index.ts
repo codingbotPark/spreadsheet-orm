@@ -6,7 +6,7 @@ const connectionParameters:Credentials = credentials
 
 const userSchema = defineTable("user", {
     name:fieldBuilder.string().build(),
-    age:fieldBuilder.number().build()
+    age:fieldBuilder.number().build(),
 })
 
 const carSchema = defineTable("cars",(field:FieldBuilder) => ({
@@ -18,15 +18,12 @@ const carSchema = defineTable("cars",(field:FieldBuilder) => ({
 // type Car = InferTableType<typeof carSchema.fields>
 
 const schemas = [userSchema, carSchema]
-type SheetNames = typeof schemas[number]["sheetName"]
-
-// ↑ 여기서 "user", "car" 키가 보이면 OK
 
 const spreadsheetClient = createSpreadsheetClient({
     email:connectionParameters.client_email,
     privateKey:connectionParameters.private_key,
     spreadsheetID:connectionParameters.spreadsheetID,
-    // schemas
+    schemas
 })
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()

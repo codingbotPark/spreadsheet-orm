@@ -1,6 +1,6 @@
 
 export type DataTypes = string | number | boolean | Date
-interface NotColumnedFieldType<T extends DataTypes>{
+export interface NotColumnedFieldType<T extends DataTypes>{
     dataType:T
     optional?:boolean
     default?:any
