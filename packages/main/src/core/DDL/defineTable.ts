@@ -73,13 +73,3 @@ export type InferTableType<T extends FieldsType> = {
     : InferFieldType<T[K]['dataType']>;
    };
 
-
-function toFieldType<D extends DataTypes>(
-   field: NotColumnedFieldType<D>,
-   order: number
-   ): FieldType<D> {
-   return {
-      ...field,
-      columnOrder: order
-   };
-   }

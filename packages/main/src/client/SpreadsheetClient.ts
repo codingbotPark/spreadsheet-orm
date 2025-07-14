@@ -2,18 +2,20 @@ import { sheets_v4 } from "googleapis";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
 import SchemaManager from "@src/core/DDL/SchemaManager";
 import Schema from "@src/core/DDL/implements/Schema";
-import Configs, { ConfigsWithSchemas } from "@src/config/Configs";
+import Configs from "@src/config/Configs";
 
-export class SpreadsheetClientWithoutSchemas{
+class SpreadsheetClient<T extends Schema[]>{
     spreadsheetAPI: sheets_v4.Sheets
     spreadsheetID: string
     constructor(
-        public configs:Configs<Schema[]>,
-        public queryBuilder:QueryBuilder  
+        public configs: Configs<T>,
+        public queryBuilder: QueryBuilder<T>,
+        public schemaManager: SchemaManager<T>
     ){
         this.spreadsheetAPI = this.configs.spread.API
         this.spreadsheetID = this.configs.spread.ID
     }
+
     query(): QueryBuilder;
     query(sql: string, values: [string | number]): Promise<void>
     query(sql?: string): Promise<any>
@@ -32,12 +34,4 @@ export class SpreadsheetClientWithoutSchemas{
     }
 }
 
-export class SpreadsheetClientWithSchemas<T extends Schema[]> extends SpreadsheetClientWithoutSchemas{
-    constructor(
-        public configs: ConfigsWithSchemas<T>,
-        public queryBuilder: QueryBuilder<T>,
-        public schemaManager: SchemaManager<T>
-    ){
-        super(configs,queryBuilder)
-    }
-}
+export default SpreadsheetClient

@@ -3,7 +3,7 @@ export type DataTypes = string | number | boolean | Date
 export interface NotColumnedFieldType<T extends DataTypes>{
     dataType:T
     optional?:boolean
-    default?:any
+    default?:T
 }
 export interface FieldType<T extends DataTypes> extends NotColumnedFieldType<T>{
     columnOrder:number

@@ -1,29 +1,37 @@
-import createSpreadsheetClient, { Credentials, defineTable, fieldBuilder, FieldBuilder } from "spreadsheet-orm"
+import createSpreadsheetClient, { Credentials, defineTable, fieldBuilder } from "spreadsheet-orm"
 import credentials from "./security/credentials.json" with {type:"json"}
 
 const connectionParameters:Credentials = credentials
 
-
-const userSchema = defineTable("user", {
+const userSchemaFields = {
     name:fieldBuilder.string().build(),
     age:fieldBuilder.number().build(),
-})
+}
 
-const carSchema = defineTable("cars",(field:FieldBuilder) => ({
-    name:field.string().build(),
-    displacement:field.number().build(),
-    forKey:field.reference(userSchema, "age").build(),
-}))
+const userSchema = defineTable("user", userSchemaFields)
+
+const carSchemaFieldsd = {
+    name:fieldBuilder.string().build(),
+    displacement:fieldBuilder.number().build(),
+    // forKey:fieldBuilder.reference(userSchema, "age").build(),
+}
+
+const carSchema = defineTable("cars",carSchemaFieldsd) 
+// const carSchema = defineTable("cars",(field:FieldBuilder) => ({
+//     name:field.string().build(),
+//     displacement:field.number().build(),
+//     forKey:field.reference(userSchema, "age").build(),
+// })) 
 
 // type Car = InferTableType<typeof carSchema.fields>
 
-const schemas = [userSchema, carSchema]
+const schemas = [userSchema, carSchema];
 
 const spreadsheetClient = createSpreadsheetClient({
-    email:connectionParameters.client_email,
-    privateKey:connectionParameters.private_key,
-    spreadsheetID:connectionParameters.spreadsheetID,
-    schemas
+    // email:connectionParameters.client_email,
+    // privateKey:connectionParameters.private_key,
+    // spreadsheetID:connectionParameters.spreadsheetID,
+    schemas,
 })
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()

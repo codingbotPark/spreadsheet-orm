@@ -128,7 +128,7 @@ export class SchemaValidator<T extends Schema[]> {
       const columnDataRowsForm: sheets_v4.Schema$RowData[] = this.evaluableRows.map((row) => {
          let value = row[actualFieldIdx];
          if ((value ?? "").trim() === "") {
-            value = this.schema.fields[definedField].default;
+            value = (this.schema.fields[definedField].default)?.toString() ?? "";
          }
          return { values: [{ userEnteredValue: { stringValue: value } }] };
       });

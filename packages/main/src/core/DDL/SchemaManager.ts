@@ -39,8 +39,6 @@ class SchemaManager<T extends Schema[]> {
    async sync(syncOptions: SyncOptions = {
       mode:"strict"
    }) {
-      if(!this.config.schema.isSchemaSetted()) return
-
       const result: SyncResult = {
          created: [],
          skipped: [],

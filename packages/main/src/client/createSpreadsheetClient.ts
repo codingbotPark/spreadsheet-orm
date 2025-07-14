@@ -1,27 +1,18 @@
 import SchemaManager from "@src/core/DDL/SchemaManager";
 import QueryBuilder from "@src/core/DML/QueryBuilder";
 import Schema from "@src/core/DDL/implements/Schema";
-import Configs, { ClientOptionsWithoutSchemas, ClinetOptionsWithSchemas, ConfigsWithSchemas } from "@src/config/Configs";
-import { SpreadsheetClientWithoutSchemas, SpreadsheetClientWithSchemas } from "./SpreadsheetClient";
+import Configs, { ClinetOptions } from "@src/config/Configs";
+import SpreadsheetClient from "./SpreadsheetClient";
 
-function createSpreadsheetClient(opts: ClientOptionsWithoutSchemas):SpreadsheetClientWithoutSchemas
-function createSpreadsheetClient<T extends Schema[]>(opts: ClinetOptionsWithSchemas<T>):SpreadsheetClientWithSchemas<T>
-function createSpreadsheetClient<T extends Schema[]>(opts: ClientOptionsWithoutSchemas | ClinetOptionsWithSchemas<T>) {
-    let clinet:SpreadsheetClientWithSchemas<T> | SpreadsheetClientWithoutSchemas
-    if (opts.schemas){
-        const configs = new ConfigsWithSchemas(opts as ClinetOptionsWithSchemas<T>)
-        clinet = new SpreadsheetClientWithSchemas(
-            configs,
-            new QueryBuilder(configs),
-            new SchemaManager(configs)
-        )
-    } else {
-        const configs = new Configs(opts)        
-        clinet = new SpreadsheetClientWithoutSchemas(
-            configs,
-            new QueryBuilder(configs)
-        )
-    }
+
+function createSpreadsheetClient<T extends Schema[]>(opts: ClinetOptions<T>):SpreadsheetClient<T> {
+// function createSpreadsheetClient<T extends Schema[]>(opts: {schemas:T}):SpreadsheetClient<T> {
+    const config = new Configs(opts) // car
+    const clinet = new SpreadsheetClient( // road
+        config,
+        new QueryBuilder(config),
+        new SchemaManager(config)
+    )
 
     return clinet
 }
