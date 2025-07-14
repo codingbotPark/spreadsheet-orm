@@ -9,6 +9,7 @@ export interface FieldType<T extends DataTypes> extends NotColumnedFieldType<T>{
     columnOrder:number
  }
 
+  
 
 abstract class BaseFieldBuilder<T extends DataTypes>{
     private _optional:boolean = false

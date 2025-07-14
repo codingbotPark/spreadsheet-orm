@@ -28,18 +28,27 @@ const carSchema = defineTable("cars",carSchemaFieldsd)
 const schemas = [userSchema, carSchema];
 
 const spreadsheetClient = createSpreadsheetClient({
+    privateKey:connectionParameters.private_key,
+    email:connectionParameters.client_email,
+    spreadsheetID:connectionParameters.spreadsheetID,
+    schemas:schemas
+})
+spreadsheetClient.configs.schema.schemaMap.cars
+// const spreadsheetClient = createSpreadsheetClient(
     // email:connectionParameters.client_email,
     // privateKey:connectionParameters.private_key,
     // spreadsheetID:connectionParameters.spreadsheetID,
-    schemas,
-})
+    // schemas:schemas
+// )
+// function createRoad<Person<string, FieldsType>[]>({ people, }: CreatRoadType<Person<string, FieldsType>[]>): Road<Person<string, FieldsType>[]>
 
 // const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
 // console.log(tt)
 // const result = await spreadsheetClient.queryBuilder.delete().from("class")
 
 // const test = await spreadsheetClient.queryBuilder.select().execute()
-const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
+const result = await spreadsheetClient.queryBuilder.select().from("cars").execute()
+// const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
 console.log(result)
 
 // const test1 = await spreadsheetClient.queryBuilder.update(['2']).where((data) => data[2] === "Bruno").execute()

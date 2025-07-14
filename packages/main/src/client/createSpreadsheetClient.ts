@@ -6,9 +6,9 @@ import SpreadsheetClient from "./SpreadsheetClient";
 
 
 function createSpreadsheetClient<T extends Schema[]>(opts: ClinetOptions<T>):SpreadsheetClient<T> {
-// function createSpreadsheetClient<T extends Schema[]>(opts: {schemas:T}):SpreadsheetClient<T> {
-    const config = new Configs(opts) // car
-    const clinet = new SpreadsheetClient( // road
+// function createSpreadsheetClient<T extends Schema[]>(opts: {schemas:T}) {
+    const config = new Configs(opts) 
+    const clinet = new SpreadsheetClient(
         config,
         new QueryBuilder(config),
         new SchemaManager(config)

@@ -1,0 +1,1 @@
+1. defineSchema 에서 assert 로 Schema<Name, FieldsType>; 를 해주지 않으면 넓은 Key값에 와이드한(fieldBuilder로 만들어진) 값이 들어가려 해서 타입에러 발생한다.

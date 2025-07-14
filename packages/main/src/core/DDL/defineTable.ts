@@ -4,9 +4,10 @@ import Schema from "./implements/Schema"
 
 export default function defineTable<Name extends string, T extends NotColumnedFieldsType>(
    sheetName: Name,
+   // builder: T,
    builder: ((field: FieldBuilder) => T) | T,
    columnOrder?: (keyof T)[]
-) {
+):Schema<Name, FieldsType> { 
    let fields: T; // Explicitly type fields as NotColumnedFieldsType
    if (typeof builder === "function") {
       fields = builder(fieldBuilder);
@@ -15,8 +16,8 @@ export default function defineTable<Name extends string, T extends NotColumnedFi
    }
 
    // Determine the final order of columns
-   const fieldNames = Object.keys(fields) as (keyof T)[];
    const columnOrderSet = new Set<keyof T>(columnOrder);
+   const fieldNames = Object.keys(fields) as (keyof T)[];
    for (const key of fieldNames) {
       columnOrderSet.add(key);
    }
@@ -35,7 +36,7 @@ export default function defineTable<Name extends string, T extends NotColumnedFi
 
    console.log(sheetName, "orderedKeys", orderedColumns);
 
-   return new Schema(sheetName, fieldsWithOrder, orderedColumns); // Cast fieldsWithOrder to ColumnizeFields<T>
+   return new Schema(sheetName, fieldsWithOrder, orderedColumns) as Schema<Name, FieldsType>;
 }
 
 export interface FieldBuilder {
@@ -57,6 +58,9 @@ export const fieldBuilder: FieldBuilder = {
 
 export type NotColumnedFieldsType = Record<string,NotColumnedFieldType<DataTypes>>;
 export type FieldsType = Record<string,FieldType<DataTypes>>; 
+export type ColumnizeFields<T extends NotColumnedFieldsType> = {
+   [K in keyof T]: FieldType<T[K]['dataType']>;
+ };
 
 
 

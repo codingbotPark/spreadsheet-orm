@@ -5,7 +5,7 @@ export type MissingSchemaStrategy = 'create' | 'ignore' | 'error'
 // 이 인터페이스는 이제 Configs.ts에서 직접 정의되므로 주석 처리하거나 삭제할 수 있습니다.
 export interface SchemaConfigOptions<T extends Schema[]> {
     onMissingSchema?: MissingSchemaStrategy;
-    schemas: T;
+    schemas?: T;
 }
 
 export type SchemaMap<T extends Schema[]> = {
@@ -28,9 +28,9 @@ class SchemaConfig<T extends Schema[]>{
         return schemaMap
     }
 
-    constructor(options: { schemas: T, onMissingSchema?: MissingSchemaStrategy }) {
+    constructor(options: SchemaConfigOptions<T>) {
         this.missingSchemaStartegy = options.onMissingSchema ?? this.DEFAULT_MISSING_STRATEGY
-        this.schemaList = options.schemas
+        this.schemaList = (options.schemas ?? []) as T 
         this.schemaMap = this.makeSchemaMap(this.schemaList)
     }
 }
