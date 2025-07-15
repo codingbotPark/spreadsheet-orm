@@ -3,7 +3,6 @@ export default createSpreadsheetClient
 export {createSpreadsheetClient}
 
 export { default as defineTable,fieldBuilder } from "./core/DDL/defineTable"
-
 // Types
 export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
 export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"

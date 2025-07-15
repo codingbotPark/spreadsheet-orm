@@ -25,7 +25,7 @@ abstract class BaseBuilder<T extends Schema[] = Schema[]>{
 
     // columnNames 배열에 있는 columnName 들을 모두 가져올 수 있는 column range
     protected specifyColumn(sheetName:(keyof SchemaMap<T>), columnNames:(keyof T[number]['fields'])[]):ColumnSpecificationType{
-        if (!this.config.schema.isSchemaSetted() || columnNames.length === 0) {
+        if (columnNames.length === 0) {
             return {};
         }
 

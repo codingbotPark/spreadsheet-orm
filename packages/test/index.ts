@@ -34,6 +34,8 @@ const spreadsheetClient = createSpreadsheetClient({
     schemas:schemas
 })
 spreadsheetClient.configs.schema.schemaMap.cars
+await spreadsheetClient.schemaManager.sync()
+
 // const spreadsheetClient = createSpreadsheetClient(
     // email:connectionParameters.client_email,
     // privateKey:connectionParameters.private_key,
@@ -47,9 +49,9 @@ spreadsheetClient.configs.schema.schemaMap.cars
 // const result = await spreadsheetClient.queryBuilder.delete().from("class")
 
 // const test = await spreadsheetClient.queryBuilder.select().execute()
-const result = await spreadsheetClient.queryBuilder.select().from("cars").execute()
+// const result = await spreadsheetClient.queryBuilder.select().from("cars").execute()
 // const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
-console.log(result)
+// console.log(result)
 
 // const test1 = await spreadsheetClient.queryBuilder.update(['2']).where((data) => data[2] === "Bruno").execute()
 // const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data) => data[2] === "Bruno").execute()

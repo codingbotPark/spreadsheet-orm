@@ -2,11 +2,8 @@ import { SchemaManagerConfig } from "@src/types/configPicks";
 import Schema from "./implements/Schema";
 import { ColumnSpecificationType, RowSpecificationType } from "@src/config/SheetConfig";
 import { FieldsType } from "./defineTable";
-import Configs from "@src/config/Configs";
-import { DataTypes } from "./abstracts/BaseFieldBuilder";
-import { google, sheets_v4, toolresults_v1beta3 } from "googleapis";
+import { sheets_v4 } from "googleapis";
 import { SchemaMap } from "@src/config/SchemaConfig";
-import { eventarc } from "googleapis/build/src/apis/eventarc";
 import { SchemaValidator } from "./implements/SchemaValidator";
 
 
@@ -49,13 +46,13 @@ class SchemaManager<T extends Schema[]> {
 
       // make Schema logic 
       // The Google Sheets API returns an error when trying to create a sheet that already exists.
-      let missingSheets = await this.getMissingSheets() // 일단 무조건 생성 및 write
-      const missingSheetNames = missingSheets.map((schema) => schema.sheetName)
-      if (missingSheets) {
+      const missingSheets = await this.getMissingSheets() // 일단 무조건 생성 및 write
+      let missingSheetNames = missingSheets.map((schema) => schema.sheetName)
+      if (missingSheetNames.length) {
          if (this.config.schema.DEFAULT_MISSING_STRATEGY === "create") {
             await this.createSheets(missingSheets)
             result.created = missingSheetNames
-            missingSheets = []
+            missingSheetNames = []
          } else if (this.config.schema.DEFAULT_MISSING_STRATEGY === "error") {
             result.errors = missingSheetNames
             throw Error("there is no sheet" + missingSheets.join(","))
@@ -65,9 +62,13 @@ class SchemaManager<T extends Schema[]> {
       }
 
       // 기본 unstableSchema 에는 missing으로 생성, 최종적으로 생성되지 않은 요소
-      const unstableSchemaSet = new Set(missingSheetNames)
+      const missingSheetNameSet = new Set(missingSheetNames)
       // existing = schemaList - missing
-      const existingSchemas = this.config.schema.schemaList.filter((schema) => !unstableSchemaSet.has(schema.sheetName))
+      const existingSchemas = this.config.schema.schemaList.filter((schema) => {
+         const result = !missingSheetNameSet.has(schema.sheetName)
+         console.log(result)
+         return result
+      })
 
       await this.updateSheetIDStore()
 
@@ -86,6 +87,7 @@ class SchemaManager<T extends Schema[]> {
       // checking existing Sheets stable & create empty schema
       // to use cached sheetIDStore in check methods
       const existingSchemaStableReports = await Promise.all(existingSchemas.map((schema) => this.checkSchemaValidation(schema, this.config)))
+      console.log("existingSchemaStableReports",existingSchemaStableReports)
 
       // strict <-> smart => fixable실행 차이
       const [stableReports, fixableReports, unstableReports] = existingSchemaStableReports.reduce<[SchemaStableReport[], SchemaStableReport[], SchemaStableReport[]]>(
@@ -147,9 +149,23 @@ class SchemaManager<T extends Schema[]> {
    }
 
    private async checkSchemaValidation(schema:Schema, config:SchemaManagerConfig<T>){
+      console.log("checkSchemaValidation", schema.sheetName)
       const data = await this.getSpecifiedSheetData(schema) // 기본적으로 데이터가 있는 부분까지 가져오게 된다
+      if (data.length === 0) {
+         const emptySchemaReport:SchemaStableReport = {
+            stable:true,
+            fieldsStatus:Array(schema.orderedColumns.length).fill(null),
+            fixable:true,
+            schema,
+            fixRequest:{
+               dataSetting:[],
+               columnMoving:[],
+               headerSetting:[]
+            }
+         }
+         return emptySchemaReport
+      }
       const sheetId = await this.getSchemaID(schema.sheetName, true) // !using cached 
-      const headers = data.at(0) ?? []
       const validator = new SchemaValidator(schema, sheetId, data, config)
       return validator.validate()
    }
@@ -204,7 +220,7 @@ class SchemaManager<T extends Schema[]> {
 
    private async makeWriteSchemaRequest(schema:Schema):Promise<sheets_v4.Schema$Request> {
       const sheetId = await this.getSchemaID(schema.sheetName, true)
-      const startRowIndex = this.config.sheet.DATA_STARTING_ROW - 1
+      const startRowIndex = this.config.sheet.DEFAULT_RECORDING_START_ROW - 1
       const startColumnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) - 1
       return {updateCells:{
             range: {
@@ -269,8 +285,7 @@ class SchemaManager<T extends Schema[]> {
          ),
       });
 
-      const result = response.data.values
-      if (!result) throw Error("error")
+      const result = response.data.values ?? []
 
       return result as string[][]
    }
@@ -293,13 +308,4 @@ type SchemaStableReport = {
    },
    schema:Schema
 }
-type StableDebugData = {
-   expectedHeaders:string[]
-   actualHeaders:string[]
-   resultHeaders:(string | null)[]
-   stable:boolean
-   fixable:null | boolean
-   fixRequest:sheets_v4.Schema$Request[]
-}
-
 
