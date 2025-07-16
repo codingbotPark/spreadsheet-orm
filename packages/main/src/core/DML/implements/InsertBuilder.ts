@@ -39,18 +39,25 @@ class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, Inser
         };
     }
     async execute() {
-        const tasks = this.queryQueue.map(q => {
-            console.log(q)
-          return this.config.spread.API.spreadsheets.values.append({
-            spreadsheetId: this.config.spread.ID,
-            valueInputOption: "RAW",
-            range: q.sheetName,
-            requestBody: { values: [q.insertValues] },
-          })
-    });
-      
+        // append 요청은 하나의 시트에 여러 개의 요청을 보낼 수 있어서, 시트별로 그룹화함
+        const groupedBySheet = new Map<string, DataTypes[][]>();
+
+        for (const q of this.queryQueue) {
+            if (!groupedBySheet.has(q.sheetName)) groupedBySheet.set(q.sheetName, []);
+            groupedBySheet.get(q.sheetName)!.push(q.insertValues);
+        }
+
+        const tasks = [...groupedBySheet.entries()].map(([sheetName, values]) =>
+            this.config.spread.API.spreadsheets.values.append({
+                spreadsheetId: this.config.spread.ID,
+                valueInputOption: "RAW",
+                range: sheetName,
+                requestBody: { values },
+            })
+        );
+
         const responses = await Promise.all(tasks);
-      
+
         return responses.map(res => {
           if (res.status !== 200) throw Error("error");
           return res.data.updates?.updatedRows;
