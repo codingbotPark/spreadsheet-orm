@@ -34,7 +34,7 @@
     "start": "tsx --tsconfig tsconfig.json src/index.ts",
     "dev": "npm run build:js -- --watch",
     "dev:types": "npm run build:types -- --watch",
-    "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
+    "prepublishOnly": "cp ../../README.md ./ && if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
