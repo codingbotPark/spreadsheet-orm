@@ -8,6 +8,7 @@ import WhereableAndQueryStore, { WhereAbleQueueType } from "../abstracts/mixins/
 
 // class DeleteBuilder<T extends {sheetName?:string}> extends ConditionChainQueryBuilder<DeleteBuilderCtorParamType>{
 class DeleteBuilder<T extends Schema[]> extends QueryStore<T, WhereAbleQueueType>{
+    protected queryQueue:WhereAbleQueueType[] = []
     from(sheetName: T[number]['sheetName']){
         return new SettedDeleteBuilder(this.config, sheetName, this.queryQueue)
     }
@@ -21,8 +22,10 @@ export default DeleteBuilder
 
 
 class SettedDeleteBuilder<T extends Schema[]> extends WhereableAndQueryStore<T, DeleteBuilder<T>>{
-    constructor(config:QueryBuilderConfig<T>, protected sheetName:T[number]['sheetName'], queryQueue:WhereAbleQueueType[]){
-        super(config, DeleteBuilder, queryQueue)
+
+    constructor(config:QueryBuilderConfig<T>, protected sheetName:T[number]['sheetName'], protected queryQueue:WhereAbleQueueType[]){
+        super(config, DeleteBuilder)
+        this.saveCurrentQueryToQueue()
     }
 
     protected createQueryForQueue(): WhereAbleQueueType {

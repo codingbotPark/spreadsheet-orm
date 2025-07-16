@@ -23,7 +23,6 @@ abstract class AndAbleQueryStore
     protected inheritState(target:NextClassInstance){
       target['sheetName'] = this.sheetName
       target['queryQueue'] = this.queryQueue
-      console.log("inherit", this.queryQueue)
     }
     
     protected saveCurrentQueryToQueue(){
@@ -34,8 +33,8 @@ abstract class AndAbleQueryStore
         config: QueryBuilderConfig<T>,
         protected nextClassConstructor:BuilderConstructor<T, NextClassInstance>,
       ) {
-        console.log("constructor는 요기")
         super(config)
+        console.log("constructor는 요기", this.sheetName)
       }
 }
 applyMixins(AndAbleQueryStore, [AndAble, QueryStore])

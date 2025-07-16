@@ -7,6 +7,7 @@ import QueryStore from "../abstracts/QueryStore";
 type SelectQueryQueueType = WhereAbleQueueType & {targetColumn:string[]}
 
 class SelectBuilder<T extends Schema[]> extends QueryStore<T, SelectQueryQueueType>{
+    protected queryQueue:SelectQueryQueueType[] = []
     from(sheetName: T[number]['sheetName']) {
         return new SettedSelectBuilder(this.config, this.targetColumn, sheetName, this.queryQueue)
     }
@@ -22,8 +23,9 @@ export default SelectBuilder
 
 class SettedSelectBuilder<T extends Schema[]>
 extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
-    constructor(config:QueryBuilderConfig<T>, private targetColumn:string[], protected sheetName:T[number]['sheetName'], queryQueue:SelectQueryQueueType[]){
-        super(config, SelectBuilder, queryQueue)
+    constructor(config:QueryBuilderConfig<T>, private targetColumn:string[], protected sheetName:T[number]['sheetName'], protected queryQueue:SelectQueryQueueType[]){
+        super(config, SelectBuilder)
+        this.saveCurrentQueryToQueue()
     }
 
     protected createQueryForQueue(): SelectQueryQueueType {
@@ -40,7 +42,6 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
 
     async execute(){
-        this.saveCurrentQueryToQueue()
         const composedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)

@@ -45,7 +45,6 @@ extends BaseBuilder<T>{
     constructor(
         config:QueryBuilderConfig<T>,
         protected nextClassConstructor:BuilderConstructor<T, NextClassInstance>,
-        protected queryQueue:QueryQueueType[]
     ){
         super(config)
     }

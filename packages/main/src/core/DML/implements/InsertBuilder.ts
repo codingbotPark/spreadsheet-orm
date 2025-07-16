@@ -10,8 +10,9 @@ interface InsertQueryQueueType extends BasicQueryQueueType{
 
 // class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
 class InsertBuilder<T extends Schema[]> extends QueryStore<T, InsertQueryQueueType>{
+    protected queryQueue:InsertQueryQueueType[] = []
     into(sheetName: T[number]['sheetName']) {
-        console.log("insert builder > settedInsertBuilder 생성")
+        console.log("insert builder > settedInsertBuilder 생성", this.queryQueue)
         return new SettedInsertBuilder(this.config, this.insertValues, sheetName, this.queryQueue)
     }
 
@@ -24,8 +25,9 @@ export default InsertBuilder
 
 
 class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, InsertBuilder<T>, InsertQueryQueueType>{
-    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], protected sheetName:T[number]['sheetName'], queryQueue:InsertQueryQueueType[]){
+    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], protected sheetName:T[number]['sheetName'], protected queryQueue:InsertQueryQueueType[]){
         super(config, InsertBuilder)
+        this.saveCurrentQueryToQueue();
     }
 
     protected createQueryForQueue(): InsertQueryQueueType {
@@ -37,15 +39,15 @@ class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, Inser
         };
     }
     async execute() {
-        this.saveCurrentQueryToQueue();
-        const tasks = this.queryQueue.map(q =>
-          this.config.spread.API.spreadsheets.values.append({
+        const tasks = this.queryQueue.map(q => {
+            console.log(q)
+          return this.config.spread.API.spreadsheets.values.append({
             spreadsheetId: this.config.spread.ID,
             valueInputOption: "RAW",
             range: q.sheetName,
             requestBody: { values: [q.insertValues] },
           })
-        );
+    });
       
         const responses = await Promise.all(tasks);
       

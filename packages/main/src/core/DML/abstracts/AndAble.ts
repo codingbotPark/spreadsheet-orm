@@ -20,9 +20,9 @@ extends BaseBuilder<T>{
 
     protected abstract inheritState(target:NextClassInstance):void
     and(...ctorParam:BuilderCtorParamType<ExtractConstructor<NextClassInstance>>):NextClassInstance{
-        console.log("레거시and")
         const instance = this.makeNextInstance(...ctorParam)
         this.inheritState(instance)
+        console.log("레거시and", instance)
         return instance
     }
 
