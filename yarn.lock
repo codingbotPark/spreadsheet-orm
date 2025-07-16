@@ -2371,7 +2371,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^24.0.14":
   version: 24.0.14
   resolution: "@types/node@npm:24.0.14"
   dependencies:
@@ -5344,6 +5344,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@types/node": "npm:^24.0.14"
     typescript: "npm:^5.7.3"
   languageName: unknown
   linkType: soft

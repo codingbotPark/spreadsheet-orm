@@ -6,10 +6,11 @@
     "version": "0.1.33",
     "packageManager": "yarn@4.5.3",
     "scripts": {
-        "build": "yarn workspaces foreach --all npm build",
+        "build": "yarn workspaces foreach --all run build",
         "test": "yarn workspaces foreach --all run test"
     },
     "devDependencies": {
+        "@types/node": "^24.0.14",
         "typescript": "^5.7.3"
     }
 }

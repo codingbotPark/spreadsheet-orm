@@ -16,10 +16,10 @@ class SpreadsheetClient<T extends Schema[]>{
         this.spreadsheetID = this.configs.spread.ID
     }
 
-    query(): QueryBuilder;
+    query(): QueryBuilder<T>;
     query(sql: string, values: [string | number]): Promise<void>
     query(sql?: string): Promise<any>
-    query(sql?: string, values?: [string | number]): Promise<any> | QueryBuilder {
+    query(sql?: string, values?: [string | number]): Promise<any> | QueryBuilder<T> {
         if (sql === undefined){
             return this.queryBuilder
         }
