@@ -30,17 +30,19 @@
     "clean": "rm -rf tsconfig.build.tsbuildinfo && rm -rf dist",
     "build:js": "yarn node esbuild.config.js",
     "build:types": "tsc -p tsconfig.build.json",
-    "build": "yarn run clean && yarn run build:js && yarn run build:types",
+    "build": "yarn run clean && yarn run build:js && yarn run build:types && yarn run copy:readme",
     "start": "tsx --tsconfig tsconfig.json src/index.ts",
     "dev": "npm run build:js -- --watch",
     "dev:types": "npm run build:types -- --watch",
-    "prepublishOnly": "cp ../../README.md ./ && if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
+    "copy:readme": "cp ../../README.md ./",
+    "prepublishOnly": "if [ -z \"$CI\" ]; then echo 'please publish with CI!' && exit 1; fi"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "./README.md"
   ],
   "type": "module",
   "exports": {
