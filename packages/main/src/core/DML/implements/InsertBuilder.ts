@@ -1,11 +1,8 @@
 import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";
-import BaseBuilder from "../abstracts/BaseBuilder";
-import { SchemaMap } from "@src/config/SchemaConfig";
 import AndAbleQueryStore from "../abstracts/mixins/AndAbleQueryStore";
 import QueryStore, { BasicQueryQueueType } from "../abstracts/QueryStore";
-import { BuilderConstructor } from "@src/types/BuilderCtorTypes";
 
 interface InsertQueryQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
@@ -14,7 +11,8 @@ interface InsertQueryQueueType extends BasicQueryQueueType{
 // class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
 class InsertBuilder<T extends Schema[]> extends QueryStore<T, InsertQueryQueueType>{
     into(sheetName: T[number]['sheetName']) {
-        return new SettedInsertBuilder(this.config, this.insertValues, sheetName)
+        console.log("insert builder > settedInsertBuilder 생성")
+        return new SettedInsertBuilder(this.config, this.insertValues, sheetName, this.queryQueue)
     }
 
     constructor(config: QueryBuilderConfig<T>, private insertValues:DataTypes[]) {
@@ -26,9 +24,8 @@ export default InsertBuilder
 
 
 class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, InsertBuilder<T>, InsertQueryQueueType>{
-    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], sheetName:T[number]['sheetName']){
-        super(config)
-        this.sheetName = sheetName
+    constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], protected sheetName:T[number]['sheetName'], queryQueue:InsertQueryQueueType[]){
+        super(config, InsertBuilder)
     }
 
     protected createQueryForQueue(): InsertQueryQueueType {

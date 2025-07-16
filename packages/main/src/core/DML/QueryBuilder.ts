@@ -12,6 +12,7 @@ class QueryBuilder<T extends Schema[] = Schema[]> {
 
 
     insert(insertValues:DataTypes[]){
+        console.log("qeuryBuildr > insert")
         return new InsertBuilder(this.config,insertValues)
     }
     
@@ -24,7 +25,7 @@ class QueryBuilder<T extends Schema[] = Schema[]> {
         return new UpdateBuilder(this.config, updateValues)
     }
 
-    delete(){
+    delete(){ 
         return new DeleteBuilder(this.config)
     }
 

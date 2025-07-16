@@ -10,10 +10,13 @@
   "github.copilot.renameSuggestions.triggerAutomatically": false,
   "github.copilot.chat.reviewSelection.enabled": false,
   "github.copilot.chat.useProjectTemplates": true,
-  "editor.inlineSuggest.edits.codeShifting": false,
   "github.copilot.chat.fixTestFailure.enabled": false,
   "github.copilot.enable": {
     "*": false
   },
   "vim.autoSwitchInputMethod.enable": true,
+  "editor.inlineSuggest.edits.allowCodeShifting": "never",
+  "github.copilot.advanced": {
+    
+  },
 }

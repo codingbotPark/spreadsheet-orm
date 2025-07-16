@@ -1,33 +1,27 @@
 import applyMixins from "@src/types/mixin";
-import AndAble from "../AndAble";
 import WhereAble, { DataWithRowType, ConditionParamTypes } from "../WhereAble";
 import BaseBuilder from "../BaseBuilder";
 import QueryStoreAble, { BasicQueryQueueType } from "../QueryStore";
 import Schema from "@src/core/DDL/implements/Schema";
 import AndAbleQueryStore from "./AndAbleQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
+import { BuilderConstructor } from "@src/types/BuilderCtorTypes";
 
 export interface WhereAbleQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
 // mixin class
 interface WhereableAndQueryStore
 <T extends Schema[], 
-NextClass extends QueryStoreAble<T, WhereAbleQueueType> ,
+NextClassInstance extends QueryStoreAble<T, WhereAbleQueueType> ,
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType,
-> extends AndAbleQueryStore<T, NextClass, WhereAbleQueueType>, WhereAble<T>{}
+> extends AndAbleQueryStore<T, NextClassInstance, WhereAbleQueueType>, WhereAble<T>{}
 
 abstract class WhereableAndQueryStore
 <T extends Schema[], 
-NextClass extends QueryStoreAble<T, WhereAbleQueueType>,
+NextClassInstance extends QueryStoreAble<T, WhereAbleQueueType>,
 QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType>
 extends BaseBuilder<T>{
-    protected queryQueue:Array<QueryQueueType> = []
     
-    protected inheritState(target:NextClass){
-        target['sheetName'] = this.sheetName
-        target['queryQueue'] = this.queryQueue
-    }
-
     protected chainConditioning(data:string[][][]):DataWithRowType[][]{
         return data.map((rangeData, idx) => {
             const filterParam = this.queryQueue[idx]
@@ -48,7 +42,11 @@ extends BaseBuilder<T>{
         return conditionedBatchValues
     }
 
-    constructor(config:QueryBuilderConfig<T>){
+    constructor(
+        config:QueryBuilderConfig<T>,
+        protected nextClassConstructor:BuilderConstructor<T, NextClassInstance>,
+        protected queryQueue:QueryQueueType[]
+    ){
         super(config)
     }
 

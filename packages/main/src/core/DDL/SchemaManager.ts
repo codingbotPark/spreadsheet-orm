@@ -102,6 +102,9 @@ class SchemaManager<T extends Schema[]> {
          }
          return acc;
       }, [[], [], []]);
+      console.log("stableReports",stableReports)
+      console.log("fixableReports",fixableReports)
+      console.log("unstableReports",unstableReports)
       
 
       if (unstableReports.length) {

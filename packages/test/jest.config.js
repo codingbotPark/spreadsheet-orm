@@ -5,10 +5,10 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   testEnvironment: 'node',
   roots: ['<rootDir>'], 
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'], // 여기에 설정 추가
   testMatch: [
-    '**/__tests__/**/*.ts',
-    '**/?(*.)+(spec|test).ts',
-    './index.ts'
+    '**/__tests__/**/*.+(ts|tsx|js)',
+    '**/?(*.)+(spec|test).+(ts|tsx|js)'
   ],
   moduleNameMapper: {
     // Dynamically map based on USE_BUILT env var

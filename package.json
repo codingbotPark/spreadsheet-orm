@@ -6,8 +6,8 @@
     "version": "0.1.33",
     "packageManager": "yarn@4.5.3",
     "scripts": {
-        "build": "yarn workspaces foreach --all npm run build",
-        "test": "yarn workspaces foreach --all npm run test"
+        "build": "yarn workspaces foreach --all npm build",
+        "test": "yarn workspaces foreach --all run test"
     },
     "devDependencies": {
         "typescript": "^5.7.3"

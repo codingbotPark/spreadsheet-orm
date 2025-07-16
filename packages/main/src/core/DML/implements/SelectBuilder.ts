@@ -8,7 +8,7 @@ type SelectQueryQueueType = WhereAbleQueueType & {targetColumn:string[]}
 
 class SelectBuilder<T extends Schema[]> extends QueryStore<T, SelectQueryQueueType>{
     from(sheetName: T[number]['sheetName']) {
-        return new SettedSelectBuilder(this.config, this.targetColumn, sheetName)
+        return new SettedSelectBuilder(this.config, this.targetColumn, sheetName, this.queryQueue)
     }
     
     // targetColumn 을 target으로 바꿔서, range or dml변수로 사용하도록
@@ -22,9 +22,8 @@ export default SelectBuilder
 
 class SettedSelectBuilder<T extends Schema[]>
 extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
-    constructor(config:QueryBuilderConfig<T>, private targetColumn:string[], sheetName:T[number]['sheetName']){
-        super(config)
-        this.sheetName = sheetName
+    constructor(config:QueryBuilderConfig<T>, private targetColumn:string[], protected sheetName:T[number]['sheetName'], queryQueue:SelectQueryQueueType[]){
+        super(config, SelectBuilder, queryQueue)
     }
 
     protected createQueryForQueue(): SelectQueryQueueType {
@@ -41,8 +40,6 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
 
     async execute(){
-        console.log("select executed")
-        console.log("queryQueue", this.queryQueue)
         this.saveCurrentQueryToQueue()
         const composedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)

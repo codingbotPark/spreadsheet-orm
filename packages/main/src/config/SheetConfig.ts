@@ -67,7 +67,7 @@ class SheetConfig {
         const isNumber = typeof row === 'number';
         const startRow = isNumber ? row : row.startRow;
         const endRow = isNumber ? '' : (row.endRow ?? row.startRow);
-        const { startColumn = 'A', endColumn = 'ZZZ' } = specifiedColumn;
+        const {startColumn, endColumn} = settedSpecifiedColumn
 
         return `${sheetName}!${startColumn}${startRow}:${endColumn}${endRow}`;
     }

@@ -4,17 +4,22 @@
     "private": true,
     "description": "Test suite for spreadsheet-orm",
     "scripts": {
-        "test": "jest",
-        "test:build": "USE_BUILD=true npm run test",
+        "test": "NODE_ENV=development jest --clearCache && jest",
+        "test:build": "NODE_ENV=production jest --clearCache && jest",
         "start": "NODE_ENV=development tsx --tsconfig tsconfig.json index.ts",
         "start:build": "NODE_ENV=production tsx --tsconfig tsconfig.json index.ts"
     },
     "dependencies": {
-        "jest": "^27.0.0",
         "spreadsheet-orm": "workspace:*"
     },
     "devDependencies": {
-        "@types/jest": "^27.0.0",
+        "@jest/globals": "^30.0.4",
+        "@types/jest": "^29.0.0",
+        "gaxios": "^7.1.1",
+        "googleapis": "^152.0.0",
+        "jest": "^29.0.0",
+        "jest-util": "^30.0.2",
+        "ts-jest": "^29.4.0",
         "tsx": "^4.19.2"
     },
     "packageManager": "yarn@4.5.3",

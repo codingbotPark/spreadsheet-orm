@@ -1,13 +1,11 @@
 {
-    "extends": "../../tsconfig.base.json",  // 루트의 tsconfig.base.json을 확장
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-      "module": "nodenext",                   // 모듈 시스템 설정
       "esModuleInterop": true,
       "strict": true,
-      "moduleResolution": "nodenext",
       "skipLibCheck": true,
       "resolveJsonModule": true,
-      "rootDir": ".",       
+      "rootDir": ".",
       "baseUrl": ".",
       "paths": {
         "@fixtures/*": ["fixtures/*"],
@@ -16,9 +14,9 @@
         "spreadsheet-orm/*":["../main/src/*"],
         "@src/*": ["../main/src/*"],
         "@built/*": ["../main/dist/*"],
-        "@built": ["../main/dist/index.js"],
+        "@built": ["../main/dist/index.js"]
       },
-      "composite": true,
+      "composite": true
     },
     "ts-node": {
       "esm": true
@@ -28,8 +26,8 @@
       "fixtures/**/*",
       "integration/**/*",
       "unit/**/*",
-      "src/**/*", 
-      "../main/src/**/*",
+      "src/**/*",
+      "../main/src/**/*"
     ],
     "references": [
       { "path": "../main" }

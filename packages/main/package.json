@@ -12,7 +12,6 @@
     "query-builder"
   ],
   "license": "MIT",
-
   "packageManager": "yarn@4.5.3",
   "dependencies": {
     "gaxios": "^6.7.1",
@@ -40,7 +39,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     ".": {

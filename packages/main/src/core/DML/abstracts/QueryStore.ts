@@ -8,7 +8,6 @@ export interface BasicQueryQueueType{
 
 abstract class QueryStore<T extends Schema[], QueueType extends BasicQueryQueueType = BasicQueryQueueType> extends BaseBuilder<T>{
     protected queryQueue:Array<QueueType> = []
-
 }
 
 

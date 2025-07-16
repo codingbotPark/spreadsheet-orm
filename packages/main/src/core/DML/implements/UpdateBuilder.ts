@@ -11,8 +11,8 @@ interface UpdateQueryQueueType extends WhereAbleQueueType{
 }
 
 class UpdateBuilder<T extends Schema[]> extends QueryStore<T, UpdateQueryQueueType>{
-    from(sheetName: string) {
-        return new SettedUpdateBuilder(this.config, this.updateValues, sheetName)
+    from(sheetName: T[number]['sheetName']) {
+        return new SettedUpdateBuilder(this.config, this.updateValues, sheetName, this.queryQueue)
     }
     
     constructor(config:QueryBuilderConfig<T>, private updateValues:UpdateValueType){
@@ -24,8 +24,8 @@ export default UpdateBuilder
 
 class SettedUpdateBuilder<T extends Schema[]>
 extends WhereableAndQueryStore<T, UpdateBuilder<T>, UpdateQueryQueueType>{
-    constructor(config:QueryBuilderConfig<T>, private updateValues:UpdateValueType, sheetName:T[number]['sheetName']){
-        super(config)
+    constructor(config:QueryBuilderConfig<T>, private updateValues:UpdateValueType, protected sheetName:T[number]['sheetName'], queryQueue:UpdateQueryQueueType[]){
+        super(config, UpdateBuilder, queryQueue)
     }
 
     async execute() {
