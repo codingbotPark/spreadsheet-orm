@@ -1,120 +1,223 @@
-# spreadsheet-orm
+# Spreadsheet ORM
 
-## Overview
-`spreadsheet-orm` is an Object-Relational Mapping (ORM) library designed for using Google Spreadsheets as a database. It provides a query builder and schema management features for spreadsheet data.
+[![NPM Version](https://img.shields.io/npm/v/spreadsheet-orm.svg)](https://www.npmjs.com/package/spreadsheet-orm)
+[![NPM Downloads](https://img.shields.io/npm/dm/spreadsheet-orm.svg)](https://www.npmjs.com/package/spreadsheet-orm)
+[![Build Status](https://github.com/codingbotPark/spreadsheet-orm/actions/workflows/node.js.yml/badge.svg)](https://github.com/codingbotPark/spreadsheet-orm/actions/workflows/node.js.yml)
+[![License](https://img.shields.io/npm/l/spreadsheet-orm.svg)](https://github.com/codingbotPark/spreadsheet-orm/blob/main/LICENSE)
 
-## Features
-- **Google Sheets API Integration**: Seamlessly connects and interacts with Google Sheets.
-- **Schema Management**: Defines and manages the schema of spreadsheets.
-- **Query Builder**: Builds and executes queries for spreadsheet data.
+**Spreadsheet ORM** is a powerful, modern, and type-safe Object-Relational Mapping (ORM) library for using Google Spreadsheets as a database. Move beyond simple row/column manipulation and leverage database-like features such as schema management, migrations, and a fluent query builder.
+
+## Key Features
+
+- **Type-Safe Schema Definition**: Define your table structures in TypeScript, and enjoy full type safety and autocompletion.
+- **Powerful Query Builder**: A fluent, chainable API for `SELECT`, `INSERT`, `UPDATE`, and `DELETE` operations.
+- **Schema Synchronization**: Keep your spreadsheet structure in sync with your code definitions, similar to database migrations.
+- **Automatic Type Inference**: Automatically infer TypeScript types from your defined schemas for full end-to-end type safety.
+- **Modern API**: Built with TypeScript and ES Modules, providing a clean and intuitive developer experience.
 
 ## Installation
-To install the package, use Yarn:
+
 ```bash
+# Using Yarn
 yarn add spreadsheet-orm
+
+# Using NPM
+npm install spreadsheet-orm
 ```
 
-## Usage
+## Quick Start
 
-### Connection
+### 1. Credentials
+
+First, you need Google Service Account credentials. For a detailed, step-by-step guide on how to get them, please see our [**Credentials Guide**](./GUIDE_CREDENTIALS.md).
+
+### 2. Core Concepts
+
+The workflow revolves around three main steps:
+1.  **Define Schemas**: Use `defineTable` to describe your tables (sheets).
+2.  **Initialize Client**: Create a client instance with your credentials and schemas.
+3.  **Sync & Query**: Use the `schemaManager` to sync your schemas and the `queryBuilder` to interact with data.
+
+### 3. Example
+
+Here is a complete example of how to get started.
+
 ```typescript
-import createSpreadsheetClient,{ Credentials } from "spreadsheet-orm"
-import credentials from "./yourGoogleCredentials.json"
+import { 
+  createSpreadsheetClient, 
+  defineTable, 
+  fieldBuilder,
+  type InferTableType
+} from "spreadsheet-orm";
 
-const connectionParameters:Credentials = credentials
-const spreadsheetClient = createSpreadsheetClient({
-    email:connectionParameters.client_email,
-    privateKey:connectionParameters.private_key,
-    spreadsheetID:connectionParameters.spreadsheetID
-})
-```
-### Query Operations
+// It's recommended to load credentials securely, e.g., from environment variables
+import credentials from "./your-google-credentials.json";
 
-#### Select
-```typescript
-// Select all data from sheet
-const results = await spreadsheetClient.queryBuilder.select().from('Users').execute();
+// --- Step 1: Define Your Schemas ---
 
-// Select with condition
-const filtered = await spreadsheetClient.queryBuilder.select(['name', 'class']).from('Users').where(row => row[1] === 'John').execute();
+const Users = defineTable("Users", {
+  id: fieldBuilder.string().default("UUID()").build(), // Set a default value
+  name: fieldBuilder.string().build(),
+  email: fieldBuilder.string().build(),
+  age: fieldBuilder.number().optional().build(), // This field can be empty
+  createdAt: fieldBuilder.date().default(new Date()).build(),
+});
 
-// Chain multiple selects
-const multiSelect = await spreadsheetClient.queryBuilder
-.select(['name']).from('Users').where(row => row[1] === 'John')
-.and(['class']).from('Students').where(row => row[2] === 'A')
-.execute();
-```
+const Posts = defineTable("Posts", (field) => ({
+  id: field.string().build(),
+  title: field.string().build(),
+  content: field.string().build(),
+  // Create a "foreign key" relationship to the Users table
+  authorId: field.reference(Users, "id").build(), 
+}));
 
-#### Insert
-```typescript
-// Insert single row
-const result = await spreadsheetClient.queryBuilder.insert(['John', 'A', '25']).into('Users').execute();
 
-// Chain multiple inserts
-const multiInsert = await spreadsheetClient.queryBuilder.
-insert(['John', 'A', '25']).into('Users')
-.and(['Jane', 'B', '23']).into('Users')
-.execute();
-```
+// --- Step 2: Automatically Infer Types from Schemas ---
 
-#### Update
-```typescript
-// Update with condition
-const updated = await spreadsheetClient.queryBuilder.update(['John Doe', 'A+', '26']).from('Users').where(row => row[1] === 'John').execute();
-```
+type User = InferTableType<typeof Users.fields>;
+type Post = InferTableType<typeof Posts.fields>;
 
-#### Delete
-```typescript
-// Delete with condition
-const deleted = await spreadsheetClient.queryBuilder.delete().from('Users').where(row => row[1] === 'John').execute();
-```
+// Now you have full type safety!
+// const newUser: User = { id: "1", name: "Jane Doe", email: "jane@example.com" };
 
-## Error Handling
 
-The library provides specific error handling for various scenarios:
+// --- Step 3: Initialize the Client ---
 
-### Spreadsheet Access Errors
-```typescript
-try {
-  const spreadsheetClient = new SpreadsheetClient({
-    email: "invalid@email.com",
-    privateKey: "invalid-key",
-    spreadsheetID: "invalid-id"
-  });
-} catch (error) {
-  if (error.message.includes("Invalid email format")) {
-    // Handle invalid email configuration
-  }
-  // Handle other configuration errors
+const client = createSpreadsheetClient({
+  // Credentials
+  email: credentials.client_email,
+  privateKey: credentials.private_key,
+  spreadsheetID: "YOUR_SPREADSHEET_ID_HERE",
+
+  // Schemas
+  schemas: [Users, Posts],
+  
+  // (Optional) Strategy for handling sheets that exist in code but not in the spreadsheet
+  onMissingSchema: "create", // 'create', 'ignore', or 'error'
+});
+
+
+// --- Step 4: Sync Schemas & Run Queries ---
+
+async function main() {
+  // Sync schemas with the spreadsheet (like a database migration)
+  // 'smart' mode will create missing sheets and fix column order without losing data.
+  console.log("Syncing schemas...");
+  await client.schemaManager.sync({ mode: "smart" });
+  console.log("Sync complete!");
+
+  // Use the query builder for CRUD operations
+  console.log("Inserting new users...");
+  await client.query()
+    .insert(["1", "John Doe", "john@example.com", 30]).into("Users")
+    .and(["2", "Jane Smith", "jane@example.com"]).into("Users") // Chain inserts with and()
+    .execute();
+  
+  console.log("Fetching users...");
+  const allUsers = await client.query().select().from("Users").execute();
+  console.log("All Users:", allUsers);
+
+  console.log("Fetching users older than 25...");
+  const filteredUsers = await client.query()
+    .select(["name", "email"])
+    .from("Users")
+    .where((row) => {
+      const ageIndex = Users.orderedColumns.indexOf("age");
+      // row[0] is the row index, so data columns start at row[1]
+      return Number(row[ageIndex + 1]) > 25; 
+    })
+    .execute();
+  console.log("Filtered Users:", filteredUsers);
 }
+
+main().catch(console.error);
 ```
 
-### Query Execution Errors
-```typescript
-try {
-  const result = await spreadsheetClient.queryBuilder.select(['name']).from('NonExistentSheet').execute();
-} catch (error) {
-  if (error.message.includes("cannot find spreadsheet")) {
-    // Handle invalid spreadsheet ID
-  } else if (error.message.includes("forbidden spreadsheet")) {
-    // Handle permission issues
-  } else {
-    // Handle other API errors
-  }
-}
-```
+## API Reference
 
-## Development
-### Scripts
-- **Build**: Compiles TypeScript files.
-  ```bash
-  yarn build
-  ```
-- **Start**: Runs the application.
-  ```bash
-  yarn start
-  ```
-- **Development**: Starts the application in development mode with hot reloading.
-  ```bash
-  yarn dev
-  ```
+### Schema Definition (`defineTable`)
+
+Use `defineTable` to define the structure of a sheet. The second argument is an object where each value is a `fieldBuilder` chain ending with `.build()`.
+
+-   `defineTable(sheetName, fields, [columnOrder])`
+
+The `fieldBuilder` provides methods for each data type:
+-   `string()`
+-   `number()`
+-   `boolean()`
+-   `date()`
+-   `reference(schema, fieldName)`: Creates a link to another table's field.
+
+Each field builder can be chained with modifiers before calling `.build()`:
+-   `.optional()`: Marks the field as optional.
+-   `.default(value)`: Provides a default value for new entries if the schema is synced.
+
+### Schema Management (`client.schemaManager`)
+
+The `schemaManager` ensures your spreadsheet structure matches your code definitions.
+
+-   `sync({ mode })`: Synchronizes the schemas.
+    -   `mode: 'strict'`: Throws an error if there are any discrepancies.
+    -   `mode: 'smart'`: (Recommended) Creates missing sheets and re-orders columns of existing sheets without data loss.
+    -   `mode: 'force'`: Overwrites existing sheets that don't match the schema, potentially causing data loss.
+    -   `mode: 'clean'`: Wipes all data and writes only the schema headers.
+
+### Query Builder (`client.query()`)
+
+The query builder provides a fluent API for data manipulation.
+
+-   **SELECT**:
+    ```typescript
+    // Select all columns
+    await client.query().select().from("Users").execute();
+
+    // Select specific columns and apply a filter
+    await client.query()
+      .select(["name", "email"])
+      .from("Users")
+      .where(row => Number(row[3]) > 30) // filter by age (assuming age is the 3rd column)
+      .execute();
+    ```
+
+-   **INSERT**:
+    ```typescript
+    const newRow = ["3", "Peter Jones", "peter@example.com", 42];
+    await client.query().insert(newRow).into("Users").execute();
+    ```
+
+-   **UPDATE**:
+    ```typescript
+    const updatedData = ["Peter Jones Jr.", "peter.jr@example.com", 43];
+    await client.query()
+      .update(updatedData)
+      .from("Users")
+      .where(row => row[1] === "3") // where id is "3"
+      .execute();
+    ```
+
+-   **DELETE**:
+    ```typescript
+    await client.query()
+      .delete()
+      .from("Users")
+      .where(row => row[2] === "peter.jr@example.com") // where email matches
+      .execute();
+    ```
+
+-   **Chaining Queries (`and`)**:
+    You can chain multiple operations into a single batch request for better performance.
+    ```typescript
+    await client.query()
+      .insert(["4", "Alice", "alice@example.com"]).into("Users")
+      .and()
+      .insert(["p1", "My First Post", "...", "4"]).into("Posts")
+      .execute();
+    ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
+
+## License
+
+This project is licensed under the MIT License.

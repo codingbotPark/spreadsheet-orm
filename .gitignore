@@ -30,3 +30,4 @@ build/
 .npmrc
 .yarnrc.local.yml
 *.tsbuildinfo
+packages/main/README.md
