@@ -1,10 +1,10 @@
 import SchemaConfig, { SchemaConfigOptions } from "./SchemaConfig";
-import SpreadConfig, { SpreadsheetConfigOptions } from "./SpreadConfig";
+import SpreadConfig, { SpreadConfigOptions } from "./SpreadConfig";
 import SheetConfig, { SheetConfigOptions } from "./SheetConfig";
 import Schema from "@src/core/DDL/implements/Schema";
 
-export interface ClinetOptions<T extends Schema[]> extends 
-    SpreadsheetConfigOptions, 
+export interface ClinetOptions<T extends Schema[] = Schema[]> extends 
+    SpreadConfigOptions, 
     SheetConfigOptions,
     SchemaConfigOptions<T>
     {}

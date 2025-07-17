@@ -17,6 +17,6 @@ await esbuild.build({
     '.ts': 'ts', // TypeScript 파일 로드
   },
   external, // Node.js 내장 모듈 및 dependencies를 번들에서 제외
-  minify: false, // 디버깅을 위해 minify 비활성화 (선택사항)
+  minify: true,
   sourcemap: true, // 소스맵 생성 (선택사항)
 }).catch(() => process.exit(1));

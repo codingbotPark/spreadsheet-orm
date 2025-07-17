@@ -9,7 +9,7 @@ export { default as QueryBuilder } from './core/DML/QueryBuilder';
 export { default as SchemaManager, type SyncModeType, type SyncOptions, type SyncResult } from "./core/DDL/SchemaManager";
 
 // Core Types
-export type { SpreadsheetConfigOptions } from './config/SpreadConfig';
+export type { SpreadConfigOptions } from './config/SpreadConfig';
 export type { DataTypes } from "./core/DDL/abstracts/BaseFieldBuilder"
 export type { Credentials } from "./types/Credentials.ts"
 export type { FieldBuilder } from "./core/DDL/defineTable"

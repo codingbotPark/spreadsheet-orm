@@ -1,14 +1,14 @@
 import { GaxiosError } from "gaxios";
 import { google, sheets_v4 } from "googleapis";
 
-export interface SpreadsheetConfigOptions{
+export interface SpreadConfigOptions{
     spreadsheetID:string;
     email: string; // service acount email
     privateKey: string; // Google API key
 }
 
 class SpreadConfig{
-    static makeAuthJWT({email, privateKey}:Pick<SpreadsheetConfigOptions, 'email' | 'privateKey'>){
+    static makeAuthJWT({email, privateKey}:Pick<SpreadConfigOptions, 'email' | 'privateKey'>){
        return new google.auth.JWT({
         email,
         key:privateKey,
@@ -16,7 +16,7 @@ class SpreadConfig{
        }) 
     }
 
-    static extractSheetIDfromURL(url:string):SpreadsheetConfigOptions['spreadsheetID'] | false{
+    static extractSheetIDfromURL(url:string):SpreadConfigOptions['spreadsheetID'] | false{
         const regex = /\/d\/([a-zA-Z0-9_-]{43})/; // extract sheet id from url
         const match = url.match(regex);
         if (match && match[1]) {
@@ -34,7 +34,7 @@ class SpreadConfig{
     API: sheets_v4.Sheets;
     info:sheets_v4.Schema$Spreadsheet | null = null
 
-    constructor(options:SpreadsheetConfigOptions){
+    constructor(options:SpreadConfigOptions){
         this.checkFormat(options)
         this.ID = SpreadConfig.extractSheetIDfromURL(options.spreadsheetID) || options.spreadsheetID 
         this.authJWT = SpreadConfig.makeAuthJWT({email:options.email, privateKey:options.privateKey}) 
@@ -71,7 +71,7 @@ class SpreadConfig{
         }
     }
 
-    private checkFormat(options:SpreadsheetConfigOptions){
+    private checkFormat(options:SpreadConfigOptions){
         if (!this.isValidEmail(options.email)){
             throw Error("Invalid email format")
         }

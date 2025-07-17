@@ -23,13 +23,14 @@
     "@babel/preset-env": "^7.26.8",
     "@babel/preset-typescript": "^7.26.0",
     "esbuild": "^0.25.0",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "clean": "rm -rf tsconfig.build.tsbuildinfo && rm -rf dist",
     "build:js": "yarn node esbuild.config.js",
-    "build:types": "tsc -p tsconfig.build.json",
+    "build:types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "build": "yarn run clean && yarn run build:js && yarn run build:types && yarn run copy:readme",
     "start": "tsx --tsconfig tsconfig.json src/index.ts",
     "dev": "npm run build:js -- --watch",
