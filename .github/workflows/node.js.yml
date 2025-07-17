@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: write
 
+    outputs:
+      new_version: ${{ steps.bump_version.outputs.version }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,6 +43,7 @@ jobs:
         run: yarn workspaces foreach --all --topological --parallel --no-private run build
 
       - name: Bump version & commit (only on main)
+        id: bump_version
         if: github.ref == 'refs/heads/main'
         run: |
           yarn workspaces foreach --all version patch
@@ -48,33 +52,21 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "chore(release): bump versions"
-          git tag v$(jq -r .version package.json)
+          NEW_VERSION=$(jq -r .version package.json)
+          git tag v$NEW_VERSION
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git push --follow-tags
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Publish to npm using yarn workspaces
         if: github.ref == 'refs/heads/main'
         run: yarn workspaces foreach --verbose --all --topological --no-private npm publish --access public
   
-  get-version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Get version from package.json
-        id: get-version
-        run: |
-          VERSION=$(jq -r .version package.json)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-        
   call-publish:
-    needs: [build, get-version]
+    needs: [build]
     uses: ./.github/workflows/release.yml
     permissions:
       contents: write
     with:
-      version: ${{ needs.get-version.outputs.version }}
+      version: ${{ needs.build.outputs.new_version }}
 
