@@ -108,17 +108,17 @@ async function main() {
 
   // Use the query builder for CRUD operations
   console.log("Inserting new users...");
-  await client.query()
+  await client.queryBuilder
     .insert(["1", "John Doe", "john@example.com", 30]).into("Users")
     .and(["2", "Jane Smith", "jane@example.com"]).into("Users") // Chain inserts with and()
     .execute();
   
   console.log("Fetching users...");
-  const allUsers = await client.query().select().from("Users").execute();
+  const allUsers = await client.queryBuilder.select().from("Users").execute();
   console.log("All Users:", allUsers);
 
   console.log("Fetching users older than 25...");
-  const filteredUsers = await client.query()
+  const filteredUsers = await client.queryBuilder
     .select(["name", "email"])
     .from("Users")
     .where((row) => {
@@ -162,17 +162,17 @@ The `schemaManager` ensures your spreadsheet structure matches your code definit
     -   `mode: 'force'`: Overwrites existing sheets that don't match the schema, potentially causing data loss.
     -   `mode: 'clean'`: Wipes all data and writes only the schema headers.
 
-### Query Builder (`client.query()`)
+### Query Builder (`client.queryBuilder`)
 
 The query builder provides a fluent API for data manipulation.
 
 -   **SELECT**:
     ```typescript
     // Select all columns
-    await client.query().select().from("Users").execute();
+    await client.queryBuilder.select().from("Users").execute();
 
     // Select specific columns and apply a filter
-    await client.query()
+    await client.queryBuilder
       .select(["name", "email"])
       .from("Users")
       .where(row => Number(row[3]) > 30) // filter by age (assuming age is the 3rd column)
@@ -182,13 +182,13 @@ The query builder provides a fluent API for data manipulation.
 -   **INSERT**:
     ```typescript
     const newRow = ["3", "Peter Jones", "peter@example.com", 42];
-    await client.query().insert(newRow).into("Users").execute();
+    await client.queryBuilder.insert(newRow).into("Users").execute();
     ```
 
 -   **UPDATE**:
     ```typescript
     const updatedData = ["Peter Jones Jr.", "peter.jr@example.com", 43];
-    await client.query()
+    await client.queryBuilder
       .update(updatedData)
       .from("Users")
       .where(row => row[1] === "3") // where id is "3"
@@ -197,7 +197,7 @@ The query builder provides a fluent API for data manipulation.
 
 -   **DELETE**:
     ```typescript
-    await client.query()
+    await client.queryBuilder
       .delete()
       .from("Users")
       .where(row => row[2] === "peter.jr@example.com") // where email matches
@@ -207,7 +207,7 @@ The query builder provides a fluent API for data manipulation.
 -   **Chaining Queries (`and`)**:
     You can chain multiple operations into a single batch request for better performance.
     ```typescript
-    await client.query()
+    await client.queryBuilder
       .insert(["4", "Alice", "alice@example.com"]).into("Users")
       .and()
       .insert(["p1", "My First Post", "...", "4"]).into("Posts")

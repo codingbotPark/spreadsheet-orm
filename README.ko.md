@@ -162,7 +162,59 @@ main().catch(console.error);
     -   `mode: 'force'`: 스키마와 일치하지 않는 기존 시트를 덮어쓰므로 데이터가 손실될 수 있습니다.
     -   `mode: 'clean'`: 모든 데이터를 지우고 스키마 헤더만 새로 씁니다.
 
-### 쿼리 빌더 (`client.query()`)
+### 쿼리 빌더 (`client.queryBuilder`)
+
+`client.queryBuilder` 메소드는 `SELECT`, `INSERT`, `UPDATE`, `DELETE` 작업을 위한 유창한 쿼리 빌더에 접근할 수 있도록 합니다. SQL과 유사한 직접 쿼리 기능(`client.query("SELECT ...")`)은 현재 구현되지 않은 플레이스홀더임을 참고해 주세요.
+
+쿼리 빌더는 데이터 조작을 위한 유창한(fluent) API를 제공합니다.
+
+-   **SELECT**:
+    ```typescript
+    // 모든 컬럼 선택
+    await client.queryBuilder.select().from("Users").execute();
+
+    // 특정 컬럼 선택 및 필터 적용
+    await client.queryBuilder
+      .select(["name", "email"])
+      .from("Users")
+      .where(row => Number(row[3]) > 30) // age(3번째 컬럼이라 가정)로 필터링
+      .execute();
+    ```
+
+-   **INSERT**:
+    ```typescript
+    const newRow = ["3", "Peter Jones", "peter@example.com", 42];
+    await client.queryBuilder.insert(newRow).into("Users").execute();
+    ```
+
+-   **UPDATE**:
+    ```typescript
+    const updatedData = ["Peter Jones Jr.", "peter.jr@example.com", 43];
+    await client.queryBuilder
+      .update(updatedData)
+      .from("Users")
+      .where(row => row[1] === "3") // id가 "3"인 행 대상
+      .execute();
+    ```
+
+-   **DELETE**:
+    ```typescript
+    await client.queryBuilder
+      .delete()
+      .from("Users")
+      .where(row => row[2] === "peter.jr@example.com") // 이메일이 일치하는 행 대상
+      .execute();
+    ```
+
+-   **쿼리 연결 (`and`)**:
+    여러 작업을 하나의 배치(batch) 요청으로 연결하여 성능을 향상시킬 수 있습니다.
+    ```typescript
+    await client.queryBuilder
+      .insert(["4", "Alice", "alice@example.com"]).into("Users")
+      .and()
+      .insert(["p1", "My First Post", "...", "4"]).into("Posts")
+      .execute();
+    ```
 
 쿼리 빌더는 데이터 조작을 위한 유창한(fluent) API를 제공합니다.
 
