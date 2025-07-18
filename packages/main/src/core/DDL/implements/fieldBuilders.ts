@@ -22,9 +22,26 @@ export class BoooleanFieldBuilder extends BaseFieldBuilder<'boolean'>{
 }
 
 export class DateFieldBuilder extends BaseFieldBuilder<'date'>{
+  timestampAtCreated?:boolean
+  timestampAtUpdated?:boolean
+
     getType(): "date" {
         return "date"
     }
+
+    createdTimestamp(){
+      this.timestampAtCreated = true
+      return this 
+    }
+
+    updatedTimestamp(){
+      this.timestampAtCreated = true
+      this.timestampAtUpdated = true
+      return this
+    }
+}
+export function isDateField(field: BaseFieldBuilder<any>): field is DateFieldBuilder {
+  return field instanceof DateFieldBuilder
 }
 
 export class ReferenceFieldBuilder<

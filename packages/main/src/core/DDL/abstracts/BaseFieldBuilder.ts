@@ -13,12 +13,12 @@ export interface FieldType<T extends DataTypes> extends NotColumnedFieldType<T>{
 
 abstract class BaseFieldBuilder<T extends DataTypes>{
     private _optional:boolean = false
-    private _default:any = undefined
+    private _default?:T
 
-    optional(): this {
-        this._optional = true
+    optional(param?:boolean): this {
+        this._optional = param ?? true
         return this
-      }
+    }
     
     default(value: any): this {
         this._default = value
