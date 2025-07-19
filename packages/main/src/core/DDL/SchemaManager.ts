@@ -5,6 +5,7 @@ import { FieldsType } from "./defineTable";
 import { sheets_v4 } from "googleapis";
 import { SchemaMap } from "@src/config/SchemaConfig";
 import { SchemaValidator } from "./implements/SchemaValidator";
+import { SheetQueries } from "@src/generators";
 
 
 export type SyncModeType = "strict" | "smart" | "force" | "clean"
@@ -50,7 +51,7 @@ class SchemaManager<T extends Schema[]> {
       let missingSheetNames = missingSheets.map((schema) => schema.sheetName)
       if (missingSheetNames.length) {
          if (this.config.schema.DEFAULT_MISSING_STRATEGY === "create") {
-            await this.createSheets(missingSheets)
+            await this.config.spread.batchUpdateQuery(missingSheets.map((sheet) => SheetQueries.addSheet(sheet.sheetName)))
             result.created = missingSheetNames
             missingSheetNames = []
          } else if (this.config.schema.DEFAULT_MISSING_STRATEGY === "error") {
@@ -75,11 +76,9 @@ class SchemaManager<T extends Schema[]> {
 
       // clean all existing schema empty
       if (syncOptions.mode === "clean") {
-         const requests =  await Promise.all(existingSchemas.map((schema) => this.makeClearSheetRequest(schema)))
-         await this.config.spread.API.spreadsheets.batchUpdate({
-            spreadsheetId:this.config.spread.ID,
-            requestBody:{requests}
-         })
+         const existSheetIds = await Promise.all(existingSchemas.map((schema) => this.getSchemaID(schema.sheetName)))
+         const clearRequest = existSheetIds.map((id) => SheetQueries.clearSheet(id))
+         await this.config.spread.batchUpdateQuery(clearRequest)
          return result
       } 
       
@@ -108,11 +107,9 @@ class SchemaManager<T extends Schema[]> {
 
       if (unstableReports.length) {
          if (syncOptions.mode === "force"){
-            const requests =  await Promise.all(unstableReports.map((report) => this.makeClearSheetRequest(report.schema))) 
-            await this.config.spread.API.spreadsheets.batchUpdate({
-               spreadsheetId:this.config.spread.ID,
-               requestBody:{requests}
-            })
+            const unstableSheetIds =  await Promise.all(unstableReports.map((report) => this.getSchemaID(report.schema.sheetName))) 
+            const clearRequets = unstableSheetIds.map((id) => SheetQueries.clearSheet(id))
+            await this.config.spread.batchUpdateQuery(clearRequets)
             // make fixable true make recognize like empty sceham
             const markWithStableReports = unstableReports.map((report) => {
                report.fixable = true
@@ -129,12 +126,7 @@ class SchemaManager<T extends Schema[]> {
          // smart = fixable only
          if (syncOptions.mode === "smart" || syncOptions.mode === "force"){
             const allFixRequest = fixableReports.flatMap((report) => [...report.fixRequest.dataSetting, ...report.fixRequest.columnMoving, ...report.fixRequest.headerSetting])
-            Boolean(allFixRequest.length) && await this.config.spread.API.spreadsheets.batchUpdate({
-               spreadsheetId:this.config.spread.ID,
-               requestBody:{
-                  requests:allFixRequest
-               }
-            })
+            Boolean(allFixRequest.length) && await this.config.spread.batchUpdateQuery(allFixRequest)
             result.fixed = fixableReports.map((report) => report.schema.sheetName)
          }
       }
@@ -142,11 +134,7 @@ class SchemaManager<T extends Schema[]> {
       const emptySheetSchemas = stableReports.filter((report) => report.fixable).map((report) => report.schema)
       if (emptySheetSchemas.length){
          const writeSchemaRequests = await Promise.all(emptySheetSchemas.map((schema) => this.makeWriteSchemaRequest(schema)))
-
-         await this.config.spread.API.spreadsheets.batchUpdate({
-            spreadsheetId:this.config.spread.ID,
-            requestBody:{requests:writeSchemaRequests}
-         })
+         await this.config.spread.batchUpdateQuery(writeSchemaRequests)
          result.written.concat(emptySheetSchemas.map(schema => schema.sheetName)) 
       }
       
@@ -183,15 +171,6 @@ class SchemaManager<T extends Schema[]> {
 
    }
 
-   isColumnFullyFilled(rows:string[][], columnIdx:number) {
-      return rows.every((row) => (row[columnIdx] ?? "").trim() === "")
-   }
-   removeNonEvaluableRows(rows: string[][]): string[][] {
-      // 뒤에서부터 값이 있는 부분까지 remove
-      const reversedIndex = [...rows].reverse().findIndex(row => row.every(cell => (cell ?? "").trim() === "")); 
-      const lastIndex = reversedIndex === -1 ? 0 : rows.length - reversedIndex;
-      return rows.slice(0, lastIndex);
-   }
 
    constructor(private config: SchemaManagerConfig<T>) {
    }
@@ -202,28 +181,6 @@ class SchemaManager<T extends Schema[]> {
       const fetchedSheetIDStore = Object.fromEntries(iterable)
       this.sheetIDStore = fetchedSheetIDStore
       return fetchedSheetIDStore
-   }
-
-   private async createSheets(schemas: Schema<string, FieldsType>[]) {
-      const request = {
-         spreadsheetId: this.config.spread.ID,
-         resource: {
-            requests: schemas.map((schema) => (
-               {
-                  addSheet: {
-                     properties: {
-                        title: schema.sheetName
-                     }
-                  }
-               }
-            ))
-         },
-      };
-
-      const response = await this.config.spread.API.spreadsheets.batchUpdate(request)
-
-      if (response.status !== 200) throw Error("error")
-      return response.data.replies
    }
 
    private async makeWriteSchemaRequest(schema:Schema):Promise<sheets_v4.Schema$Request> {
@@ -241,22 +198,6 @@ class SchemaManager<T extends Schema[]> {
             rows: [{values:schema.orderedColumns.map((column) => ({userEnteredValue:{stringValue:column}}))}],
             fields: 'userEnteredValue'
       }}
-   }
-   private async makeClearSheetRequest(schema:Schema):Promise<sheets_v4.Schema$Request>{
-      const sheetId = await this.getSchemaID(schema.sheetName, true)
-      return {
-         updateCells: {
-           range: {
-             sheetId,
-           },
-           fields: '*' // 모든 필드 삭제 (값 + 포맷 포함)
-         }
-       }
-   }
-   private async makeClearAndWriteRequest(schemaList:Schema[]){
-      const clearSchemaRequests =  await Promise.all(schemaList.map((schema) => this.makeClearSheetRequest(schema)))
-      const writeSchemaRequests = await Promise.all(schemaList.map((schema) => this.makeWriteSchemaRequest(schema)))
-      return [...clearSchemaRequests, ...writeSchemaRequests]
    }
 
 
