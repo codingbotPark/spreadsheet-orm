@@ -1,17 +1,18 @@
 
 export type DataTypes = string | number | boolean | Date
-export interface NotColumnedFieldType<T extends DataTypes>{
+export type LiteralDataTypes = "string" | "number" | "boolean" | "date"
+export interface NotColumnedFieldType<T extends LiteralDataTypes>{
     dataType:T
     optional?:boolean
     default?:T
 }
-export interface FieldType<T extends DataTypes> extends NotColumnedFieldType<T>{
+export interface FieldType<T extends LiteralDataTypes> extends NotColumnedFieldType<T>{
     columnOrder:number
  }
 
   
 
-abstract class BaseFieldBuilder<T extends DataTypes>{
+abstract class BaseFieldBuilder<T extends LiteralDataTypes>{
     private _optional:boolean = false
     private _default?:T
 

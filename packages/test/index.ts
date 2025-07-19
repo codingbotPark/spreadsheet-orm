@@ -1,6 +1,5 @@
 import createSpreadsheetClient, { Credentials, defineTable, fieldBuilder } from "spreadsheet-orm"
 import credentials from "./security/credentials.json"
-import defineTable, { InferTableType } from "spreadsheet-orm/src/core/DDL/defineTable"
 
 const connectionParameters:Credentials = credentials
 
@@ -55,41 +54,4 @@ await spreadsheetClient.schemaManager.sync({mode:"force"})
 // )
 // function createRoad<Person<string, FieldsType>[]>({ people, }: CreatRoadType<Person<string, FieldsType>[]>): Road<Person<string, FieldsType>[]>
 
-const testSchema = defineTable("cars",(field) => ({
-    name:field.string(),
-    displacement:field.number()
-}))
-testSchema.sheetName
 
-
-type Car = InferTableType<typeof testSchema.fields>
-function addCar(car:Car){
-    
-}
-
-
-// const tt = await spreadsheetClient.queryBuilder.delete().where((data) => data[1]==="Bruno").from("student").and().where((data) => data[2]==="Bruno").from("class").execute()
-// console.log(tt)
-// const result = await spreadsheetClient.queryBuilder.delete().from("class")
-
-// const test = await spreadsheetClient.queryBuilder.select().execute()
-// const result = await spreadsheetClient.queryBuilder.select().from("cars").execute()
-// const result = await spreadsheetClient.queryBuilder.select().from("class").execute()
-// console.log(result)
-
-// const test1 = await spreadsheetClient.queryBuilder.update(['2']).where((data) => data[2] === "Bruno").execute()
-// const result2 = await spreadsheetClient.queryBuilder.update(['2']).from("class").where((data) => data[2] === "Bruno").execute()
-// console.log(result2)
-
-// const test3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).execute()
-// const result3 = await spreadsheetClient.queryBuilder.insert(["1", "2", "3"]).into("class").execute()
-// console.log(result3)
-
-// const test4 = await spreadsheetClient.queryBuilder.delete().where((data) => data[2] === "Bruno").execute()
-// const result4 = await spreadsheetClient.queryBuilder.delete().from("class").where((data) => data[2] === "2").execute()
-// console.log(result4)
-// 1. 타입 선언
-// 1. Person 타입
-
-// 1. Person 클래스 정의
-// 메타데이터용 타입

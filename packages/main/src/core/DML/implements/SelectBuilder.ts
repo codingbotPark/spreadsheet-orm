@@ -31,7 +31,6 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
     protected createQueryForQueue(): SelectQueryQueueType {
         assertNotNull(this.sheetName)
         assertNotNull(this.targetColumn)
-        console.log(this.queryQueue)
         const queryQueue:SelectQueryQueueType = {
             ...this.getCurrentCondition(),
             sheetName:this.sheetName,
@@ -43,15 +42,11 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
     async execute(){
         const composedRanges = this.queryQueue.map((query) => {
-            console.log(query.sheetName)
-            // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.sheetName ,query.targetColumn)
             const composedRange = this.config.sheet.composeRange(query.sheetName, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
-        console.log("composedRanges",composedRanges)
         const requestBody = this.makeRequestBody(composedRanges)
-        console.log("requestBody",requestBody)
 
         const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spread.ID,

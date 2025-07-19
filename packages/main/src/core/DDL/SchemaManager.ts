@@ -45,15 +45,18 @@ class SchemaManager<T extends Schema[]> {
          errors: [],
       }
 
+      const actualSheets = (await this.config.spread.getSpreadInfo()).sheets // 현재 시트
+      const actualSheetNamesSet = new Set(actualSheets?.map((sheet) => sheet.properties?.title)) // 실제 시트들의 이름
+      const missingSheets = this.config.schema.schemaList.filter((schema) => !actualSheetNamesSet.has(schema.sheetName)) // 정의된 스키마들 중 실제 시트에 있으면 제외
+
       // make Schema logic 
       // The Google Sheets API returns an error when trying to create a sheet that already exists.
-      const missingSheets = await this.getMissingSheets() // 일단 무조건 생성 및 write
       let missingSheetNames = missingSheets.map((schema) => schema.sheetName)
       if (missingSheetNames.length) {
          if (this.config.schema.DEFAULT_MISSING_STRATEGY === "create") {
             await this.config.spread.batchUpdateQuery(missingSheets.map((sheet) => SheetQueries.addSheet(sheet.sheetName)))
             result.created = missingSheetNames
-            missingSheetNames = []
+            missingSheetNames = [] // clear to part of existingSchemas
          } else if (this.config.schema.DEFAULT_MISSING_STRATEGY === "error") {
             result.errors = missingSheetNames
             throw Error("there is no sheet" + missingSheets.join(","))
@@ -64,7 +67,7 @@ class SchemaManager<T extends Schema[]> {
 
       // 기본 unstableSchema 에는 missing으로 생성, 최종적으로 생성되지 않은 요소
       const missingSheetNameSet = new Set(missingSheetNames)
-      // existing = schemaList - missing
+      // existing = schemaList - missing, 즉 선언된 스키마 중 실제 있는 것들
       const existingSchemas = this.config.schema.schemaList.filter((schema) => {
          const result = !missingSheetNameSet.has(schema.sheetName)
          console.log(result)
@@ -72,7 +75,6 @@ class SchemaManager<T extends Schema[]> {
       })
 
       await this.updateSheetIDStore()
-
 
       // clean all existing schema empty
       if (syncOptions.mode === "clean") {
@@ -85,7 +87,6 @@ class SchemaManager<T extends Schema[]> {
       // checking existing Sheets stable & create empty schema
       // to use cached sheetIDStore in check methods
       const existingSchemaStableReports = await Promise.all(existingSchemas.map((schema) => this.checkSchemaValidation(schema, this.config)))
-      console.log("existingSchemaStableReports",existingSchemaStableReports)
 
       // strict <-> smart => fixable실행 차이
       const [stableReports, fixableReports, unstableReports] = existingSchemaStableReports.reduce<[SchemaStableReport[], SchemaStableReport[], SchemaStableReport[]]>(
@@ -138,7 +139,20 @@ class SchemaManager<T extends Schema[]> {
          result.written.concat(emptySheetSchemas.map(schema => schema.sheetName)) 
       }
       
-      // set type to spreadsheet
+      // set type to spreadsheet after processing schema structure
+      existingSchemas.flatMap((schema) => {
+         const sheetId = this.getSchemaID(schema.sheetName)
+         schema.orderedColumns.map((columnName, idx) => {
+            const dataType = schema.fields[columnName].dataType
+            let type = typeof dataType
+            if (type === "number"){}
+            else if (dataType instanceof Date){
+               type = "date"
+            }else{return}
+
+            return SheetQueries.repeatTypedCell(sheetId, )
+         })
+      })
       
 
       return result
@@ -176,7 +190,7 @@ class SchemaManager<T extends Schema[]> {
    }
 
    protected async updateSheetIDStore(){
-      const actualSheets = await this.getActualSheets() ?? []
+      const actualSheets = (await this.config.spread.getSpreadInfo()).sheets ?? [] // 현재 시트
       const iterable = actualSheets.map((sheet) => [sheet.properties?.title, sheet.properties?.sheetId]).filter((iter) => iter[0] !== undefined)
       const fetchedSheetIDStore = Object.fromEntries(iterable)
       this.sheetIDStore = fetchedSheetIDStore
@@ -202,18 +216,6 @@ class SchemaManager<T extends Schema[]> {
 
 
 
-   private async getActualSheets() {
-      const sheetInfo = await this.config.spread.getSpreadInfo()
-      return sheetInfo.sheets
-   }
-   private async getMissingSheets() { // 지정된 스키마 기준 실제 sheet가 없는 스키마
-      const actualSheets = await this.getActualSheets()
-      const actualSheetNames = actualSheets?.map((sheet) => sheet.properties?.title)
-      const currentSheetNamesSet = new Set(actualSheetNames)
-      const missingSheets = this.config.schema.schemaList.filter((schema) => !currentSheetNamesSet.has(schema.sheetName))
-      // 현재 스프레드와 
-      return missingSheets
-   }
 
    private async getSpecifiedSheetData(schema:Schema):Promise<string[][]>{
       // get all data from header

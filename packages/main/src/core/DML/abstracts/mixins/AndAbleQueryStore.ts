@@ -34,7 +34,6 @@ abstract class AndAbleQueryStore
         protected nextClassConstructor:BuilderConstructor<T, NextClassInstance>,
       ) {
         super(config)
-        console.log("constructor는 요기", this.sheetName)
       }
 }
 applyMixins(AndAbleQueryStore, [AndAble, QueryStore])

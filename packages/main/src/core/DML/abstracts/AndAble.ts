@@ -22,7 +22,6 @@ extends BaseBuilder<T>{
     and(...ctorParam:BuilderCtorParamType<ExtractConstructor<NextClassInstance>>):NextClassInstance{
         const instance = this.makeNextInstance(...ctorParam)
         this.inheritState(instance)
-        console.log("레거시and", instance)
         return instance
     }
 

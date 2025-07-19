@@ -19,4 +19,32 @@ export class SheetQueries {
         }
     }
   }
+
+  static repeatTypedCell(sheetId:number, type:"number" | "date", rangeOptions = {startColumnIndex:0, endColumnIndex:1000000}):sheets_v4.Schema$Request{
+    const numberFormat = {
+        "number":{
+            type:"NUMBER"
+        },
+        "date":{
+            type:"DATE_TIME",
+            pattern: "yyyy-mm-dd hh:mm:ss"
+        }
+    }
+
+    return {
+        repeatCell:{
+            range:{
+                sheetId,
+                ...rangeOptions,
+            },
+            cell:{
+                userEnteredFormat: {
+                    numberFormat:numberFormat[type]
+                }
+            },
+        }
+    }
+  }
+
+
 }

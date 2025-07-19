@@ -12,7 +12,6 @@ class QueryBuilder<T extends Schema[] = Schema[]> {
 
 
     insert(insertValues:DataTypes[]){
-        console.log("qeuryBuildr > insert")
         return new InsertBuilder(this.config,insertValues)
     }
     

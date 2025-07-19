@@ -12,7 +12,6 @@ interface InsertQueryQueueType extends BasicQueryQueueType{
 class InsertBuilder<T extends Schema[]> extends QueryStore<T, InsertQueryQueueType>{
     protected queryQueue:InsertQueryQueueType[] = []
     into(sheetName: T[number]['sheetName']) {
-        console.log("insert builder > settedInsertBuilder 생성", this.queryQueue)
         return new SettedInsertBuilder(this.config, this.insertValues, sheetName, this.queryQueue)
     }
 

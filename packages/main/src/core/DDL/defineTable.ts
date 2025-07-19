@@ -1,4 +1,4 @@
-import { DataTypes, FieldType, NotColumnedFieldType } from "./abstracts/BaseFieldBuilder"
+import { DataTypes, FieldType, LiteralDataTypes, NotColumnedFieldType } from "./abstracts/BaseFieldBuilder"
 import { BoooleanFieldBuilder, DateFieldBuilder, NumberFieldBuilder, ReferenceFieldBuilder, StringFieldBuilder } from "./implements/fieldBuilders"
 import Schema from "./implements/Schema"
 
@@ -56,8 +56,8 @@ export const fieldBuilder: FieldBuilder = {
       new ReferenceFieldBuilder<T, Key, T[Key]['dataType']>(schema, field)
 }
 
-export type NotColumnedFieldsType = Record<string,NotColumnedFieldType<DataTypes>>;
-export type FieldsType = Record<string,FieldType<DataTypes>>; 
+export type NotColumnedFieldsType = Record<string,NotColumnedFieldType<LiteralDataTypes>>;
+export type FieldsType = Record<string,FieldType<LiteralDataTypes>>; 
 export type ColumnizeFields<T extends NotColumnedFieldsType> = {
    [K in keyof T]: FieldType<T[K]['dataType']>;
  };
