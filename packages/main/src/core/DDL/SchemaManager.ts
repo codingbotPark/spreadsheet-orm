@@ -140,20 +140,26 @@ class SchemaManager<T extends Schema[]> {
       }
       
       // set type to spreadsheet after processing schema structure
-      existingSchemas.flatMap((schema) => {
-         const sheetId = this.getSchemaID(schema.sheetName)
-         schema.orderedColumns.map((columnName, idx) => {
-            const dataType = schema.fields[columnName].dataType
-            let type = typeof dataType
-            if (type === "number"){}
-            else if (dataType instanceof Date){
-               type = "date"
-            }else{return}
+      const setTypedColumnRequests: sheets_v4.Schema$Request[] = []
+      for (const schema of existingSchemas) {
+         const sheetId = await this.getSchemaID(schema.sheetName, true)
 
-            return SheetQueries.repeatTypedCell(sheetId, )
-         })
-      })
-      
+         for (let idx = 0; idx < schema.orderedColumns.length; idx++) {
+            const columnName = schema.orderedColumns[idx]
+            const dataType = schema.fields[columnName].dataType
+
+            if (dataType !== "number" && dataType !== "date") continue
+
+            const startColumnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) + idx
+            const request = SheetQueries.repeatTypedCell(sheetId, dataType, {
+               startRowIndex: this.config.sheet.DATA_STARTING_ROW,
+               startColumnIndex,
+               endColumnIndex: startColumnIndex + 1
+            })
+            setTypedColumnRequests.push(request)
+         }
+      }
+      this.config.spread.batchUpdateQuery(setTypedColumnRequests)
 
       return result
    }
