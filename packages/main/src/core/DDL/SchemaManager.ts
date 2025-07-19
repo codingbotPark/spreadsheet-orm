@@ -72,15 +72,14 @@ class SchemaManager<T extends Schema[]> {
 
       await this.updateSheetIDStore()
 
-      // write Schema logic
-      // write schema as possible as(existing)
+
+      // clean all existing schema empty
       if (syncOptions.mode === "clean") {
-         const requests = await this.makeClearAndWriteRequest(existingSchemas)
+         const requests =  await Promise.all(existingSchemas.map((schema) => this.makeClearSheetRequest(schema)))
          await this.config.spread.API.spreadsheets.batchUpdate({
             spreadsheetId:this.config.spread.ID,
             requestBody:{requests}
          })
-         result.written = existingSchemas.map((schema) => schema.sheetName)
          return result
       } 
       
@@ -109,13 +108,17 @@ class SchemaManager<T extends Schema[]> {
 
       if (unstableReports.length) {
          if (syncOptions.mode === "force"){
-            const unstablSchemas = unstableReports.map((report) => report.schema)
-            const requests = await this.makeClearAndWriteRequest(unstablSchemas)
+            const requests =  await Promise.all(unstableReports.map((report) => this.makeClearSheetRequest(report.schema))) 
             await this.config.spread.API.spreadsheets.batchUpdate({
                spreadsheetId:this.config.spread.ID,
                requestBody:{requests}
             })
-            result.written.concat(unstablSchemas.map((schema) => schema.sheetName))
+            // make fixable true make recognize like empty sceham
+            const markWithStableReports = unstableReports.map((report) => {
+               report.fixable = true
+               return report
+            })
+            stableReports.concat(markWithStableReports)
          } else {
             result.errors = unstableReports.map((report) => report.schema.sheetName)
             throw("unstable")
@@ -135,18 +138,20 @@ class SchemaManager<T extends Schema[]> {
             result.fixed = fixableReports.map((report) => report.schema.sheetName)
          }
       }
-      if (stableReports.length){
-         const emptySheetSchemas = stableReports.filter((report) => report.fixable).map((report) => report.schema)
-         if (emptySheetSchemas.length){
-            const writeSchemaRequests = await Promise.all(emptySheetSchemas.map((schema) => this.makeWriteSchemaRequest(schema)))
-   
-            await this.config.spread.API.spreadsheets.batchUpdate({
-               spreadsheetId:this.config.spread.ID,
-               requestBody:{requests:writeSchemaRequests}
-            })
-            result.written.concat(emptySheetSchemas.map(schema => schema.sheetName)) 
-         }
+      // emptySheetSchemas = 원래 empty | unstable in force option | all in clean option
+      const emptySheetSchemas = stableReports.filter((report) => report.fixable).map((report) => report.schema)
+      if (emptySheetSchemas.length){
+         const writeSchemaRequests = await Promise.all(emptySheetSchemas.map((schema) => this.makeWriteSchemaRequest(schema)))
+
+         await this.config.spread.API.spreadsheets.batchUpdate({
+            spreadsheetId:this.config.spread.ID,
+            requestBody:{requests:writeSchemaRequests}
+         })
+         result.written.concat(emptySheetSchemas.map(schema => schema.sheetName)) 
       }
+      
+      // set type to spreadsheet
+      
 
       return result
    }
