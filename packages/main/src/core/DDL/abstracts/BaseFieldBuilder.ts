@@ -15,6 +15,8 @@ export interface NotColumnedFieldType<T extends LiteralDataTypes>{
     dataType:T
     optional?:boolean
     default?:T
+    timestampAtCreated?:boolean
+    timestampAtUpdated?:boolean
 }
 export interface FieldType<T extends LiteralDataTypes> extends NotColumnedFieldType<T>{
     columnOrder:number
@@ -41,6 +43,8 @@ abstract class BaseFieldBuilder<T extends LiteralDataTypes>{
             dataType: this.getType(),
             optional: this._optional,
             default: this._default,
+            timestampAtCreated: (this as any).timestampAtCreated,
+            timestampAtUpdated: (this as any).timestampAtUpdated,
         }
     }
 
