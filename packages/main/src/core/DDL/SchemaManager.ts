@@ -1,11 +1,10 @@
 import { SchemaManagerConfig } from "@src/types/configPicks";
 import Schema from "./implements/Schema";
 import { ColumnSpecificationType, RowSpecificationType } from "@src/config/SheetConfig";
-import { FieldsType } from "./defineTable";
 import { sheets_v4 } from "googleapis";
 import { SchemaMap } from "@src/config/SchemaConfig";
 import { SchemaValidator } from "./implements/SchemaValidator";
-import { SheetQueries } from "@src/generators";
+import { SheetQueries } from "@src/generators/SheetQueries";
 
 
 export type SyncModeType = "strict" | "smart" | "force" | "clean"
@@ -160,6 +159,7 @@ class SchemaManager<T extends Schema[]> {
          }
       }
       this.config.spread.batchUpdateQuery(setTypedColumnRequests)
+      console.log("set type to column successfully")
 
       return result
    }

@@ -46,6 +46,7 @@ export class SheetQueries {
                     numberFormat:numberFormat[type]
                 }
             },
+            fields:"userEnteredFormat.numberFormat"
         }
     }
   }
