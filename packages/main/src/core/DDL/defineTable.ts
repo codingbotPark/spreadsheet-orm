@@ -1,4 +1,4 @@
-import { DataTypes, FieldType, LiteralDataTypes, NotColumnedFieldType } from "./abstracts/BaseFieldBuilder"
+import { DataTypes, FieldType, LiteralDataTypes, NotColumnedFieldType, TypeFromLiteral } from "./abstracts/BaseFieldBuilder"
 import { BoooleanFieldBuilder, DateFieldBuilder, NumberFieldBuilder, ReferenceFieldBuilder, StringFieldBuilder } from "./implements/fieldBuilders"
 import Schema from "./implements/Schema"
 
@@ -77,3 +77,18 @@ export type InferTableType<T extends FieldsType> = {
     : InferFieldType<T[K]['dataType']>;
    };
 
+
+export type OrderedValueTypes<
+  T extends FieldsType,
+  Ordered extends (keyof T)[]
+> = {
+  [K in keyof Ordered]: Ordered[K] extends keyof T
+    ? TypeFromLiteral<T[Ordered[K]]["dataType"]>
+    : never;
+};
+// export type OrderedValueTypes<
+//   T extends FieldsType,
+//   Ordered extends (keyof T)[]
+// > = {
+//   [K in keyof Ordered]: TypeFromLiteral<T[Ordered[K]]["dataType"]>
+// };

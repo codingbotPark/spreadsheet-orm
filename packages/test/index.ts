@@ -13,6 +13,7 @@ const userSchema = defineTable("user", userSchemaFields)
 const carSchemaFieldsd = {
     name:fieldBuilder.string().build(),
     displacement:fieldBuilder.number().build(),
+    createdAt:fieldBuilder.date().createdTimestamp().build()
     // forKey:fieldBuilder.reference(userSchema, "age").build(),
 }
 
@@ -31,17 +32,18 @@ const spreadsheetClient = createSpreadsheetClient({
     privateKey:connectionParameters.private_key,
     email:connectionParameters.client_email,
     spreadsheetID:connectionParameters.spreadsheetID,
-    schemas:schemas
+    // schemas:schemas
 })
-spreadsheetClient.configs.schema.schemaMap.cars
-await spreadsheetClient.schemaManager.sync({mode:"force"})
+// spreadsheetClient.configs.schema.schemaMap.cars
+// await spreadsheetClient.schemaManager.sync({mode:"force"})
+// await spreadsheetClient.queryBuilder.insert(["volvo", "1960"]).into("cars").execute()
 // await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").execute()
 // await spreadsheetClient.queryBuilder.delete().from("cars").where((data) => data[2] === "1960").execute() // index0 = index
 // await spreadsheetClient.queryBuilder.update(["hyundai", 2000]).from("cars").execute()
 // await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").and(["hyundai", 2020]).into("cars").execute()
 // // await spreadsheetClient.queryBuilder.insert(["volve", 1960]).into("cars").and()
-// const result = await spreadsheetClient.queryBuilder.select().from("cars").execute()
-// console.log(result)
+const result = await spreadsheetClient.queryBuilder.select().from("cars").and().from("user").execute()
+console.log(result)
 
 
 // await spreadsheetClient.queryBuilder.update()

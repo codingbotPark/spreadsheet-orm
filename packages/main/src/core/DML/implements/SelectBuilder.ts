@@ -3,6 +3,8 @@ import assertNotNull from "@src/types/assertType";
 import WhereableAndQueryStore, { WhereAbleQueueType } from "../abstracts/mixins/WhereableAndQueryStore";
 import Schema from "@src/core/DDL/implements/Schema";
 import QueryStore from "../abstracts/QueryStore";
+import { SchemaMap } from "@src/config/SchemaConfig";
+import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 
 type SelectQueryQueueType = WhereAbleQueueType & {targetColumn:string[]}
 
@@ -42,11 +44,15 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
     async execute(){
         const composedRanges = this.queryQueue.map((query) => {
+            console.log(query.sheetName)
+            // const specifiedColumn = this.specifyColumn(query.targetColumn)
             const specifiedColumn = this.specifyColumn(query.sheetName ,query.targetColumn)
             const composedRange = this.config.sheet.composeRange(query.sheetName, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
+        console.log("composedRanges",composedRanges)
         const requestBody = this.makeRequestBody(composedRanges)
+        console.log("requestBody",requestBody)
 
         const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spread.ID,
@@ -58,11 +64,13 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
 
         // extract values only
         const extractedValues = this.extractValuesFromMatch(result)
+        console.log("extractedValues",extractedValues)
+        const convertedExtractedValuees = this.convertTypeToDefined(extractedValues) 
         // process where
-        const conditionedExtractedValues = this.chainConditioning(extractedValues)
+        const conditionedConvertedExtractedValues = this.chainConditioning(convertedExtractedValuees)
 
         // return result
-        return conditionedExtractedValues
+        return conditionedConvertedExtractedValues
     }
 
     private makeRequestBody(ranges:string[]){
@@ -71,6 +79,33 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
                 a1Range:range
             }))
         }
+    }
+
+    private convertTypeToDefined(extractedValues:string[][][]){
+        return extractedValues.map((sheetValue, idx) => {
+            const queriedFrom = this.queryQueue[idx].sheetName
+            if (!(queriedFrom in this.config.schema.schemaMap)) return sheetValue
+
+            const currentSchema = this.config.schema.schemaMap[queriedFrom as keyof SchemaMap<T>]
+            console.log("currentSchema", currentSchema)
+            console.log("orderedColumns", currentSchema.orderedColumns)
+            const typeConverters:((value:string)=>DataTypes)[] = currentSchema.orderedColumns.map((column) => {
+                const type = currentSchema.fields[column].dataType
+                switch (type){
+                    case "boolean":
+                        return (value:string) => value.toLowerCase() === "true"
+                    case "date":
+                        return (value:string) => new Date(value)
+                    case "number":
+                        return (value:string) => Number(value)
+                    default:
+                        return (value:string) => value
+                }
+            })
+
+            const result = sheetValue.map((row) => row.map((value,idx) => typeConverters[idx](value)))
+            return result
+        })
     }
 
 }

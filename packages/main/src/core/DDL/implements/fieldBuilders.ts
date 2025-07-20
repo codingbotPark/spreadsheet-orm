@@ -31,7 +31,7 @@ export class DateFieldBuilder extends BaseFieldBuilder<'date'>{
 
     createdTimestamp(){
       this.timestampAtCreated = true
-      return this 
+      return this
     }
 
     updatedTimestamp(){

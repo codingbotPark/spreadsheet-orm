@@ -6,6 +6,7 @@ import Schema from "@src/core/DDL/implements/Schema";
 import AndAbleQueryStore from "./AndAbleQueryStore";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import { BuilderConstructor } from "@src/types/BuilderCtorTypes";
+import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 
 export interface WhereAbleQueueType extends ConditionParamTypes, BasicQueryQueueType{}
 
@@ -17,12 +18,11 @@ QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType,
 > extends AndAbleQueryStore<T, NextClassInstance, WhereAbleQueueType>, WhereAble<T>{}
 
 abstract class WhereableAndQueryStore
-<T extends Schema[], 
-NextClassInstance extends QueryStoreAble<T, WhereAbleQueueType>,
-QueryQueueType extends WhereAbleQueueType = WhereAbleQueueType>
+<T extends Schema[], NextClassInstance extends QueryStoreAble<T, WhereAbleQueueType>>
 extends BaseBuilder<T>{
     
-    protected chainConditioning(data:string[][][]):DataWithRowType[][]{
+    // protected chainConditioning(data:string[][][]):DataWithRowType[][]{
+    protected chainConditioning(data:DataTypes[][][]):DataWithRowType[][]{
         return data.map((rangeData, idx) => {
             const filterParam = this.queryQueue[idx]
             const indexedRangeData = this.indexingBatchData(rangeData)

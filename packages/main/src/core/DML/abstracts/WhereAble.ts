@@ -1,6 +1,7 @@
 import { sheets_v4 } from "googleapis";
 import BaseBuilder from "./BaseBuilder";
 import Schema from "@src/core/DDL/implements/Schema";
+import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 
 
 // from, where 구현
@@ -66,7 +67,7 @@ abstract class WhereAble<T extends Schema[]> extends BaseBuilder<T>{
         return values
     }
 
-    protected indexingBatchData(data:string[][]):DataWithRowType[]{
+    protected indexingBatchData(data:DataTypes[][]):DataWithRowType[]{
         return data.map((currData, idx) => [idx + this.config.sheet.DATA_STARTING_ROW, ...currData] as DataWithRowType);
     }
 

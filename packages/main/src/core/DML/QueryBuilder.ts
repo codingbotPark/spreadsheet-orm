@@ -6,10 +6,10 @@ import { QueryBuilderConfig } from "@src/types/configPicks";
 import { DataTypes } from "../DDL/abstracts/BaseFieldBuilder";
 import Schema from "../DDL/implements/Schema";
 
+
 class QueryBuilder<T extends Schema[] = Schema[]> {
     constructor(private config: QueryBuilderConfig<T>) {
     }
-
 
     insert(insertValues:DataTypes[]){
         return new InsertBuilder(this.config,insertValues)
@@ -18,7 +18,7 @@ class QueryBuilder<T extends Schema[] = Schema[]> {
     // select(targetColumn?:string[]){
     select(targetColumn?:string[]){
         return new SelectBuilder(this.config, targetColumn)
-    }   
+    }
 
     update(updateValues:DataTypes[]){
         return new UpdateBuilder(this.config, updateValues)

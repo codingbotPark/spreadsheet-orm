@@ -1,6 +1,16 @@
 
+
 export type DataTypes = string | number | boolean | Date
 export type LiteralDataTypes = "string" | "number" | "boolean" | "date"
+export type TypeFromLiteral<T extends LiteralDataTypes> =
+    T extends "string" ? string :
+    T extends "number" ? number :
+    T extends "boolean" ? boolean :
+    T extends "date" ? Date :
+    never;
+
+
+
 export interface NotColumnedFieldType<T extends LiteralDataTypes>{
     dataType:T
     optional?:boolean

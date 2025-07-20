@@ -1,4 +1,4 @@
-import { DataTypes } from "@src/core/DDL/abstracts/BaseFieldBuilder";
+import { DataTypes, TypeFromLiteral } from "@src/core/DDL/abstracts/BaseFieldBuilder";
 import { QueryBuilderConfig } from "@src/types/configPicks";
 import Schema from "@src/core/DDL/implements/Schema";
 import AndAbleQueryStore from "../abstracts/mixins/AndAbleQueryStore";
@@ -8,10 +8,9 @@ interface InsertQueryQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
 }
 
-// class InsertBuilder<T extends Schema[] ,Into extends {sheetName?:string}> extends AndAble<typeof InsertBuilder>{
-class InsertBuilder<T extends Schema[]> extends QueryStore<T, InsertQueryQueueType>{
+class InsertBuilder<T extends Schema[], Sheetname extends T[number]['sheetName']> extends QueryStore<T, InsertQueryQueueType>{
     protected queryQueue:InsertQueryQueueType[] = []
-    into(sheetName: T[number]['sheetName']) {
+    into(sheetName: Sheetname) {
         return new SettedInsertBuilder(this.config, this.insertValues, sheetName, this.queryQueue)
     }
 
@@ -23,7 +22,8 @@ export default InsertBuilder
 
 
 
-class SettedInsertBuilder<T extends Schema[]> extends AndAbleQueryStore<T, InsertBuilder<T>, InsertQueryQueueType>{
+class SettedInsertBuilder<T extends Schema[], SheetName extends T[number]['sheetName']> extends AndAbleQueryStore<T, InsertBuilder<T, SheetName>, InsertQueryQueueType>{
+    // constructor(config:QueryBuilderConfig<T>, private insertValues:OrderedValueTypes<S[SheetName]['fields'], S[SheetName]['orderedColumns']>, protected sheetName:SheetName, protected queryQueue:InsertQueryQueueType[]){
     constructor(config:QueryBuilderConfig<T>, private insertValues:DataTypes[], protected sheetName:T[number]['sheetName'], protected queryQueue:InsertQueryQueueType[]){
         super(config, InsertBuilder)
         this.saveCurrentQueryToQueue();

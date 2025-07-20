@@ -1,4 +1,4 @@
-import { CellType } from "@src/types/spreadType"
+
 
 export interface SheetConfigOptions {
 
@@ -127,3 +127,5 @@ export interface RowSpecificationType {
     startRow: number,
     endRow?: number
 }
+
+export type CellType = { column: string; row: number }
