@@ -32,7 +32,7 @@ const spreadsheetClient = createSpreadsheetClient({
     privateKey:connectionParameters.private_key,
     email:connectionParameters.client_email,
     spreadsheetID:connectionParameters.spreadsheetID,
-    // schemas:schemas
+    schemas:schemas
 })
 // spreadsheetClient.configs.schema.schemaMap.cars
 // await spreadsheetClient.schemaManager.sync({mode:"force"})
@@ -42,7 +42,7 @@ const spreadsheetClient = createSpreadsheetClient({
 // await spreadsheetClient.queryBuilder.update(["hyundai", 2000]).from("cars").execute()
 // await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").and(["hyundai", 2020]).into("cars").execute()
 // // await spreadsheetClient.queryBuilder.insert(["volve", 1960]).into("cars").and()
-const result = await spreadsheetClient.queryBuilder.select().from("cars").and().from("user").execute()
+const result = await spreadsheetClient.queryBuilder.select().from("cars").and().from("user").execute({detail:false})
 console.log(result)
 
 

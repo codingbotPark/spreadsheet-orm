@@ -42,7 +42,7 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
     }
 
 
-    async execute(){
+    async execute(selectOption:{detail:boolean} = {detail:true}){
         const composedRanges = this.queryQueue.map((query) => {
             console.log(query.sheetName)
             // const specifiedColumn = this.specifyColumn(query.targetColumn)
@@ -65,9 +65,7 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
         // extract values only
         const extractedValues = this.extractValuesFromMatch(result)
         console.log("extractedValues",extractedValues)
-        const convertedExtractedValuees = this.convertTypeToDefined(extractedValues) 
-        // process where
-        const conditionedConvertedExtractedValues = this.chainConditioning(convertedExtractedValuees)
+        const conditionedConvertedExtractedValues = this.chainConditioning(selectOption ? this.convertTypeToDefined(extractedValues) : extractedValues)
 
         // return result
         return conditionedConvertedExtractedValues
@@ -87,8 +85,6 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
             if (!(queriedFrom in this.config.schema.schemaMap)) return sheetValue
 
             const currentSchema = this.config.schema.schemaMap[queriedFrom as keyof SchemaMap<T>]
-            console.log("currentSchema", currentSchema)
-            console.log("orderedColumns", currentSchema.orderedColumns)
             const typeConverters:((value:string)=>DataTypes)[] = currentSchema.orderedColumns.map((column) => {
                 const type = currentSchema.fields[column].dataType
                 switch (type){
