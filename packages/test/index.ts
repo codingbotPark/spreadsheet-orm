@@ -1,6 +1,5 @@
 import createSpreadsheetClient, { Credentials, defineTable, fieldBuilder } from "spreadsheet-orm"
 import credentials from "./security/credentials.json"
-
 const connectionParameters:Credentials = credentials
 
 const userSchemaFields = {
@@ -36,8 +35,8 @@ const spreadsheetClient = createSpreadsheetClient({
 })
 // spreadsheetClient.configs.schema.schemaMap.cars
 await spreadsheetClient.schemaManager.sync({mode:"force"})
-// await spreadsheetClient.queryBuilder.insert(["volvo", 1960]).into("cars").execute()
-// await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").execute()
+
+await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").execute()
 // await spreadsheetClient.queryBuilder.delete().from("cars").where((data) => data[2] === "1960").execute() // index0 = index
 // await spreadsheetClient.queryBuilder.update(["hyundai", 2000]).from("cars").execute()
 // await spreadsheetClient.queryBuilder.insert(["volvo",1960]).into("cars").and(["hyundai", 2020]).into("cars").execute()

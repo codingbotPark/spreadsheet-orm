@@ -25,6 +25,18 @@ class SpreadConfig{
         return false
     }
 
+    // Google Sheets 시리얼 번호로 변환하는 헬퍼 함수
+    static jsDateToSheetsSerial(jsDate:Date) {
+        const sheetsEpoch = new Date(1899, 11, 30, 0, 0, 0);
+        const diffMillis = jsDate.getTime() - sheetsEpoch.getTime();
+        const millisPerDay = 24 * 60 * 60 * 1000;
+        let sheetsSerial = diffMillis / millisPerDay;
+        if (jsDate.getFullYear() > 1900 || (jsDate.getFullYear() === 1900 && jsDate.getMonth() > 1)) {
+            sheetsSerial += 1;
+        }
+
+        return sheetsSerial;
+    }
 
     /**
      * instance properties
@@ -76,11 +88,11 @@ class SpreadConfig{
             spreadsheetId:spreadsheetId ?? this.ID,
             requestBody: { requests }
         }
-        console.log(JSON.stringify(request))
         const response = await this.API.spreadsheets.batchUpdate(request);
         if (response.status !== 200) throw new Error("Batch failed");
         return response.data.replies;
     }
+
 
     private checkFormat(options:SpreadConfigOptions){
         if (!this.isValidEmail(options.email)){
