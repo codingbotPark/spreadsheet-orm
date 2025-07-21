@@ -149,16 +149,17 @@ class SchemaManager<T extends Schema[]> {
 
             if (dataType !== "number" && dataType !== "date") continue
 
-            const startColumnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) + idx
-            const request = SheetQueries.repeatTypedCell(sheetId, dataType, {
-               startRowIndex: this.config.sheet.DATA_STARTING_ROW,
+            const startColumnIndex = this.config.sheet.columnToNumber(this.config.sheet.DEFAULT_RECORDING_START_COLUMN) - 1 + idx
+            const request = SheetQueries.setNumberTypedCell(dataType, {
+               sheetId,
+               startRowIndex: this.config.sheet.DATA_STARTING_ROW - 1,
                startColumnIndex,
                endColumnIndex: startColumnIndex + 1
             })
             setTypedColumnRequests.push(request)
          }
       }
-      this.config.spread.batchUpdateQuery(setTypedColumnRequests)
+      await this.config.spread.batchUpdateQuery(setTypedColumnRequests)
       console.log("set type to column successfully")
 
       return result

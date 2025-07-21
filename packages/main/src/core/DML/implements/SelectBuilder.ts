@@ -50,9 +50,7 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
             const composedRange = this.config.sheet.composeRange(query.sheetName, this.config.sheet.DATA_STARTING_ROW, specifiedColumn)
             return composedRange
         })
-        console.log("composedRanges",composedRanges)
         const requestBody = this.makeRequestBody(composedRanges)
-        console.log("requestBody",requestBody)
 
         const response = await this.config.spread.API.spreadsheets.values.batchGetByDataFilter({
             spreadsheetId:this.config.spread.ID,
@@ -85,19 +83,8 @@ extends WhereableAndQueryStore<T, SelectBuilder<T>, SelectQueryQueueType>{
             if (!(queriedFrom in this.config.schema.schemaMap)) return sheetValue
 
             const currentSchema = this.config.schema.schemaMap[queriedFrom as keyof SchemaMap<T>]
-            const typeConverters:((value:string)=>DataTypes)[] = currentSchema.orderedColumns.map((column) => {
-                const type = currentSchema.fields[column].dataType
-                switch (type){
-                    case "boolean":
-                        return (value:string) => value.toLowerCase() === "true"
-                    case "date":
-                        return (value:string) => new Date(value)
-                    case "number":
-                        return (value:string) => Number(value)
-                    default:
-                        return (value:string) => value
-                }
-            })
+            // orderColumns 를 기준으로 typeParser메서드들이 indexing된 배열을
+            const typeConverters:((value:string)=>DataTypes)[] = currentSchema.orderedColumns.map((column) => this.config.schema.typeParsers[currentSchema.fields[column].dataType])
 
             const result = sheetValue.map((row) => row.map((value,idx) => typeConverters[idx](value)))
             return result
