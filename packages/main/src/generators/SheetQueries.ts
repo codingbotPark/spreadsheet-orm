@@ -20,30 +20,28 @@ export class SheetQueries {
     }
   }
 
-  static repeatTypedCell(
-    sheetId:number, 
+  static setNumberTypedCell(
     type:"number" | "date", 
-    range:Omit<sheets_v4.Schema$GridRange, "sheetId"> = {endRowIndex:1000000})
+    range:sheets_v4.Schema$GridRange)
     :sheets_v4.Schema$Request{
     const numberFormat = {
         "number":{
-            type:"NUMBER"
+            type:"NUMBER",
         },
         "date":{
             type:"DATE_TIME",
-            pattern: "yyyy-mm-dd hh:mm:ss"
         }
     }
-
     return {
         repeatCell:{
             range:{
-                sheetId,
-                ...range,
+              startRowIndex:2,
+              endRowIndex:1000000,
+              ...range
             },
             cell:{
                 userEnteredFormat: {
-                    numberFormat:numberFormat[type]
+                    numberFormat:numberFormat[type],
                 }
             },
             fields:"userEnteredFormat.numberFormat"

@@ -96,21 +96,28 @@ class SettedInsertBuilder<T extends Schema[], SheetName extends T[number]['sheet
     }
 
     // Google Sheets 시리얼 번호로 변환하는 헬퍼 함수
-    private dateToGoogleSheetsSerial(date: Date): number {
-        // Google Sheets epoch: December 30, 1899
-        // JavaScript epoch: January 1, 1970
-        // 1900년 2월 29일 버그 (Lotus 1-2-3에서 유래, Excel/Sheets가 계승) 때문에 25569를 더함
-        // (1900년은 윤년이 아니지만, Excel/Sheets는 윤년으로 간주)
-        const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // December 30, 1899
-        const msPerDay = 24 * 60 * 60 * 1000;
-        const serial = (date.getTime() - excelEpoch.getTime()) / msPerDay;
-        
-        // 1900년 2월 29일 버그 보정 (1900년 3월 1일 이후 날짜에만 해당)
-        // 1900년 3월 1일은 시리얼 61
-        if (serial >= 61) {
-            return serial + 1;
+    private jsDateToSheetsSerial(jsDate:Date) {
+        // Google Sheets의 기준 날짜 (1899년 12월 30일)
+        // JavaScript Date 객체는 월을 0부터 시작하므로 11은 12월을 의미합니다.
+        const sheetsEpoch = new Date(1899, 11, 30, 0, 0, 0);
+
+        // JavaScript Date 객체와 Sheets 기준 날짜 간의 밀리초 차이 계산
+        const diffMillis = jsDate.getTime() - sheetsEpoch.getTime();
+
+        // 1일의 밀리초 (24시간 * 60분 * 60초 * 1000밀리초)
+        const millisPerDay = 24 * 60 * 60 * 1000;
+
+        // 일수로 변환
+        let sheetsSerial = diffMillis / millisPerDay;
+
+        // Google Sheets (및 Excel)의 1900년 윤년 버그 보정
+        // 1900년 2월 29일은 실제로는 존재하지 않았지만, Sheets는 이를 날짜로 계산합니다.
+        // 따라서 1900년 3월 1일 이후의 날짜에는 1을 더해줘야 합니다.
+        if (jsDate.getFullYear() > 1900 || (jsDate.getFullYear() === 1900 && jsDate.getMonth() > 1)) {
+            sheetsSerial += 1;
         }
-        return serial;
+
+        return sheetsSerial;
     }
     
 }

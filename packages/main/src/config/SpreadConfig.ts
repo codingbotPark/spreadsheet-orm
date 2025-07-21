@@ -72,10 +72,12 @@ class SpreadConfig{
     }
 
     async batchUpdateQuery(requests: sheets_v4.Schema$Request[], spreadsheetId?: string,) {
-        const response = await this.API.spreadsheets.batchUpdate({
-        spreadsheetId:spreadsheetId ?? this.ID,
-        requestBody: { requests }
-        });
+        const request = { 
+            spreadsheetId:spreadsheetId ?? this.ID,
+            requestBody: { requests }
+        }
+        console.log(JSON.stringify(request))
+        const response = await this.API.spreadsheets.batchUpdate(request);
         if (response.status !== 200) throw new Error("Batch failed");
         return response.data.replies;
     }
