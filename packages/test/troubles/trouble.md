@@ -8,4 +8,4 @@
 2. step-wise 방법으로 sheetName 설정 메서드 이후에 execute 메서드를 가진 클래스를 반환(힌팅자체가 안뜸)
 코드가 길어지지만, 힌팅이 안떠서 구현했는데, Andable로직 구현(mixin패턴이라)에 어려움
 
-
+3. 객체와 Map의 key 값 순서 보장. 객체는 string:입력순서보장, number:오름차순으로 보장.

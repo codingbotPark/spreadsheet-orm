@@ -5,6 +5,7 @@ import AndAbleQueryStore from "../abstracts/mixins/AndAbleQueryStore";
 import QueryStore, { BasicQueryQueueType } from "../abstracts/QueryStore";
 import { SchemaMap } from "@src/config/SchemaConfig";
 import SpreadConfig from "@src/config/SpreadConfig";
+import { FieldsType } from "@src/core/DDL/defineTable";
 
 interface InsertQueryQueueType extends BasicQueryQueueType{
     insertValues:DataTypes[]
@@ -42,12 +43,18 @@ class SettedInsertBuilder<T extends Schema[], SheetName extends T[number]['sheet
     async execute() {
         // append 요청은 하나의 시트에 여러 개의 요청을 보낼 수 있어서, 시트별로 그룹화함
         const groupedBySheet = new Map<keyof SchemaMap<T>, DataTypes[][]>();
-
         for (const q of this.queryQueue) {
             if (!groupedBySheet.has(q.sheetName)) groupedBySheet.set(q.sheetName, []);
             groupedBySheet.get(q.sheetName)!.push(q.insertValues);
         }
 
+        // 한 번에 순회하는게 성능상 더 좋은 경우가 많을거라 생각함
+        groupedBySheet.entries().map(([sheetName, values]) => {
+            const fields = this.config.schema.schemaMap[sheetName].fields
+            const typedValues = this.config.schema.recordDetailType ? this.coerceTypes(fields, values) : values
+            // const autoInjectedValues = this.autoFieldInjection(fields, )
+        })
+        // const typedValue = this.config.schema.recordDetailType ? this.coerceTypes(groupedBySheet)
         const filledGroupedBySheet = this.fillCreatedAtColumn(groupedBySheet);
 
         const tasks = [...filledGroupedBySheet.entries()].map(([sheetName, values]) => // filledGroupedBySheet 사용
@@ -85,7 +92,7 @@ class SettedInsertBuilder<T extends Schema[], SheetName extends T[number]['sheet
                     if (field.dataType === 'date' && field.timestampAtCreated) {
                         const columnIndex = field.columnOrder - 1; // columnOrder는 1부터 시작, 배열 인덱스는 0부터 시작
                         const now = new Date();
-                        newRow[columnIndex] = SpreadConfig.jsDateToSheetsSerial(now); // not working now
+                        newRow[columnIndex] = SpreadConfig.jsDateToSheetsSerial(now);
                     }
                 }
                 return newRow;
@@ -95,6 +102,11 @@ class SettedInsertBuilder<T extends Schema[], SheetName extends T[number]['sheet
         return newGroupedBySheet;
     }
 
+    private coerceTypes(schemaFields:FieldsType ,values:DataTypes[][]){ // convert actual type from
 
+    }   
+    private autoFieldInjection(schemaFields:FieldsType, values:DataTypes[][]){ // createdAt, updatedAt, default 같은 컬럼 처리
+        
+    }
     
 }
